@@ -43,7 +43,7 @@ raytracera_SOURCES = \
     spot-light.cc \
     area-light.h \
     area-light.cc \
-    map.h \ 
+    map.h \
     map.cc \
     triangle.h \
     triangle.cc \
