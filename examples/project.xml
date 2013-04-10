@@ -1,0 +1,278 @@
+<?xml version="1.0" ?>
+<project>
+    <raytracer reflectiondepth="5" subsamplesx="1" subsamplesy="1" exposure="-1" />
+    <preview width="320"  height="240" />
+    <final   width="1024" height="768" />
+    <scene>
+        <camera position="0,3,1" target="0,0,1" fov="1" tilt="0" />
+        <lights>
+            <pointlight
+                name="arey2" 
+                position="6,0,1" 
+                intensity="100,100,100"
+                shadow="false"
+                target="0,0,0" 
+                angle="0.628319" 
+                anglefalloff="0.628319" 
+                lightradius="0.1" 
+                samples="30" /> 
+
+            <pointlight0
+                name="pointy" 
+                position="2,-8,3" 
+                intensity="100,100,100" />
+
+            
+        
+            <pointlight0 
+                name="pointy2" 
+                position="2,8,3" 
+                intensity="100,100,100" />
+
+            
+
+            <pointlight0
+                name="arey" 
+                position="3,5,0.6" 
+                intensity="150,60,60" 
+                target="0,0,0" 
+                angle="0.628319" 
+                anglefalloff="0.628319" 
+                lightradius="0.5" 
+                samples="1" /> 
+
+            <pointlight0 
+                name="pointy" 
+                position="6,6,1" 
+                intensity="100,100,100" />
+
+            
+            <spotlight0 
+                name="spotty" 
+                position="3,5,5" 
+                intensity="100,100,100" 
+                target="0,0,0" 
+                angle="0.448799" 
+                anglefalloff="0.448799" />
+            
+            
+        </lights>
+
+        <images>
+            <cimgimage 
+                name="earthimg" 
+                filename="/Users/ali/Pictures/Work/earth.jpg" />
+
+            <checker2d 
+                name="check" 
+                color1="1.0,0.0,0.0" 
+                color2="0.0,1.0,0.0" />
+        </images>
+
+        <maps>
+            <map2dplane 
+                name="floormap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1.1,1.1,1.1" 
+                imagescale="1,1" 
+                image="check" />
+
+            <map2dspherical
+                name="earthmap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="earthimg" />
+
+            <uvmap
+                name="earthuv" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="earthimg" />
+
+        </maps>
+
+        <materials>
+            <material 
+                name="earthmat" 
+                diffusecolor="1,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="1.0" 
+                dielectric="true" 
+                opticdensity="1.66"
+                scatterfactor="0.0" 
+                scattersamples="5" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.8" 
+                alpha="40" 
+                diffusemap="" 
+                normalmap="" />
+
+            <material 
+                name="floormat" 
+                diffusecolor="1,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="0.0" 
+                dielectric="0" 
+                scatterfactor="0.0" 
+                scattersamples="5" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.5" 
+                alpha="15" 
+                diffusemap="floormap" 
+                normalmap="" />
+
+            <material 
+                name="meshmat" 
+                diffusecolor="0,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="0.0" 
+                dielectric="false" 
+                scatterfactor="0.0" 
+                scattersamples="1" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="1.0" 
+                alpha="15" 
+                diffusemap="earthuv" 
+                normalmap="" />
+        </materials>
+
+        <objects>
+            <plane
+                name="floor" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                material="floormat" />
+
+            <mesh name="cube" position="0,0,1" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
+                <verts>
+                    <vert i="0" p="-1.5, 1,-1" n="-1, 0.5, 0" />
+                    <vert i="1" p="-0.5, 0,-1" n="-1,-1, 0" />
+                    <vert i="2" p=" 0.5, 0,-1" n=" 1,-1, 0" />
+                    <vert i="3" p=" 1.5, 1,-1" n=" 1, 0.5, 0" />
+
+                    <vert i="4" p="-1.5, 1, 1" n="-1, 0.5, 0" />
+                    <vert i="5" p="-0.5, 0, 1" n="-1,-1, 0" />
+                    <vert i="6" p=" 0.5, 0, 1" n=" 1,-1, 0" />
+                    <vert i="7" p=" 1.5, 1, 1" n=" 1, 0.5, 0" />                    
+                </verts>
+
+                <uvps>
+                    <uvp i="0" p="0,0" />
+                    <uvp i="1" p="1,0" />
+                    <uvp i="2" p="1,1" />
+                    <uvp i="3" p="0,1" />
+                </uvps>
+
+                <trigs>
+                    <trig i="0" n="0,0,0" 
+                        v0="1" v1="2" v2="6" m0="0" m1="1" m2="2" />
+                    <trig i="0" n="0,0,0" 
+                        v0="6" v1="5" v2="1" m0="2" m1="3" m2="1" />
+
+                    <trig i="0" n="0,0,0" 
+                        v0="0" v1="1" v2="5" m0="0" m1="1" m2="2" />
+                    <trig i="0" n="0,0,0" 
+                        v0="5" v1="4" v2="0" m0="2" m1="3" m2="1" />
+
+                    <trig i="0" n="0,0,0" 
+                        v0="2" v1="3" v2="7" m0="0" m1="1" m2="2" />
+                    <trig i="0" n="0,0,0" 
+                        v0="7" v1="6" v2="2" m0="2" m1="3" m2="1" />
+
+                    <trig i="0" n="0,0,0" 
+                        v0="0" v1="3" v2="7" m0="0" m1="1" m2="2" />
+                    <trig i="0" n="0,0,0" 
+                        v0="7" v1="4" v2="0" m0="2" m1="3" m2="1" />
+
+
+
+                </trigs>
+
+            </mesh>
+
+            <!--
+            <mesh name="cube" position="0,0,1" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
+                <verts>
+                    <vert i="1" p="-1,-1, 1" n="0,0,1" />
+                    <vert i="2" p="-1, 1, 1" n="0,0,1" />
+                    <vert i="3" p=" 1, 1, 1" n="0,0,1" />
+                    <vert i="4" p=" 1,-1, 1" n="0,0,1" />
+                    <vert i="5" p="-1,-1,-1" n="0,0,1" />
+                    <vert i="6" p="-1, 1,-1" n="0,0,1" />
+                    <vert i="7" p=" 1, 1,-1" n="0,0,1" />
+                    <vert i="8" p=" 1,-1,-1" n="0,0,1" />
+                </verts>
+                <uvps>
+                    <uvp i="1" p="0,0" />
+                    <uvp i="2" p="0,1" />
+                    <uvp i="3" p="1,1" />
+                    <uvp i="4" p="1,0" />
+                </uvps>
+                <trigs>
+                    <trig i="3" n="0,0,-1" 
+                        v0="6" v1="8" v2="7" 
+                        m0="1" m1="4" m2="3" />
+                    <trig i="4" n="0,0,-1" 
+                        v0="6" v1="5" v2="8" 
+                        m0="3" m1="2" m2="1" />
+
+                    <trig i="1" n="0,0,1" 
+                        v0="1" v1="4" v2="3" 
+                        m0="1" m1="4" m2="3" />
+                    <trig i="2" n="0,0,1" 
+                        v0="3" v1="2" v2="1" 
+                        m0="3" m1="2" m2="1" />
+
+                    <trig i="3" n="0,-1,0" 
+                        v0="5" v1="8" v2="4" 
+                        m0="1" m1="4" m2="3" />
+                    <trig i="4" n="0,-1,0" 
+                        v0="4" v1="1" v2="5" 
+                        m0="3" m1="2" m2="1" />
+
+                    <trig i="5" n="-1,0,0" 
+                        v0="6" v1="5" v2="1" 
+                        m0="1" m1="4" m2="3" />
+                    <trig i="6" n="-1,0,0" 
+                        v0="1" v1="2" v2="6" 
+                        m0="3" m1="2" m2="1" />
+
+                    <trig i="3" n="0,1,0" 
+                        v0="7" v1="6" v2="2" 
+                        m0="1" m1="4" m2="3" />
+                    <trig i="4" n="0,1,0" 
+                        v0="2" v1="3" v2="7" 
+                        m0="3" m1="2" m2="1" />
+
+                       <trig i="3" n="1,0,0" 
+                        v0="8" v1="7" v2="3" 
+                        m0="1" m1="4" m2="3" />
+                    <trig i="4" n="1,0,0" 
+                        v0="3" v1="4" v2="8" 
+                        m0="3" m1="2" m2="1" /> 
+
+                </trigs>
+            </mesh>
+
+            
+                        
+            <sphere0 
+                name="earth" 
+                position="2,0,1" 
+                rotation="0,0,3" 
+                scale="1,1,1" 
+                material="earthmat" /> -->
+
+        </objects>
+
+    </scene>
+</project>
