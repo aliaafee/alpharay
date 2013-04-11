@@ -88,25 +88,25 @@ void initGlut(int argc, char** argv)
     glutIdleFunc(idle);
 }
 
-int test() {
-    Vector v1(1.0, 3.2, 4.5);
-    Vector v2(4.2, 1.6, 300);
-    Vector r;
+int test(Object *obj) {
+    UVTriangle *intersectionUVTriangle;
+	Vector intersectionPoint, intersectionPointLocal;
+    float distance;
 
-    r = v1%v2;
-    cout << "v1%v2 " << r << endl;
+    Ray ray(Vector(0,0,0) , Vector(1,1,1));
 
-    V_CROSS(r, v1, v2);
-    cout << "V_CROSS(r, v1, v2) " << r << endl;
-
-    r = v1-v2;
-    cout << "v1-v2 " << r << endl;
-
-    V_SUB(r, v1, v2);
-    cout << "V_SUB(r, v1, v2) " << r << endl;
-
-    cout << "v1*v2 " << v1*v2 << endl;
-    cout << "V_DOT(v1,v2) " << V_DOT(v1,v2) << endl;
+    int count = 10000;
+    boost::timer statusTime;
+    cout << "doing " << count << " ints with " << obj->name_  << endl;
+    for (int i = 0; i < count; i++) {
+        obj->intersection(
+                    ray,
+                    &intersectionPoint,
+                    &intersectionPointLocal, 
+                    &intersectionUVTriangle,
+                    &distance); 
+    }
+    cout << "completed in " << statusTime.elapsed() << " s" << endl;
 }
 
 
@@ -129,6 +129,8 @@ int main(int argc, char** argv)
     cout << "Opening file: " << filename << endl;
 
     project.load(filename);
+
+    //test(project.scene.getObject("cube")); return 0;
 
     if (outfile == "") {
         //Render to glbuffer

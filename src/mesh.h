@@ -35,11 +35,12 @@ public:
     std::vector<Vector2*> uvpoints;
     std::vector<Triangle*> triangles;
 
+    Vector normal(Vector localPoint, UVTriangle *uvtriangle);
+
     Object* intersection(
             Ray &ray,
             Vector *intersectionPoint,
             Vector *intersectionPointLocal,
-            Vector *intersectionNormal,
             UVTriangle **intersectionUVTriangle,
             float *distance);
 

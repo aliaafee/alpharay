@@ -13,7 +13,6 @@ Object* Plane::intersection(
             Ray &ray,
             Vector *intersectionPoint=NULL,
             Vector *intersectionPointLocal=NULL,
-            Vector *intersectionNormal=NULL,
             UVTriangle **intersectionUVTriangle=NULL,
             float *distance=NULL)  
 {
@@ -61,9 +60,6 @@ Object* Plane::intersection(
 	    //*intersectionPoint = ray.position_ + (ray.direction_ * t);
         V_INT_POINT((*intersectionPoint), ray.position_, ray.direction_, t);
     }
-
-    if (intersectionNormal != NULL)
-        *intersectionNormal = transformNormal(normal_) * normalDirection_;
 
     if (intersectionUVTriangle != NULL)
         *intersectionUVTriangle = NULL;

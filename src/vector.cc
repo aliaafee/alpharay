@@ -153,6 +153,12 @@ Vector& Vector::operator-=(const Vector& rhs) {
     return *this;
 }
 
+Vector& Vector::operator/=(const float f) {
+    x /= f;
+    y /= f;
+    z /= f;
+    return *this;
+}
 
 Vector Vector::operator+(Vector param) {
 	Vector t;

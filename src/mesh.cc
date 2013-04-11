@@ -36,12 +36,17 @@ void Mesh::transform(){
         triangles[i]->transform();
     }
 }
+
+Vector Mesh::normal(Vector localPoint, UVTriangle *uvtriangle) {
+    return transformNormal(
+                uvtriangle->getNormal(localPoint)
+            );
+}
 	
 Object* Mesh::intersection(
             Ray &ray,
             Vector *intersectionPoint=NULL,
             Vector *intersectionPointLocal=NULL,
-            Vector *intersectionNormal=NULL,
             UVTriangle **intersectionUVTriangle=NULL,
             float *distance=NULL) 
 {
@@ -49,63 +54,49 @@ Object* Mesh::intersection(
 	Vector Ro = transformPointInv(ray.position_);
 	Vector Rd = transformDisplacementInv(ray.direction_);
 
+    bool result;
     Triangle* curI=NULL;
-    UVTriangle* curIuvT;
-    Vector curN;
     float curt;
 
     Triangle* cloI=NULL;
-    UVTriangle* cloIuvT;
-    Vector cloN;
     float clot;
+
+    int closestTrig = -1;
 
     clot = BIG_NUM;
 
-    bool fast = false;
-    if (intersectionPoint == NULL && 
-            intersectionPointLocal == NULL && 
-            intersectionNormal == NULL &&
-            distance == NULL) {
-        fast = true;
-    }
-
+    Vector pvec, tvec, qvec;
+    float det, inv_det, u, v;
 
     for (int i=0; i < triangles.size(); i++) {
-        if (intersectionNormal != NULL) {
-            curI = triangles[i]->intersection(Ro, Rd, NULL, &curN, &curIuvT, &curt);
-        } else {
-            curI = triangles[i]->intersection(Ro, Rd, NULL, NULL, &curIuvT, &curt);
-        }
-        if (curI != NULL) {
-            if (fast) {
-                return this;
-            }
-            if (curt > 0.0001) {
-                if (curt < clot) {
-                    cloI = curI;
-                    clot = curt;
-                    cloN = curN;
-                    cloIuvT = curIuvT;
-                }
+        //This is real ugly, but kinda fast. is it worth it?
+        RAY_TRIG(result, (triangles[i]), Ro, Rd, curt, pvec, tvec, qvec, det, inv_det, u, v);
+
+        //Or use the function alternative. Much nicer looking. But a teeny bit slower
+        //result = triangles[i]->intersection(Ro, Rd, &curt);
+
+        if (result) {
+            if (curt > 0.0001 && curt < clot) {
+                closestTrig = i;
+                clot = curt;
             }
         }
     }
 
-    if (cloI == NULL) {
+    if (closestTrig == -1) {
         return NULL;
     }
+
+    cloI = triangles[closestTrig];
 
     if (intersectionPointLocal != NULL)
         *intersectionPointLocal = Ro + (Rd * clot);
 
     if (intersectionPoint != NULL)
 	    *intersectionPoint  = ray.position_ + (ray.direction_ * clot);
-    
-    if (intersectionNormal != NULL)
-	    *intersectionNormal = transformNormal(cloN) * normalDirection_;
 
     if (intersectionUVTriangle != NULL)
-        *intersectionUVTriangle = cloIuvT; 
+        *intersectionUVTriangle = cloI->uvtriangle; 
 
     if (distance != NULL)
 	    *distance = clot;
@@ -189,6 +180,8 @@ bool Mesh::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
             add(trig);
         }
     }
+
+    std::cout << "  mesh " << vertexs.size() << " verts, " << triangles.size() << " trigs" << std::endl;
 }
 
 

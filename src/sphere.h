@@ -16,11 +16,14 @@ public:
     Sphere () {init();}
 	Sphere (std::string name, Vector position, Material *material);	
 
+    Vector normal(Vector localPoint, UVTriangle *uvtriangle) {
+        return transformNormal(localPoint);
+    };
+
     Object* intersection(
             Ray &ray,
             Vector *intersectionPoint,
             Vector *intersectionPointLocal,
-            Vector *intersectionNormal,
             UVTriangle **intersectionUVTriangle,
             float *distance);
 

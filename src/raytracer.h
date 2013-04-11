@@ -65,7 +65,6 @@ private:
                                           Ray &ray,
                                           Vector *closestIntersectionPoint,
                                           Vector *closestIntersectionPointLocal,
-                                          Vector *closestIntersectionNormal,
                                           UVTriangle **closestIntersectionUVTriangle,
                                           Object *ignore);
 

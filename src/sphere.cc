@@ -14,7 +14,6 @@ Object* Sphere::intersection(
             Ray &ray,
             Vector *intersectionPoint=NULL,
             Vector *intersectionPointLocal=NULL,
-            Vector *intersectionNormal=NULL,
             UVTriangle **intersectionUVTriangle=NULL,
             float *distance=NULL)  
 {
@@ -80,9 +79,6 @@ Object* Sphere::intersection(
     if (intersectionPoint != NULL) {
         V_INT_POINT((*intersectionPoint), ray.position_, ray.direction_, t);
     }
-    
-    if (intersectionNormal != NULL)
-	    *intersectionNormal = transformNormal(i) * normalDirection_;
 
     if (intersectionUVTriangle != NULL)
         *intersectionUVTriangle = NULL;

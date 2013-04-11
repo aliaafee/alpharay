@@ -47,6 +47,29 @@ Material::Material(std::string name, Vector diffuseColor, Vector highlightColor,
     normalMap_ = normalMap;
 }
 
+Material::Material(Material* source) {
+    init();
+    if (source == NULL) {
+        return;
+    }
+    name_ = source->name_;
+
+	diffuseColor_ = source->diffuseColor_;
+	highlightColor_ = source->highlightColor_;
+	reflectivity_ = source->reflectivity_;
+    opticDensity_ = source->opticDensity_;
+    dielectric_ = source->dielectric_;
+    scatterFactor_ = source->scatterFactor_;
+    scatterSamples_ = source->scatterSamples_;
+	ka_ = source->ka_;
+	kd_ = source->kd_;
+	ks_ = source->ks_; 
+	alpha_ = source->alpha_; 
+
+	diffuseMap_ = source->diffuseMap_;
+    normalMap_ = source->normalMap_;
+}
+
 Vector Material::getReflection() {
     Vector color;
 

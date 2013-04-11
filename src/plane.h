@@ -16,13 +16,16 @@ public:
     virtual void init() { xmlName = "plane"; normal_ = Vector(0, 0, 1);}
 
     Plane () {init();}
-    Plane (std::string name, Vector position, Material *material);	
+    Plane (std::string name, Vector position, Material *material);
+
+    Vector normal(Vector localPoint, UVTriangle *uvtriangle) {
+        return transformNormal(normal_);
+    }; 
 
     Object* intersection(
             Ray &ray,
             Vector *intersectionPoint,
             Vector *intersectionPointLocal,
-            Vector *intersectionNormal,
             UVTriangle **intersectionUVTriangle,
             float *distance);
 

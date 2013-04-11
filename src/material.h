@@ -49,6 +49,9 @@ public:
 	    Map *diffuseMap,
         Map *normalMap
 	);
+
+    Material(Material*);
+
 	virtual ~Material() {};
 
     virtual void transform() {

@@ -19,13 +19,10 @@ Object* Light::getFirstIntersection(std::vector<Object*>* objects,
 
     for (int i=0; i < (*objects).size(); i++) {
         if ((*objects)[i] != ignore) {
-            currentObject = ((*objects)[i])->intersection(ray, NULL, NULL, NULL, NULL, &distance);
-            //currentObject = ((*objects)[i])->intersection(ray);
+            currentObject = ((*objects)[i])->intersection(ray, NULL, NULL, NULL, &distance);
             if (currentObject != NULL) {
                 if (distance < rayLimit) {
                     if (distance > 0.0001) {
-                        //*firstIntersectionPoint = intersectionPoint;
-				        //*firstIntersectionNormal = intersectionNormal;
 				        return currentObject;
                     }
                 }

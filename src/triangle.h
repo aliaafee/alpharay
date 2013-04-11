@@ -9,6 +9,27 @@
 #include "map.h"
 #include "vertex.h"
 
+#define RAY_TRIG(result, trig, Ro, Rd, t, pvec, tvec, qvec, det, inv_det, u, v) \
+    result = false; \
+    V_CROSS(pvec, Rd, trig->edge2); \
+    det = V_DOT((trig->edge1), pvec); \
+    if (det > EPSILON) { \
+        inv_det = 1.0 / det; \
+        V_SUB(tvec, Ro, trig->v0->p); \
+        u = V_DOT(tvec, pvec) * inv_det; \
+        if (! (u < 0.0 || u > 1.0) ) {\
+            V_CROSS(qvec, tvec, trig->edge1); \
+            v = V_DOT(Rd, qvec) * inv_det; \
+            t = V_DOT(trig->edge2, qvec) * inv_det; \
+            if (t >= 0) { \
+                if (! (v < 0.0 || u + v > 1.0) ) { \
+                    result = true; \
+                } \
+            } \
+        } \
+    }\
+
+
 class Triangle
 {
     public:
@@ -43,19 +64,11 @@ class Triangle
                     v1, uv1,
                     v2, uv2);
             
-            if (normal.isNull()) {
-                Vector e1 = v1->p - v0->p;
-                Vector e2 = v2->p - v0->p;
-                n = (e1 % e2) * normalDir;
-            } else {
-                n = normal;
-            }
+            //average out vertex normals to get face normal
+            n = (v0_->n + v1_->n + v2_->n) / 3.0f;
         };
 
         void transform() {
-            //n = (v0->n + v1->n + v2->n)/3;
-            //n = v0->n;
-            
             Vector e1 = v1->p - v0->p;
             Vector e2 = v2->p - v0->p;
 
@@ -70,16 +83,11 @@ class Triangle
                 edge1 = e2;
                 edge2 = e1;
             }
-
-            n = n * -1;
         }
 
-        Triangle* intersection(
-                Vector Ro,
-                Vector Rd,
-                Vector *intersectionPoint,
-                Vector *intersectionNormal,
-                UVTriangle **intersectionUVTriangle,
+        bool intersection(
+                Vector &Ro,
+                Vector &Rd,
                 float *distance);
 
        virtual TiXmlElement* getXml() {

@@ -17,6 +17,8 @@ class UVTriangle {
         float weight0;
         float weight1;
         float weight2;
+
+        Vector currentPoint;
             
         UVTriangle (Vertex* v0_, Vector2* uv0_,
                     Vertex* v1_, Vector2* uv1_,

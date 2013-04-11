@@ -59,11 +59,14 @@ public:
 	
 	virtual ~Object() {};
 
+    virtual Vector normal(Vector localPoint, UVTriangle *uvtriangle) {
+        return Vector(0, 0, 0);
+    };
+
 	virtual Object* intersection(
             Ray &ray,
             Vector *intersectionPoint=NULL,
             Vector *intersectionPointLocal=NULL,
-            Vector *intersectionNormal=NULL,
             UVTriangle **intersectionUVTriangle=NULL,
             float *distance=NULL) {
         return NULL;
@@ -77,13 +80,13 @@ public:
     virtual bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials);
     virtual TiXmlElement* getXml();
 
-    Vector transformNormal(Vector);
 protected:
 	void GenerateTransformationMatrix();
 	Vector transformPoint(Vector);
 	Vector transformPointInv(Vector);
 	Vector transformDisplacement(Vector);
 	Vector transformDisplacementInv(Vector);
+    Vector transformNormal(Vector);
     
 private:
 	Matrix4 transMatrix; // TRS

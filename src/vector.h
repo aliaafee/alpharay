@@ -60,6 +60,8 @@
     r.y = o.y + d.y * t; \
     r.z = o.z + d.z * t;
 
+#define V_EQUAL(v1, v2) ( (v1.x == v2.x) && (v1.y == v2.y) && (v1.z == v2.z) )
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -134,6 +136,7 @@ public:
 
     Vector& operator+=(const Vector& rhs);
     Vector& operator-=(const Vector& rhs);
+    Vector& operator/=(const float f);
 	
 	Vector operator+(Vector); //Add
 	Vector operator-(Vector); //Subtract

@@ -6,12 +6,11 @@ Object* Raytracer::getClosestIntersection(Scene &scene,
                                           Ray &ray,
                                           Vector *closestIntersectionPoint,
                                           Vector *closestIntersectionPointLocal,
-                                          Vector *closestIntersectionNormal,
                                           UVTriangle **closestIntersectionUVTriangle,
                                           Object *ignore=NULL) 
 {
     UVTriangle *intersectionUVTriangle;
-	Vector intersectionPoint, intersectionPointLocal ,intersectionNormal;
+	Vector intersectionPoint, intersectionPointLocal;
 
 	float distance;
 
@@ -19,8 +18,6 @@ Object* Raytracer::getClosestIntersection(Scene &scene,
 	
 	Object *currentObject = NULL;
 	Object *closestObject = NULL;
-
-    
 	
 	for (int i=0; i < scene.objects.size(); i++) {
         //std::cout << "intersecting with " << scene.objects[i]->name_ << std::endl;
@@ -31,7 +28,6 @@ Object* Raytracer::getClosestIntersection(Scene &scene,
                     ray,
                     &intersectionPoint,
                     &intersectionPointLocal, 
-                    &intersectionNormal,
                     &intersectionUVTriangle,
                     &distance);   
 
@@ -41,7 +37,6 @@ Object* Raytracer::getClosestIntersection(Scene &scene,
 				    	closesetDistace = distance;
                         *closestIntersectionPointLocal = intersectionPointLocal;
 					    *closestIntersectionPoint = intersectionPoint;
-					    *closestIntersectionNormal = intersectionNormal;
                         *closestIntersectionUVTriangle = intersectionUVTriangle;
 					    closestObject = currentObject;
 				    }
@@ -219,40 +214,33 @@ Vector Raytracer::raytraceDistributed(Scene &scene, Ray ray, int *reflectionDept
         ray.direction_.z = cos(t);
         color += raytrace(scene, ray, reflectionDepth, ignore);
     }
-    return color / float(scatterSamples);
+    color /= float(scatterSamples);
+    return color;
 }
 
 
 Vector Raytracer::raytrace(Scene &scene ,Ray ray, int *reflectionDepth, Object* ignore=NULL) {
     UVTriangle *intersectionUVTriangle = NULL;
-	Vector intersectionPoint, intersectionPointLocal, intersectionNormal;
+	Vector intersectionPoint, intersectionPointLocal;
 	Vector diffuse,reflection;
 
-    //std::cout << "intersecting" << std::endl;
     rayCount_ += 1;
 
 	Object *closestObject = getClosestIntersection(scene, 
                                                    ray, 
                                                    &intersectionPoint,
                                                    &intersectionPointLocal,
-                                                   &intersectionNormal, 
                                                    &intersectionUVTriangle,
                                                    ignore);
-    intersectionNormal.normalize();
 	
     if (closestObject != NULL) {
-        
-        Material material = *(closestObject->material_);
-        UVTriangle *intUVTcopy = NULL;
+        //Make a copy of the material and uvtriangle
+        Material material(closestObject->material_);
+        UVTriangle uvtriangle(intersectionUVTriangle);
 
-        Vector localNormal;
-        
-        if (intersectionUVTriangle != NULL) {
-            intUVTcopy = new UVTriangle(intersectionUVTriangle);
-            intUVTcopy->calculateWeights(intersectionPointLocal);
-            localNormal = intUVTcopy->getNormal(intersectionPointLocal);
-            intersectionNormal = closestObject->transformNormal(localNormal);
-        }
+        //Get normal at given point
+        Vector intersectionNormal = closestObject->normal(intersectionPointLocal, &uvtriangle);
+        intersectionNormal.normalize();
 
         setLighting(scene, material, intersectionPoint, intersectionNormal, ray.direction_);
 
@@ -267,14 +255,8 @@ Vector Raytracer::raytrace(Scene &scene ,Ray ray, int *reflectionDepth, Object* 
                                             material, reflectionDepth);
             }
         }
-                        
-        diffuse = material.getColor(intersectionPointLocal, intUVTcopy, reflection);
-		
-        if (intUVTcopy != NULL) {
-            delete intUVTcopy;
-        }
 
-		return diffuse; //localNormal + Vector(1,1,1);
+		return material.getColor(intersectionPointLocal, &uvtriangle, reflection);
 	}
 	
 	return Vector(0, 0, 0);
