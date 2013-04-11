@@ -118,15 +118,34 @@ bool Mesh::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
 
     TiXmlHandle hRoot = TiXmlHandle(pElem);
 
+    //if file is specified load mesh from file
+    TiXmlDocument doc;
+    pElem = hRoot.FirstChild( "file" ).Element();
+    if (pElem) {
+        std::string filename("");
+        pElem->QueryStringAttribute ("filename", &filename);
+        if (filename != "") {
+            TiXmlHandle hDoc(&doc);
+            if (doc.LoadFile(filename)) {
+                pElem = hDoc.FirstChildElement().Element();
+                if (pElem) {
+                    hRoot = TiXmlHandle(pElem);
+                }
+            }
+        }
+    }
+
     //vertices
     Vertex* vert;
-    pElem = hRoot.FirstChild( "verts" ).FirstChild().Element();
+    pElem = hRoot.FirstChild("verts").FirstChild().Element();
     if (pElem) {
         for (pElem; pElem; pElem = pElem->NextSiblingElement()) {
             vert = new Vertex();
             vert->loadXml(pElem);
             add(vert);
         }
+    } else {
+        std::cout << "noverts" << endl;
     }
 
     //uvpoints

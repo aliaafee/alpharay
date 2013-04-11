@@ -45,6 +45,7 @@ void idle(void)
 
 
 void animate(int etc) {
+    glutPostRedisplay();
     //project.scene.camera_.orbitZ(-1 * M_PI/90);
     if (actor != NULL) {
         //actor->rotation_.x += 0.03;
@@ -62,9 +63,7 @@ void animate(int etc) {
         vActor2->y += 0.005;
     }
 
-    project.renderPreview();
-    
-    glutPostRedisplay();
+    project.renderPreview(); 
 
     glutTimerFunc(10, animate, 0);
 }

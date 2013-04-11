@@ -4,60 +4,40 @@
     <preview width="320"  height="240" />
     <final   width="1024" height="768" />
     <scene>
-        <camera position="0,3,1" target="0,0,1" fov="1" tilt="0" />
+        <camera position="2,13,4" target="0,0,3" fov="1" tilt="0" />
         <lights>
             <pointlight
                 name="arey2" 
-                position="6,0,1" 
+                position="-10,0,10" 
                 intensity="100,100,100"
+                shadow="true"
+                target="0,0,0" 
+                angle="0.628319" 
+                anglefalloff="0.628319" 
+                lightradius="0.1" 
+                samples="30" />
+            <pointlight
+                name="arey3" 
+                position="-10,10,10" 
+                intensity="100,100,100"
+                shadow="true"
+                target="0,0,0" 
+                angle="0.628319" 
+                anglefalloff="0.628319" 
+                lightradius="0.1" 
+                samples="30" />
+            <pointlight
+                name="arey3" 
+                position="10,10,5" 
+                intensity="60,60,60"
                 shadow="false"
                 target="0,0,0" 
                 angle="0.628319" 
                 anglefalloff="0.628319" 
                 lightradius="0.1" 
-                samples="30" /> 
+                samples="30" />
 
-            <pointlight0
-                name="pointy" 
-                position="2,-8,3" 
-                intensity="100,100,100" />
-
-            
-        
-            <pointlight0 
-                name="pointy2" 
-                position="2,8,3" 
-                intensity="100,100,100" />
-
-            
-
-            <pointlight0
-                name="arey" 
-                position="3,5,0.6" 
-                intensity="150,60,60" 
-                target="0,0,0" 
-                angle="0.628319" 
-                anglefalloff="0.628319" 
-                lightradius="0.5" 
-                samples="1" /> 
-
-            <pointlight0 
-                name="pointy" 
-                position="6,6,1" 
-                intensity="100,100,100" />
-
-            
-            <spotlight0 
-                name="spotty" 
-                position="3,5,5" 
-                intensity="100,100,100" 
-                target="0,0,0" 
-                angle="0.448799" 
-                anglefalloff="0.448799" />
-            
-            
         </lights>
-
         <images>
             <cimgimage 
                 name="earthimg" 
@@ -152,119 +132,11 @@
                 scale="1,1,1" 
                 material="floormat" />
 
-            <mesh name="cube" position="0,0,1" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
-                <verts>
-                    <vert i="0" p="-1.5, 1,-1" n="-1, 0.5, 0" />
-                    <vert i="1" p="-0.5, 0,-1" n="-1,-1, 0" />
-                    <vert i="2" p=" 0.5, 0,-1" n=" 1,-1, 0" />
-                    <vert i="3" p=" 1.5, 1,-1" n=" 1, 0.5, 0" />
-
-                    <vert i="4" p="-1.5, 1, 1" n="-1, 0.5, 0" />
-                    <vert i="5" p="-0.5, 0, 1" n="-1,-1, 0" />
-                    <vert i="6" p=" 0.5, 0, 1" n=" 1,-1, 0" />
-                    <vert i="7" p=" 1.5, 1, 1" n=" 1, 0.5, 0" />                    
-                </verts>
-
-                <uvps>
-                    <uvp i="0" p="0,0" />
-                    <uvp i="1" p="1,0" />
-                    <uvp i="2" p="1,1" />
-                    <uvp i="3" p="0,1" />
-                </uvps>
-
-                <trigs>
-                    <trig i="0" n="0,0,0" 
-                        v0="1" v1="2" v2="6" m0="0" m1="1" m2="2" />
-                    <trig i="0" n="0,0,0" 
-                        v0="6" v1="5" v2="1" m0="2" m1="3" m2="1" />
-
-                    <trig i="0" n="0,0,0" 
-                        v0="0" v1="1" v2="5" m0="0" m1="1" m2="2" />
-                    <trig i="0" n="0,0,0" 
-                        v0="5" v1="4" v2="0" m0="2" m1="3" m2="1" />
-
-                    <trig i="0" n="0,0,0" 
-                        v0="2" v1="3" v2="7" m0="0" m1="1" m2="2" />
-                    <trig i="0" n="0,0,0" 
-                        v0="7" v1="6" v2="2" m0="2" m1="3" m2="1" />
-
-                    <trig i="0" n="0,0,0" 
-                        v0="0" v1="3" v2="7" m0="0" m1="1" m2="2" />
-                    <trig i="0" n="0,0,0" 
-                        v0="7" v1="4" v2="0" m0="2" m1="3" m2="1" />
-
-
-
-                </trigs>
-
+            <mesh name="cube" position="0,0,0" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
+                <file filename="/Users/ali/Projects/raytracera/examples/bunny-sn.xml" />
+                <file filename="/Users/ali/Projects/raytracera/examples/cube.xml" />
             </mesh>
-
-            <!--
-            <mesh name="cube" position="0,0,1" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
-                <verts>
-                    <vert i="1" p="-1,-1, 1" n="0,0,1" />
-                    <vert i="2" p="-1, 1, 1" n="0,0,1" />
-                    <vert i="3" p=" 1, 1, 1" n="0,0,1" />
-                    <vert i="4" p=" 1,-1, 1" n="0,0,1" />
-                    <vert i="5" p="-1,-1,-1" n="0,0,1" />
-                    <vert i="6" p="-1, 1,-1" n="0,0,1" />
-                    <vert i="7" p=" 1, 1,-1" n="0,0,1" />
-                    <vert i="8" p=" 1,-1,-1" n="0,0,1" />
-                </verts>
-                <uvps>
-                    <uvp i="1" p="0,0" />
-                    <uvp i="2" p="0,1" />
-                    <uvp i="3" p="1,1" />
-                    <uvp i="4" p="1,0" />
-                </uvps>
-                <trigs>
-                    <trig i="3" n="0,0,-1" 
-                        v0="6" v1="8" v2="7" 
-                        m0="1" m1="4" m2="3" />
-                    <trig i="4" n="0,0,-1" 
-                        v0="6" v1="5" v2="8" 
-                        m0="3" m1="2" m2="1" />
-
-                    <trig i="1" n="0,0,1" 
-                        v0="1" v1="4" v2="3" 
-                        m0="1" m1="4" m2="3" />
-                    <trig i="2" n="0,0,1" 
-                        v0="3" v1="2" v2="1" 
-                        m0="3" m1="2" m2="1" />
-
-                    <trig i="3" n="0,-1,0" 
-                        v0="5" v1="8" v2="4" 
-                        m0="1" m1="4" m2="3" />
-                    <trig i="4" n="0,-1,0" 
-                        v0="4" v1="1" v2="5" 
-                        m0="3" m1="2" m2="1" />
-
-                    <trig i="5" n="-1,0,0" 
-                        v0="6" v1="5" v2="1" 
-                        m0="1" m1="4" m2="3" />
-                    <trig i="6" n="-1,0,0" 
-                        v0="1" v1="2" v2="6" 
-                        m0="3" m1="2" m2="1" />
-
-                    <trig i="3" n="0,1,0" 
-                        v0="7" v1="6" v2="2" 
-                        m0="1" m1="4" m2="3" />
-                    <trig i="4" n="0,1,0" 
-                        v0="2" v1="3" v2="7" 
-                        m0="3" m1="2" m2="1" />
-
-                       <trig i="3" n="1,0,0" 
-                        v0="8" v1="7" v2="3" 
-                        m0="1" m1="4" m2="3" />
-                    <trig i="4" n="1,0,0" 
-                        v0="3" v1="4" v2="8" 
-                        m0="3" m1="2" m2="1" /> 
-
-                </trigs>
-            </mesh>
-
             
-                        
             <sphere0 
                 name="earth" 
                 position="2,0,1" 
