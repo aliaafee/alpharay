@@ -2,9 +2,9 @@
 <project>
     <raytracer reflectiondepth="5" subsamplesx="1" subsamplesy="1" exposure="-1" />
     <preview width="320"  height="240" />
-    <final   width="1024" height="768" />
+    <final   width="320" height="240" />
     <scene>
-        <camera position="2,13,4" target="0,0,3" fov="1" tilt="0" />
+        <camera position="1,7.5,4" target="0,-1,2" fov="1" tilt="0" />
         <lights>
             <pointlight
                 name="arey2" 
@@ -81,8 +81,8 @@
                 name="earthmat" 
                 diffusecolor="1,1,0" 
                 highlightcolor="1,1,1" 
-                reflectivity="1.0" 
-                dielectric="true" 
+                reflectivity="0.0" 
+                dielectric="false" 
                 opticdensity="1.66"
                 scatterfactor="0.0" 
                 scattersamples="5" 
@@ -110,9 +110,9 @@
 
             <material 
                 name="meshmat" 
-                diffusecolor="0,1,0" 
+                diffusecolor="0,1,1" 
                 highlightcolor="1,1,1" 
-                reflectivity="0.0" 
+                reflectivity="0.9" 
                 dielectric="false" 
                 scatterfactor="0.0" 
                 scattersamples="1" 
@@ -120,7 +120,8 @@
                 kd="0.8" 
                 ks="1.0" 
                 alpha="15" 
-                diffusemap="earthuv" 
+                flatshading="true"
+                diffusemap="" 
                 normalmap="" />
         </materials>
 
@@ -132,14 +133,17 @@
                 scale="1,1,1" 
                 material="floormat" />
 
-            <mesh name="cube" position="0,0,0" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
-                <file filename="/Users/ali/Projects/raytracera/examples/bunny-sn.xml" />
+            <mesh name="cube" position="1.5,-1,2" rotation="0,0,0" scale="1,1,1" material="meshmat">
+                <file filename="/Users/ali/Projects/raytracera/examples/icosahedron.xml" />
                 <file filename="/Users/ali/Projects/raytracera/examples/cube.xml" />
+                <file filename="/Users/ali/Projects/raytracera/examples/bunny.xml" />
+                <file filename="/Users/ali/Projects/raytracera/examples/bunny-n.xml" />
+                <file filename="/Users/ali/Projects/raytracera/examples/sphere.xml" />
             </mesh>
             
-            <sphere0 
+            <sphere 
                 name="earth" 
-                position="2,0,1" 
+                position="-2,0,1" 
                 rotation="0,0,3" 
                 scale="1,1,1" 
                 material="earthmat" /> -->

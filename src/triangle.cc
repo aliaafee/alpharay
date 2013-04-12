@@ -3,8 +3,8 @@
 #include "triangle.h"
 
 bool Triangle::intersection(
-                Vector &Ro,
-                Vector &Rd,
+                const Vector &Ro,
+                const Vector &Rd,
                 float *t)
 {
     /*

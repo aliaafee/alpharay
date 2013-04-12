@@ -86,8 +86,8 @@ class Triangle
         }
 
         bool intersection(
-                Vector &Ro,
-                Vector &Rd,
+                const Vector &Ro,
+                const Vector &Rd,
                 float *distance);
 
        virtual TiXmlElement* getXml() {

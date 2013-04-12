@@ -1,6 +1,13 @@
+'''
+scale = 50.0
+filename = "../examples/bunny-sn.obj"
+trans = (0.0, 0.0, -1.8)
+'''
+
 scale = 1.0
-filename = "../examples/bunny-n.obj"
-trans = (0.0, 0.0, 0)
+filename = "../examples/sphere.obj"
+trans = (0.0, 0.0, 0.0)
+
 
 def loadOBJ(filename):
     numVerts = 0
@@ -29,11 +36,13 @@ def loadOBJ(filename):
                         i += 1
                         
                     f.append(pa)
-                #f = map(int, vals[1:4])
                 faces.append(f)
     return verts, norms, faces
 
 verts, norms, faces = loadOBJ(filename)
+
+#print "verts {0}, norms {1}, faces {2}".format(len(verts), len(norms), len(faces))
+#exit()
 
 print '<?xml version="1.0" ?>'
 print '<mesh>'
@@ -55,9 +64,9 @@ i = 0
 print " <trigs>"
 for face in faces:
     i += 1
-    nx = (float(norms[face[0][0]][0]) + float(norms[face[1][0]][0]) + float(norms[face[0][2]][0])) / 3.0
-    ny = (float(norms[face[0][0]][2]) + float(norms[face[1][0]][2]) + float(norms[face[0][2]][2])) / 3.0
-    nz = (float(norms[face[0][0]][1]) + float(norms[face[1][0]][1]) + float(norms[face[0][2]][1])) / 3.0
+    nx = (float(norms[face[0][0]-1][0]) + float(norms[face[1][0]-1][0]) + float(norms[face[2][0]-1][0])) / 3.0
+    ny = (float(norms[face[0][0]-1][2]) + float(norms[face[1][0]-1][2]) + float(norms[face[2][0]-1][2])) / 3.0
+    nz = (float(norms[face[0][0]-1][1]) + float(norms[face[1][0]-1][1]) + float(norms[face[2][0]-1][1])) / 3.0
 
     print '  <trig i="{0}" n="{7},{8},{9}" v0="{1}" v1="{2}" v2="{3}" m0="{4}" m1="{5}" m2="{6}" />'.format(
                         i, 
