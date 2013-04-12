@@ -18,7 +18,7 @@ public:
     Plane () {init();}
     Plane (std::string name, Vector position, Material *material);
 
-    Vector normal(Vector localPoint, UVTriangle *uvtriangle) {
+    Vector normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
         return transformNormal(normal_);
     }; 
 

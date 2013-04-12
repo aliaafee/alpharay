@@ -10,6 +10,8 @@ class UVTriangle {
         Vertex* v1;
         Vertex* v2;
 
+        Vector* n;
+
         Vector2* uv0;
         Vector2* uv1;
         Vector2* uv2;
@@ -22,7 +24,7 @@ class UVTriangle {
             
         UVTriangle (Vertex* v0_, Vector2* uv0_,
                     Vertex* v1_, Vector2* uv1_,
-                    Vertex* v2_, Vector2* uv2_) {
+                    Vertex* v2_, Vector2* uv2_, Vector* n_) {
             v0 = v0_;
             uv0 = uv0_;
 
@@ -31,6 +33,8 @@ class UVTriangle {
 
             v2 = v2_;
             uv2 = uv2_;
+
+            n = n_;
 
             weight0 = 0.0f;
             weight1 = 0.0f;
@@ -48,6 +52,8 @@ class UVTriangle {
                 v2 = source->v2;
                 uv2 = source->uv2;
 
+                n = source->n;
+
                 weight0 = 0.0f;
                 weight1 = 0.0f;
                 weight2 = 0.0f;
@@ -62,9 +68,9 @@ class UVTriangle {
             return false;
         };
 
+        Vector getNormal(Vector point, bool interpolated);
         Vector2 getUV(Vector point);
-        Vector getNormal(Vector point);
-
+        
         void calculateWeights(Vector point);
 };
 

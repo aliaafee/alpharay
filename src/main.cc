@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include <GL/freeglut.h>
 #include <GL/glu.h>
@@ -48,7 +49,7 @@ void animate(int etc) {
     glutPostRedisplay();
     //project.scene.camera_.orbitZ(-1 * M_PI/90);
     if (actor != NULL) {
-        //actor->rotation_.x += 0.03;
+        //actor->rotation_.x += 0.05;
         actor->rotation_.z += 0.05;
         //actor->position_.z -= 0.01;
         //actor->position_.z += 0.01;
@@ -63,7 +64,9 @@ void animate(int etc) {
         vActor2->y += 0.005;
     }
 
-    project.renderPreview(); 
+    project.renderPreview();
+
+    project.raytracer.statusOn = false;
 
     glutTimerFunc(10, animate, 0);
 }
@@ -132,24 +135,25 @@ int main(int argc, char** argv)
 
     //test(project.scene.getObject("cube")); return 0;
 
-    if (outfile == "") {
-        //Render to glbuffer
-        cout << endl;
-        project.renderPreview();
-    } else {
+    if (outfile != "") {
         //Render to file
         cout << endl;
-        project.renderFinal(outfile);
+        std::stringstream ss;
+        actor = project.scene.getObject("cube");
+        for (int i = 0; i < 10 ; i ++) {
+            ss.str("");
+            ss << outfile << i << ".png";
+            project.renderFinal(ss.str());
+            actor->rotation_.z += 0.62832;
+        }
         return 0;
     }
 
     //Display
     initGlut(argc, argv);
-    
-    project.raytracer.statusOn = false;
 
-    //actor = project.scene.getObject("cube");
-    //animate(0);
+    actor = project.scene.getObject("cube");
+    animate(0);
 
     glutMainLoop();
 

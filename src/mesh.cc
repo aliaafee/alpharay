@@ -37,9 +37,9 @@ void Mesh::transform(){
     }
 }
 
-Vector Mesh::normal(Vector localPoint, UVTriangle *uvtriangle) {
+Vector Mesh::normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
     return transformNormal(
-                uvtriangle->getNormal(localPoint)
+                uvtriangle->getNormal(localPoint, !(material->flatShading_))
             );
 }
 	

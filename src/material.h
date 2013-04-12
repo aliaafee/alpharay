@@ -31,10 +31,12 @@ public:
 	float ks_; //specular reflection coefficient
 	float alpha_; //specular highlight amount
 
+    bool flatShading_;
+
 	Map *diffuseMap_;
     Map *normalMap_;
 
-    virtual void init() { xmlName = "material"; }
+    virtual void init();
 
 	Material();
 	Material(

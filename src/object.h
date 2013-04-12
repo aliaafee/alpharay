@@ -59,7 +59,7 @@ public:
 	
 	virtual ~Object() {};
 
-    virtual Vector normal(Vector localPoint, UVTriangle *uvtriangle) {
+    virtual Vector normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
         return Vector(0, 0, 0);
     };
 
@@ -74,7 +74,9 @@ public:
 
     virtual void transform() { 
         GenerateTransformationMatrix(); 
-        material_->transform();
+        if (material_ != NULL) {
+            material_->transform();
+        }
     }
 
     virtual bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials);

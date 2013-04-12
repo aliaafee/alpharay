@@ -35,7 +35,7 @@ public:
     std::vector<Vector2*> uvpoints;
     std::vector<Triangle*> triangles;
 
-    Vector normal(Vector localPoint, UVTriangle *uvtriangle);
+    Vector normal(Vector localPoint, UVTriangle *uvtriangle, Material *material);
 
     Object* intersection(
             Ray &ray,

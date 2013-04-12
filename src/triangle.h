@@ -13,7 +13,7 @@
     result = false; \
     V_CROSS(pvec, Rd, trig->edge2); \
     det = V_DOT((trig->edge1), pvec); \
-    if (det > EPSILON) { \
+    if (!(det > -EPSILON && det < EPSILON)) { \
         inv_det = 1.0 / det; \
         V_SUB(tvec, Ro, trig->v0->p); \
         u = V_DOT(tvec, pvec) * inv_det; \
@@ -62,7 +62,7 @@ class Triangle
             uvtriangle = new UVTriangle(
                     v0, uv0,
                     v1, uv1,
-                    v2, uv2);
+                    v2, uv2, &n);
             
             //average out vertex normals to get face normal
             n = (v0_->n + v1_->n + v2_->n) / 3.0f;

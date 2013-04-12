@@ -239,7 +239,7 @@ Vector Raytracer::raytrace(Scene &scene ,Ray ray, int *reflectionDepth, Object* 
         UVTriangle uvtriangle(intersectionUVTriangle);
 
         //Get normal at given point
-        Vector intersectionNormal = closestObject->normal(intersectionPointLocal, &uvtriangle);
+        Vector intersectionNormal = closestObject->normal(intersectionPointLocal, &uvtriangle, &material);
         intersectionNormal.normalize();
 
         setLighting(scene, material, intersectionPoint, intersectionNormal, ray.direction_);

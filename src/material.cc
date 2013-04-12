@@ -7,11 +7,12 @@
  *src: http://en.wikipedia.org/wiki/Phong_reflection_model
  */
 
-Material::Material() {
-    init();
+
+void Material::init() { 
+    xmlName = "material"; 
     name_ = "material";
 
-	diffuseColor_ = Vector(255,0,0);
+	diffuseColor_ = Vector(255,255,255);
 	highlightColor_ = Vector(255,255,255);
 	reflectivity_ = 0;
     opticDensity_ = 1.66f;
@@ -23,8 +24,14 @@ Material::Material() {
 	ks_ = 0.8; 
 	alpha_ = 15; 
 
+    flatShading_ = false;
+
 	diffuseMap_ = NULL;
     normalMap_ = NULL;
+}
+
+Material::Material() {
+    init();
 }
 
 Material::Material(std::string name, Vector diffuseColor, Vector highlightColor,float reflectivity, float ka, float kd, float ks, float alpha, Map *diffuseMap=NULL, Map *normalMap=NULL) {
@@ -43,15 +50,15 @@ Material::Material(std::string name, Vector diffuseColor, Vector highlightColor,
 	ks_ = ks; 
 	alpha_ = alpha; 
 
+    flatShading_ = false;
+
 	diffuseMap_ = diffuseMap;
     normalMap_ = normalMap;
 }
 
 Material::Material(Material* source) {
     init();
-    if (source == NULL) {
-        return;
-    }
+    if (source != NULL) {
     name_ = source->name_;
 
 	diffuseColor_ = source->diffuseColor_;
@@ -66,8 +73,11 @@ Material::Material(Material* source) {
 	ks_ = source->ks_; 
 	alpha_ = source->alpha_; 
 
+    flatShading_ = source->flatShading_;
+
 	diffuseMap_ = source->diffuseMap_;
     normalMap_ = source->normalMap_;
+    }
 }
 
 Vector Material::getReflection() {
@@ -162,6 +172,8 @@ bool Material::loadXml(TiXmlElement* pElem, LinkList <Map> *linkMaps, LinkList <
 	diffuseMap_ = NULL;
     normalMap_ = NULL;
 
+    flatShading_ = false;
+
     pElem->QueryStringAttribute ("name", &name_);
     pElem->QueryValueAttribute <Vector> ("diffusecolor", &diffuseColor_);
     pElem->QueryValueAttribute <Vector> ("highlightcolor", &highlightColor_);
@@ -174,6 +186,7 @@ bool Material::loadXml(TiXmlElement* pElem, LinkList <Map> *linkMaps, LinkList <
     pElem->QueryFloatAttribute ("kd", &kd_);
     pElem->QueryFloatAttribute ("ks", &ks_);
     pElem->QueryFloatAttribute ("alpha", &alpha_);
+    pElem->QueryBoolAttribute ("flatshading", &flatShading_);
 
     std::string mapname; 
 
@@ -204,6 +217,7 @@ TiXmlElement* Material::getXml() {
     root->SetAttribute("kd", ftos(kd_));
     root->SetAttribute("ks", ftos(ks_));
     root->SetAttribute("alpha", ftos(alpha_));
+    root->SetAttribute("flatshading", flatShading_);
     
     if (diffuseMap_ == NULL) {
         root->SetAttribute("diffusemap", "");

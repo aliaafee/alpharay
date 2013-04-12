@@ -110,7 +110,11 @@ bool Object::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
 
     std::string matname = "";
     pElem->QueryStringAttribute ("material", &matname);
-    linkMaterials->add(matname, &material_);
+    if (matname != "") {
+        linkMaterials->add(matname, &material_);
+    } else {
+        material_ = NULL;
+    }
 
     return true;
 }

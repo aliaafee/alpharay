@@ -44,9 +44,13 @@ void UVTriangle::calculateWeights(Vector point) {
     weight2 = sqrt(xa2.magnitude2() / a);
 }
 
-Vector UVTriangle::getNormal(Vector point) {
-    calculateWeights(point);
-    return ((v0->n) * weight0) + ((v1->n) * weight1) + ((v2->n) * weight2);
+Vector UVTriangle::getNormal(Vector point, bool interpolated = true) {
+    if (interpolated) {
+        calculateWeights(point);
+        return ((v0->n) * weight0) + ((v1->n) * weight1) + ((v2->n) * weight2);
+    } else {
+        return *n;
+    }
 }
 
 Vector2 UVTriangle::getUV(Vector point) {

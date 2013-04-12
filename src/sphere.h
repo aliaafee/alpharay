@@ -16,7 +16,7 @@ public:
     Sphere () {init();}
 	Sphere (std::string name, Vector position, Material *material);	
 
-    Vector normal(Vector localPoint, UVTriangle *uvtriangle) {
+    Vector normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
         return transformNormal(localPoint);
     };
 
