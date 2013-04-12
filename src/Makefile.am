@@ -54,7 +54,9 @@ raytracera_SOURCES = \
     float-image.h \
     float-image.cc \
     uvtriangle.h \
-    uvtriangle.cc
+    uvtriangle.cc \
+    bbox.h \ 
+    bbox.cc
 
 
 raytracera_LDFLAGS = -lgl -lglut -lX11 -lglu \

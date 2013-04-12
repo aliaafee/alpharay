@@ -112,7 +112,7 @@
                 name="meshmat" 
                 diffusecolor="0,1,1" 
                 highlightcolor="1,1,1" 
-                reflectivity="0.9" 
+                reflectivity="0.0" 
                 dielectric="false" 
                 scatterfactor="0.0" 
                 scattersamples="1" 
@@ -120,7 +120,7 @@
                 kd="0.8" 
                 ks="1.0" 
                 alpha="15" 
-                flatshading="true"
+                flatshading="false"
                 diffusemap="" 
                 normalmap="" />
         </materials>
@@ -133,12 +133,13 @@
                 scale="1,1,1" 
                 material="floormat" />
 
-            <mesh name="cube" position="1.5,-1,2" rotation="0,0,0" scale="1,1,1" material="meshmat">
+            <mesh name="cube" position="1.5,-1,0" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
+                <file filename="/Users/ali/Projects/raytracera/examples/bunny.xml" />
+
+                <file filename="/Users/ali/Projects/raytracera/examples/sphere.xml" />
                 <file filename="/Users/ali/Projects/raytracera/examples/icosahedron.xml" />
                 <file filename="/Users/ali/Projects/raytracera/examples/cube.xml" />
-                <file filename="/Users/ali/Projects/raytracera/examples/bunny.xml" />
-                <file filename="/Users/ali/Projects/raytracera/examples/bunny-n.xml" />
-                <file filename="/Users/ali/Projects/raytracera/examples/sphere.xml" />
+                                <file filename="/Users/ali/Projects/raytracera/examples/bunny-n.xml" />
             </mesh>
             
             <sphere 

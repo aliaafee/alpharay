@@ -37,6 +37,24 @@ void Mesh::transform(){
     }
 }
 
+void Mesh::setBounds() {
+    Vector min;
+    Vector max;
+
+    for (int i=0; i < vertexs.size(); i++) {
+        if (vertexs[i]->p.x < min.x) min.x = vertexs[i]->p.x;
+        if (vertexs[i]->p.x > max.x) max.x = vertexs[i]->p.x;
+
+        if (vertexs[i]->p.y < min.y) min.y = vertexs[i]->p.y;
+        if (vertexs[i]->p.y > max.y) max.y = vertexs[i]->p.y;
+
+        if (vertexs[i]->p.z < min.z) min.z = vertexs[i]->p.z;
+        if (vertexs[i]->p.z > max.z) max.z = vertexs[i]->p.z;
+    }
+
+    bbox_ = BBox(min, max);
+}
+
 Vector Mesh::normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
     return transformNormal(
                 uvtriangle->getNormal(localPoint, !(material->flatShading_))
@@ -53,6 +71,10 @@ Object* Mesh::intersection(
 	//transform the ray to fit into object space
 	Vector Ro = transformPointInv(ray.position_);
 	Vector Rd = transformDisplacementInv(ray.direction_);
+
+    //Check for bounding box intersection
+    if ( !(bbox_.intersection(Ro, Rd)) )
+        return NULL;
 
     bool result;
     Triangle* curI=NULL;
@@ -181,7 +203,10 @@ bool Mesh::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
         }
     }
 
-    std::cout << "  mesh " << vertexs.size() << " verts, " << triangles.size() << " trigs" << std::endl;
+    setBounds();
+
+    std::cout << "  mesh " << vertexs.size() << " verts, " << triangles.size() << " trigs" << endl;
+    std::cout << "    bbox[" << bbox_.bounds[0] << "," <<bbox_.bounds[1] << "]" << std::endl;
 }
 
 

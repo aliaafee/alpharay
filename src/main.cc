@@ -11,6 +11,8 @@ using namespace std;
 
 #include "project.h"
 
+#include "bbox.h"
+
 Object *actor;
 Vector *vActor;
 Vector2 * vActor2;
@@ -91,7 +93,8 @@ void initGlut(int argc, char** argv)
     glutIdleFunc(idle);
 }
 
-int test(Object *obj) {
+int test(Object *obj=NULL) {
+    /*
     UVTriangle *intersectionUVTriangle;
 	Vector intersectionPoint, intersectionPointLocal;
     float distance;
@@ -110,11 +113,27 @@ int test(Object *obj) {
                     &distance); 
     }
     cout << "completed in " << statusTime.elapsed() << " s" << endl;
+    */
+    BBox box(Vector(0,0,0), Vector(2,2,2));
+    Ray ray(Vector(10,1,1) , Vector(-1,1,1));
+
+    int count = 1000000000;
+    boost::timer statusTime;
+    bool result;
+    float tmax = 0;
+    float tmin = 0;
+    for (int i = 0; i < count; i++) {
+        result = box.intersection(ray.position_, ray.direction_); 
+    }
+    cout << "result " << result << " int at " << tmin << " & " << tmax << "from ray" << endl;
+    cout << "completed in " << statusTime.elapsed() << " s" << endl;
 }
 
 
 int main(int argc, char** argv)
 {
+    //test(NULL); return 0;
+
     string filename = "";
     string outfile = "";
 
@@ -154,6 +173,7 @@ int main(int argc, char** argv)
 
     actor = project.scene.getObject("cube");
     animate(0);
+    //project.renderPreview();
 
     glutMainLoop();
 

@@ -13,6 +13,8 @@
 #include "map.h"
 #include "material.h"
 
+#include "bbox.h"
+
 class Object
 {
 public:
@@ -24,6 +26,8 @@ public:
 	Vector position_;
 	Vector rotation_;
 	Vector scale_;
+
+    BBox bbox_;
 
 	float normalDirection_;
 	Object* parent_;
@@ -43,6 +47,7 @@ public:
         normalDirection_ = 1;
         parent_ = NULL;
     }
+
 	Object(std::string name, Vector position, Material *material) {
         init();
         name_ = name;
@@ -77,6 +82,10 @@ public:
         if (material_ != NULL) {
             material_->transform();
         }
+    }
+
+    virtual void setBounds() {
+        ;
     }
 
     virtual bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials);

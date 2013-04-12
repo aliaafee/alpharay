@@ -46,6 +46,8 @@ public:
 
     void transform();
 
+    void setBounds();
+
     bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials);
     TiXmlElement* getXml();
 };
