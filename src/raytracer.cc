@@ -411,7 +411,8 @@ void Raytracer::renderThreaded (Scene& scene, Image& image)
 
         }
     }
-
+    
+    /*
     if (statusOn) {
         boost::thread status(&Raytracer::statusDisplay, this);
         status.join();
@@ -421,7 +422,7 @@ void Raytracer::renderThreaded (Scene& scene, Image& image)
         for (int x = 0; x < width; x++) {
             renderThread[x][y].join();
         }
-    }
+    }*/
 
 }
 

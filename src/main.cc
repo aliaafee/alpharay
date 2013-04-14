@@ -13,6 +13,8 @@ using namespace std;
 
 #include "bbox.h"
 
+#include "octree.h"
+
 Object *actor;
 Vector *vActor;
 Vector2 * vActor2;
@@ -114,6 +116,7 @@ int test(Object *obj=NULL) {
     }
     cout << "completed in " << statusTime.elapsed() << " s" << endl;
     */
+    /*
     BBox box(Vector(0,0,0), Vector(2,2,2));
     Ray ray(Vector(10,1,1) , Vector(-1,1,1));
 
@@ -127,6 +130,23 @@ int test(Object *obj=NULL) {
     }
     cout << "result " << result << " int at " << tmin << " & " << tmax << "from ray" << endl;
     cout << "completed in " << statusTime.elapsed() << " s" << endl;
+    
+    Octree w(Vector(0,0,0), Vector(2,2,2), 10, 10);
+
+    w.add(NULL, 0);
+    */
+
+    Vertex v1( 0, Vector(0,0,0) , Vector(1,1,1) );
+    Vertex v2( 1, Vector(0,1,0) , Vector(1,1,1) );
+    Vertex v3( 2, Vector(1,0,0) , Vector(1,1,1) );
+
+    Triangle trig( 0,&v1,&v2,&v3,NULL,NULL,NULL,1,Vector(0,0,0) );
+
+    Vector min(-1,-1,-1);
+    Vector max(2,2,2);
+
+    trig.inbounds( min, max );
+
 }
 
 
@@ -152,11 +172,14 @@ int main(int argc, char** argv)
 
     project.load(filename);
 
+    //return 0;
     //test(project.scene.getObject("cube")); return 0;
 
     if (outfile != "") {
         //Render to file
         cout << endl;
+
+        /*
         std::stringstream ss;
         actor = project.scene.getObject("cube");
         for (int i = 0; i < 10 ; i ++) {
@@ -164,16 +187,18 @@ int main(int argc, char** argv)
             ss << outfile << i << ".png";
             project.renderFinal(ss.str());
             actor->rotation_.z += 0.62832;
-        }
+        }*/
+
+        project.renderFinal(outfile);
         return 0;
     }
 
     //Display
     initGlut(argc, argv);
 
-    actor = project.scene.getObject("cube");
-    animate(0);
-    //project.renderPreview();
+    //actor = project.scene.getObject("cube");
+    //animate(0);
+    project.renderPreview();
 
     glutMainLoop();
 

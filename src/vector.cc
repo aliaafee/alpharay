@@ -160,6 +160,13 @@ Vector& Vector::operator/=(const float f) {
     return *this;
 }
 
+bool Vector::operator<(Vector& rhs) {
+    if (magnitude2() < rhs.magnitude2()) {
+        return true;
+    }
+    return false;
+}
+
 Vector Vector::operator+(Vector param) {
 	Vector t;
 	t.x = x + param.x;

@@ -52,6 +52,20 @@ void Mesh::setBounds() {
         if (vertexs[i]->p.z > max.z) max.z = vertexs[i]->p.z;
     }
 
+    //This fixes a precision error
+    min -= Vector(0.01,0.01,0.01);
+    max += Vector(0.01,0.01,0.01);
+
+    cout << "   gen octree " << min << max << endl;
+    //tests with stanford bunny with 69666 trigs
+    //with depth 0 time is 2:50
+    //with depth 2 time is 1:44
+    //with depth 3 time is 1:24
+    //with depth 4 time is 1:42
+    //with depth 5 time is 2:05
+    octree_ = Octree(min, max, 3, 500);
+
+    octree_.add(&triangles, 0);
     bbox_ = BBox(min, max);
 }
 
@@ -72,6 +86,7 @@ Object* Mesh::intersection(
 	Vector Ro = transformPointInv(ray.position_);
 	Vector Rd = transformDisplacementInv(ray.direction_);
 
+    /*
     //Check for bounding box intersection
     if ( !(bbox_.intersection(Ro, Rd)) )
         return NULL;
@@ -110,6 +125,16 @@ Object* Mesh::intersection(
     }
 
     cloI = triangles[closestTrig];
+    
+    */
+    Triangle* cloI=NULL;
+    float clot;
+
+    cloI = octree_.intersection(Ro, Rd, &clot);
+
+    if (cloI == NULL) {
+        return NULL;
+    }
 
     if (intersectionPointLocal != NULL)
         *intersectionPointLocal = Ro + (Rd * clot);
@@ -203,10 +228,11 @@ bool Mesh::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
         }
     }
 
-    setBounds();
-
     std::cout << "  mesh " << vertexs.size() << " verts, " << triangles.size() << " trigs" << endl;
-    std::cout << "    bbox[" << bbox_.bounds[0] << "," <<bbox_.bounds[1] << "]" << std::endl;
+    
+    setBounds();
+    
+    //std::cout << "    bbox[" << bbox_.bounds[0] << "," <<bbox_.bounds[1] << "]" << std::endl;
 }
 
 

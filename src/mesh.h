@@ -12,9 +12,17 @@
 #include "vertex.h"
 #include "triangle.h"
 
+#include "octree.h"
+
+
 class Mesh : public Object
 {
 public:
+    std::vector<Vertex*> vertexs;
+    std::vector<Vector2*> uvpoints;
+    std::vector<Triangle*> triangles;
+    Octree octree_;
+
     virtual void init() { xmlName = "mesh"; }
 
     Mesh() {};
@@ -30,10 +38,6 @@ public:
 
     void add(Triangle *triangle) 
 		{triangles.push_back(triangle); }
-
-    std::vector<Vertex*> vertexs;
-    std::vector<Vector2*> uvpoints;
-    std::vector<Triangle*> triangles;
 
     Vector normal(Vector localPoint, UVTriangle *uvtriangle, Material *material);
 

@@ -23,6 +23,8 @@
 #define     BIG_NUM 1000000000
 #define   SMALL_NUM 0.0000001
 
+#define  ARRAY(x, y, z, w, h, d) (x*w*d + y*d + z)
+
 #define V_CROSS(dest, v1, v2) \
     dest.x = v1.y * v2.z - v1.z * v2.y; \
     dest.y = v1.z * v2.x - v1.x * v2.z; \
@@ -137,6 +139,8 @@ public:
     Vector& operator+=(const Vector& rhs);
     Vector& operator-=(const Vector& rhs);
     Vector& operator/=(const float f);
+
+    bool operator<(Vector& rhs);
 	
 	Vector operator+(Vector); //Add
 	Vector operator-(Vector); //Subtract

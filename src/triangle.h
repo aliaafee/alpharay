@@ -90,7 +90,9 @@ class Triangle
                 const Vector &Rd,
                 float *distance);
 
-       virtual TiXmlElement* getXml() {
+        bool inbounds(Vector &min, Vector &max);
+
+        virtual TiXmlElement* getXml() {
             TiXmlElement* root = new TiXmlElement("trig");
 
             root->SetAttribute("i", i);
