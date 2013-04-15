@@ -2,73 +2,49 @@
 
 #include "triangle.h"
 
+void Triangle::getbounds(Vector *min, Vector *max) {
+    for (i=0; i < 3; i++) {
+        if (v[i]->p.x < min->x) min->x = v[i]->p.x;
+        if (v[i]->p.x > max->x) max->x = v[i]->p.x;
+        if (v[i]->p.y < min->y) min->y = v[i]->p.y;
+        if (v[i]->p.y > max->y) max->y = v[i]->p.y;
+        if (v[i]->p.z < min->z) min->z = v[i]->p.z;
+        if (v[i]->p.z > max->z) max->z = v[i]->p.z;
+    }
+}
+
 bool Triangle::inbounds(Vector &min, Vector &max) {
-    Vector tmax, tmin;
+    Vector tmax(-BIG_NUM, -BIG_NUM, -BIG_NUM);
+    Vector tmin( BIG_NUM,  BIG_NUM,  BIG_NUM);
 
-    if (v0->p.x < tmin.x) tmin.x = v0->p.x;
-    if (v0->p.x > tmax.x) tmax.x = v0->p.x;
-    if (v1->p.x < tmin.x) tmin.x = v1->p.x;
-    if (v1->p.x > tmax.x) tmax.x = v1->p.x;
-    if (v2->p.x < tmin.x) tmin.x = v2->p.x;
-    if (v2->p.x > tmax.x) tmax.x = v2->p.x;
-
-    if (v0->p.y < tmin.y) tmin.y = v0->p.y;
-    if (v0->p.y > tmax.y) tmax.y = v0->p.y;
-    if (v1->p.y < tmin.y) tmin.y = v1->p.y;
-    if (v1->p.y > tmax.y) tmax.y = v1->p.y;
-    if (v2->p.y < tmin.y) tmin.y = v2->p.y;
-    if (v2->p.y > tmax.y) tmax.y = v2->p.y;
-
-    if (v0->p.z < tmin.z) tmin.z = v0->p.z;
-    if (v0->p.z > tmax.z) tmax.z = v0->p.z;
-    if (v1->p.z < tmin.z) tmin.z = v1->p.z;
-    if (v1->p.z > tmax.z) tmax.z = v1->p.z;
-    if (v2->p.z < tmin.z) tmin.z = v2->p.z;
-    if (v2->p.z > tmax.z) tmax.z = v2->p.z;
-
-    Vector t;
-    Vector tsize = tmax-tmin;
-    Vector bsize = max - min;
-
-    //cout << "trig bounds" << tmin << tmax << endl;
-    //cout << "bbox bounds" << min << max << endl;
-    //cout << "trig box" << endl;
-    for (int x=0; x < 2; x++) {
-        for (int y=0; y < 2; y++) {
-            for (int z=0; z < 2; z++) {
-                t = tmin + Vector(tsize.x * float(x), tsize.y * float(y), tsize.z * float(z));
-                //cout << t;
-                if ( (t.x > min.x) && (t.x < max.x) &&
-                     (t.y > min.y) && (t.y < max.y) &&
-                     (t.z > min.z) && (t.z < max.z) ) { 
-                    //cout << "in" << endl;
-                    return true;
-                } else {
-                    ;//cout << (t.x > min.x) << (t.x < max.x) << (t.y > min.y) << (t.y < max.y) << (t.z > min.z) << (t.z < min.z) << endl;
-                }
-            }
-        }
+    for (i=0; i < 3; i++) {
+        if (v[i]->p.x < tmin.x) tmin.x = v[i]->p.x;
+        if (v[i]->p.x > tmax.x) tmax.x = v[i]->p.x;
+        if (v[i]->p.y < tmin.y) tmin.y = v[i]->p.y;
+        if (v[i]->p.y > tmax.y) tmax.y = v[i]->p.y;
+        if (v[i]->p.z < tmin.z) tmin.z = v[i]->p.z;
+        if (v[i]->p.z > tmax.z) tmax.z = v[i]->p.z;
     }
 
-    //cout << "bbox" << endl;
+    bool a = inRange(min.x, tmin.x, tmax.x) || inRange(max.x, tmin.x, tmax.x) || 
+             inRange(tmin.x, min.x, max.x)  || inRange(tmax.x, min.x, max.x) ;
 
-    for (int x=0; x < 2; x++) {
-        for (int y=0; y < 2; y++) {
-            for (int z=0; z < 2; z++) {
-                t = min + Vector(bsize.x * float(x), bsize.y * float(y), bsize.z * float(z));
-                //cout << t;
-                if (t.x > tmin.x && t.x < tmax.x &&
-                    t.y > tmin.y && t.y < tmax.y &&
-                    t.z > tmin.z && t.z < tmax.z) {
-                    //cout << "in" << endl;
-                    return true;
-                } else {
-                    ;//cout << "out" << endl;
-                }
-            }
-        }
+    bool b = inRange(min.y, tmin.y, tmax.y) || inRange(max.y, tmin.y, tmax.y) || 
+             inRange(tmin.y, min.y, max.y)  || inRange(tmax.y, min.y, max.y) ;
+
+    bool c = inRange(min.z, tmin.z, tmax.z) || inRange(max.z, tmin.z, tmax.z) || 
+             inRange(tmin.z, min.z, max.z)  || inRange(tmax.z, min.z, max.z) ;
+
+    /*
+    cout << a << "=" << min.x << "," << max.x << " | " << tmin.x << "," << tmax.x <<  endl;
+    cout << b << "=" << min.y << "," << max.y << " | " << tmin.y << "," << tmax.y <<  endl;
+    cout << c << "=" << min.z << "," << max.z << " | " << tmin.z << "," << tmax.z <<  endl;
+    */
+
+    if ( a && b && c) {
+        return true;
     }
-
+    
 
     return false;
 }
@@ -103,7 +79,7 @@ bool Triangle::intersection(
     float inv_det = 1.0 / det;
     
     Vector tvec;
-    V_SUB(tvec, Ro, v0->p);
+    V_SUB(tvec, Ro, v[0]->p);
 
     float u = V_DOT(tvec, pvec) * inv_det;
 

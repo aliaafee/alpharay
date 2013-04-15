@@ -38,8 +38,8 @@ void Mesh::transform(){
 }
 
 void Mesh::setBounds() {
-    Vector min;
-    Vector max;
+    Vector max(-BIG_NUM, -BIG_NUM, -BIG_NUM);
+    Vector min( BIG_NUM,  BIG_NUM,  BIG_NUM);
 
     for (int i=0; i < vertexs.size(); i++) {
         if (vertexs[i]->p.x < min.x) min.x = vertexs[i]->p.x;
@@ -57,16 +57,14 @@ void Mesh::setBounds() {
     max += Vector(0.01,0.01,0.01);
 
     cout << "   gen octree " << min << max << endl;
-    //tests with stanford bunny with 69666 trigs
-    //with depth 0 time is 2:50
-    //with depth 2 time is 1:44
-    //with depth 3 time is 1:24
-    //with depth 4 time is 1:42
-    //with depth 5 time is 2:05
-    octree_ = Octree(min, max, 3, 500);
 
-    octree_.add(&triangles, 0);
-    bbox_ = BBox(min, max);
+    int leafCount = 0;
+
+    octree_ = Octree(min, max, 10, 25);
+
+    octree_.add(&triangles, 0, &leafCount);
+
+    cout << "     leaves " << leafCount << endl;
 }
 
 Vector Mesh::normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {

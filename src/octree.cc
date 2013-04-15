@@ -1,6 +1,6 @@
 #include "octree.h"
 
-bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth) {
+bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth, int *leaves) {
     if (!newtriangles) {
         return false;
     }
@@ -9,8 +9,9 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth) {
 
     //if too deep or reached threshold number of trigs store the trigs and return;
     if (currentDepth >= maxDepth_ || newtriangles->size() <= threshold_) {
+        *leaves += 1;
         triangles = newtriangles;
-        //std::cout << "Done Leaf, trigs " << triangles->size() << std::endl;
+        //std::cout << "     leaf trigs " << triangles->size() << std::endl;
         return true;
     }
 
@@ -42,7 +43,7 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth) {
                 int zi = z + 1;
                 if (subtrig->size() > 0) {
                     children[xi][yi][zi] = new Octree(submin, submax, maxDepth_, threshold_);
-                    (children[xi][yi][zi])->add(subtrig, currentDepth + 1);
+                    (children[xi][yi][zi])->add(subtrig, currentDepth + 1, leaves);
                 } else {
                     children[xi][yi][zi] = NULL;
                     delete subtrig;

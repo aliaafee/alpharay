@@ -136,14 +136,14 @@ int test(Object *obj=NULL) {
     w.add(NULL, 0);
     */
 
-    Vertex v1( 0, Vector(0,0,0) , Vector(1,1,1) );
-    Vertex v2( 1, Vector(0,1,0) , Vector(1,1,1) );
-    Vertex v3( 2, Vector(1,0,0) , Vector(1,1,1) );
+    Vertex v1( 0, Vector(0,0,10) , Vector(1,1,1) );
+    Vertex v2( 1, Vector(0,1,10) , Vector(1,1,1) );
+    Vertex v3( 2, Vector(1,0,10) , Vector(1,1,1) );
 
     Triangle trig( 0,&v1,&v2,&v3,NULL,NULL,NULL,1,Vector(0,0,0) );
 
-    Vector min(-1,-1,-1);
-    Vector max(2,2,2);
+    Vector min(0.5,0.5,0.5);
+    Vector max(0.75,0.75,0.75);
 
     trig.inbounds( min, max );
 
@@ -193,13 +193,14 @@ int main(int argc, char** argv)
         return 0;
     }
 
+    //project.renderPreview();
+
     //Display
     initGlut(argc, argv);
 
-    //actor = project.scene.getObject("cube");
-    //animate(0);
-    project.renderPreview();
-
+    actor = project.scene.getObject("cube");
+    animate(0);
+    
     glutMainLoop();
 
     return 0;

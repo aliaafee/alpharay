@@ -40,6 +40,7 @@ class Project {
             temp.copyTo(preview);
             */
             raytracer.renderThreaded(scene, *preview);
+            //raytracer.render(scene, *preview);
         }
 
         void renderFinal(string filename) {

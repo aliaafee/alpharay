@@ -15,7 +15,7 @@
     det = V_DOT((trig->edge1), pvec); \
     if (!(det > -EPSILON && det < EPSILON)) { \
         inv_det = 1.0 / det; \
-        V_SUB(tvec, Ro, trig->v0->p); \
+        V_SUB(tvec, Ro, trig->v[0]->p); \
         u = V_DOT(tvec, pvec) * inv_det; \
         if (! (u < 0.0 || u > 1.0) ) {\
             V_CROSS(qvec, tvec, trig->edge1); \
@@ -30,13 +30,15 @@
     }\
 
 
+#define inRange(v, rmin, rmax) ( (rmin < v) && (v < rmax) )
+
+
 class Triangle
 {
     public:
         int i;
-        Vertex* v0;
-        Vertex* v1;
-        Vertex* v2;
+        
+        Vertex* v[3];
 
         UVTriangle* uvtriangle;
 
@@ -55,22 +57,22 @@ class Triangle
                 Vector normal=Vector(0,0,0)) {
             i = index;
 
-            v0 = v0_;
-            v1 = v1_;
-            v2 = v2_;
+            v[0] = v0_;
+            v[1] = v1_;
+            v[2] = v2_;
 
             uvtriangle = new UVTriangle(
-                    v0, uv0,
-                    v1, uv1,
-                    v2, uv2, &n);
+                    v[0], uv0,
+                    v[1], uv1,
+                    v[2], uv2, &n);
             
             //average out vertex normals to get face normal
-            n = (v0_->n + v1_->n + v2_->n) / 3.0f;
+            n = (v[0]->n + v[1]->n + v[2]->n) / 3.0f;
         };
 
         void transform() {
-            Vector e1 = v1->p - v0->p;
-            Vector e2 = v2->p - v0->p;
+            Vector e1 = v[1]->p - v[0]->p;
+            Vector e2 = v[2]->p - v[0]->p;
 
             Vector n2 = e1 % e2;
 
@@ -91,6 +93,7 @@ class Triangle
                 float *distance);
 
         bool inbounds(Vector &min, Vector &max);
+        void getbounds(Vector *min, Vector *max);
 
         virtual TiXmlElement* getXml() {
             TiXmlElement* root = new TiXmlElement("trig");
@@ -99,9 +102,9 @@ class Triangle
 
             root->SetAttribute("n", n.str());
 
-            root->SetAttribute("v0", v0->i);
-            root->SetAttribute("v1", v1->i);
-            root->SetAttribute("v2", v2->i);
+            root->SetAttribute("v0", v[0]->i);
+            root->SetAttribute("v1", v[1]->i);
+            root->SetAttribute("v2", v[2]->i);
 
             root->SetAttribute("m0", uvtriangle->uv0->i);
             root->SetAttribute("m1", uvtriangle->uv1->i);
