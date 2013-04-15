@@ -58,9 +58,9 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth, int *le
 }
 
 
-Triangle* Octree::intersection(const Vector Ro, const Vector Rd, float *t) {
+Triangle* Octree::intersection(const Ray &ray, float *t) {
     //Check for intersection with this bounding volume
-    if (!BBox::intersection(Ro, Rd)) {
+    if (!BBox::intersection(ray.position_, ray.direction_)) {
         return NULL;
     }
 
@@ -79,15 +79,8 @@ Triangle* Octree::intersection(const Vector Ro, const Vector Rd, float *t) {
 
         clot = BIG_NUM;
 
-        Vector pvec, tvec, qvec;
-        float det, inv_det, u, v;
-
         for (int i=0; i < triangles->size(); i++) {
-            //This is real ugly, but kinda fast. is it worth it?
-            //RAY_TRIG(result, ((*triangles)[i]), Ro, Rd, curt, pvec, tvec, qvec, det, inv_det, u, v);
-
-            //Or use the function alternative. Much nicer looking. But a teeny bit slower
-            result = (*triangles)[i]->intersection(Ro, Rd, &curt);
+            result = (*triangles)[i]->intersection(ray, &curt);
 
             if (result) {
                 if (curt > 0.0001 && curt < clot) {
@@ -109,22 +102,24 @@ Triangle* Octree::intersection(const Vector Ro, const Vector Rd, float *t) {
         clot = BIG_NUM;
         curI = NULL;
 
-        for (int x = 0; x < 2; x++) {
-            for (int y = 0; y < 2; y++) {
-                for (int z = 0; z < 2; z++) {
-                    if (children[x][y][z] != NULL) {
-                        curI = (children[x][y][z])->intersection(Ro, Rd, &curt);
-                        if (curI != NULL) {
-                            if (curt < clot) {
-                                cloI = curI;
-                                clot = curt;
-                            }
-                        }
+        for (int x = 0; x < 2; x++) 
+        for (int y = 0; y < 2; y++) 
+        for (int z = 0; z < 2; z++)
+        {
+            if (children[x][y][z] != NULL) {
+                curI = (children[x][y][z])->intersection(ray, &curt);
+                //Pick the closest  intersection
+                if (curI != NULL) {
+                    if (curt < clot) {
+                        cloI = curI;
+                        clot = curt;
                     }
-
                 }
             }
+
         }
+            
+        
 
         *t = clot;
         return cloI;

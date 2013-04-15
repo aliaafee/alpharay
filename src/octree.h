@@ -27,7 +27,7 @@ class Octree : BBox {
         }
 
         virtual bool add(std::vector<Triangle*> *newtriangles, int currentDepth, int *leaves);
-        virtual Triangle* intersection(const Vector Ro, const Vector Rd, float *t);
+        virtual Triangle* intersection(const Ray &ray, float *t);
 };
 
 

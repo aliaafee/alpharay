@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <tinyxml.h>
+#include <fstream>
+#include <sstream>
 
 #include "object.h"
 #include "map.h"
@@ -19,6 +21,7 @@ class Mesh : public Object
 {
 public:
     std::vector<Vertex*> vertexs;
+    std::vector<Vector*> normals;
     std::vector<Vector2*> uvpoints;
     std::vector<Triangle*> triangles;
     Octree octree_;
@@ -54,6 +57,8 @@ public:
 
     bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials);
     TiXmlElement* getXml();
+
+    bool loadWavefrontObj(std::string filename);
 };
 
 #endif // _MESH_H_

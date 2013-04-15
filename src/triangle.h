@@ -6,8 +6,9 @@
 #define EPSILON 0.000001
 
 #include "vector.h"
-#include "map.h"
+#include "uvtriangle.h"
 #include "vertex.h"
+#include "ray.h"
 
 #define RAY_TRIG(result, trig, Ro, Rd, t, pvec, tvec, qvec, det, inv_det, u, v) \
     result = false; \
@@ -87,10 +88,7 @@ class Triangle
             }
         }
 
-        bool intersection(
-                const Vector &Ro,
-                const Vector &Rd,
-                float *distance);
+        bool intersection(const Ray &ray, float *t);
 
         bool inbounds(Vector &min, Vector &max);
         void getbounds(Vector *min, Vector *max);

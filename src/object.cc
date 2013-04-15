@@ -100,6 +100,14 @@ Vector Object::transformNormal(Vector normal) {
     return result;
 }
 
+Ray Object::transformRay(Ray ray) {
+    Ray result;
+    result.position_ = transformPointInv(ray.position_);
+	result.direction_ = transformDisplacementInv(ray.direction_);
+
+    return result;
+}
+
 bool Object::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
     name_ = "object"; 
 

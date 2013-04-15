@@ -98,6 +98,7 @@ protected:
 	Vector transformDisplacement(Vector);
 	Vector transformDisplacementInv(Vector);
     Vector transformNormal(Vector);
+    Ray transformRay(Ray);
     
 private:
 	Matrix4 transMatrix; // TRS

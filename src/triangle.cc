@@ -3,6 +3,9 @@
 #include "triangle.h"
 
 void Triangle::getbounds(Vector *min, Vector *max) {
+    *max = Vector(-BIG_NUM, -BIG_NUM, -BIG_NUM);
+    *min = Vector( BIG_NUM,  BIG_NUM,  BIG_NUM);
+
     for (i=0; i < 3; i++) {
         if (v[i]->p.x < min->x) min->x = v[i]->p.x;
         if (v[i]->p.x > max->x) max->x = v[i]->p.x;
@@ -50,10 +53,7 @@ bool Triangle::inbounds(Vector &min, Vector &max) {
 }
 
 
-bool Triangle::intersection(
-                const Vector &Ro,
-                const Vector &Rd,
-                float *t)
+bool Triangle::intersection(const Ray &ray, float *t)
 {
     /*
        Ray Plane Intersection
@@ -67,19 +67,19 @@ bool Triangle::intersection(
     //Vector edge2 = v2->p - v0->p;
     
     Vector pvec;// = Rd % edge2;
-    V_CROSS(pvec, Rd, edge2)
+    V_CROSS(pvec, ray.direction_, edge2)
 
     float det = V_DOT(edge1, pvec);
 
-    //if (det > -EPSILON && det < EPSILON) {
-    if (det < EPSILON) {
+    if (det > -EPSILON && det < EPSILON) {
+    //if (det < EPSILON) {
         return false;
     }
 
     float inv_det = 1.0 / det;
     
     Vector tvec;
-    V_SUB(tvec, Ro, v[0]->p);
+    V_SUB(tvec, ray.position_, v[0]->p);
 
     float u = V_DOT(tvec, pvec) * inv_det;
 
@@ -95,7 +95,7 @@ bool Triangle::intersection(
         return false;
     }
 
-    float v = V_DOT(Rd, qvec) * inv_det;
+    float v = V_DOT(ray.direction_, qvec) * inv_det;
 
     if (v < 0.0 || u + v > 1.0)
         return false; 
