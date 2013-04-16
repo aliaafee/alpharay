@@ -58,7 +58,7 @@ public:
     bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials);
     TiXmlElement* getXml();
 
-    bool loadWavefrontObj(std::string filename);
+    bool loadWavefrontObj(std::string filename, float scale, Vector position);
 };
 
 #endif // _MESH_H_

@@ -154,102 +154,7 @@ Object* Mesh::intersection(
 }
 
 
-bool Mesh::loadWavefrontObj(std::string filename) {
-    cout << "  Loading obj file..." << endl;
-
-    float scale = 50;
-
-    std::string line;
-    std::ifstream objfile (filename.c_str());
-
-    //default mapping
-    add(new Vector2(0,0));
-
-    if (objfile.is_open()) {
-        int i = 0;
-		while (objfile.good()) {
-			getline(objfile,line);
-            
-            std::stringstream ss(line);
-            std::stringstream s2;
-            std::string token;
-
-            token = "";
-            getline(ss, token, ' ');
-            if (token == "v") {
-                Vector p;
-                token = ""; getline(ss, token, ' ');
-                p.x = stof(token) * scale;
-                token = ""; getline(ss, token, ' ');
-                p.z = stof(token) * scale;
-                token = ""; getline(ss, token, ' ');
-                p.y = stof(token) * scale;
-                
-                vertexs[i-1]->p = p;
-
-                //cout << vertexs[i-1]->p << vertexs[i-1]->n << endl;
-            } else if (token == "vn") {
-                Vector p;
-                token = ""; getline(ss, token, ' ');
-                p.x = stof(token);
-                token = ""; getline(ss, token, ' ');
-                p.z = stof(token);
-                token = ""; getline(ss, token, ' ');
-                p.y = stof(token);
-
-                i += 1;
-                vertexs.push_back(new Vertex( i, Vector(0,0,0), p ));
-            } else if (token == "f") {
-                std::string vert;
-                int v0, v1, v2;
-
-                token = ""; getline(ss, token, ' '); s2.str(token);
-                vert = ""; getline(s2, vert, '/');
-                v0 = int(stof(vert) - 1);
-
-                token = ""; getline(ss, token, ' '); s2.str(token);
-                vert = ""; getline(s2, vert, '/');
-                v1 = int(stof(vert) - 1);
-
-                token = ""; getline(ss, token, ' '); s2.str(token);
-                vert = ""; getline(s2, vert, '/');
-                v2 = int(stof(vert) - 1);
-
-                Vector n = (vertexs[v0]->n + vertexs[v1]->n + vertexs[v2]->n) / 3.0;
-
-                //cout << v0 << "," << v1 << "," << v2 << endl;
-
-                add( new Triangle( i,
-                    vertexs[v0],
-                    vertexs[v1],
-                    vertexs[v2],
-                    uvpoints[0],
-                    uvpoints[0],
-                    uvpoints[0],
-                    1,
-                    n) );
-            }
-		}
-		objfile.close();
-
-        std::cout << "  mesh " << vertexs.size() << " verts, " << triangles.size() << " trigs" << endl;
-        setBounds();
-        return true;
-	}
-	
-    std::cout << "Unable to open file " << filename << std::endl;
-    return false;
-}
-
-
 bool Mesh::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
-    /*
-       Wavefront Obj loader
-       --------------------
-       Needs a bit of work
-       TODO: fix the mesh to store normals separately from vertices
-
-    */
     Object::loadXml(pElem, linkMaterials);
 
     TiXmlHandle hRoot = TiXmlHandle(pElem);
@@ -275,7 +180,11 @@ bool Mesh::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
             }
         } else if (type == "obj") {
             //Load wavefront obj file
-            return loadWavefrontObj(filename);
+            Vector position(0,0,0);
+            float scale=1;
+            pElem->QueryValueAttribute <Vector> ("position", &position);
+            pElem->QueryFloatAttribute("scale", &scale);
+            return loadWavefrontObj(filename, scale, position);
         }
     }
 
@@ -372,3 +281,116 @@ TiXmlElement* Mesh::getXml() {
 
     return root;
 }
+
+
+
+bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) {
+    /*
+       Wavefront Obj loader
+       --------------------
+       Needs a bit of work
+       TODO: fix the mesh to store normals separately from vertices
+
+    */
+    cout << "  Loading obj file..." << endl;
+
+    std::string line;
+    std::ifstream objfile (filename.c_str());
+
+    //default mapping
+    add(new Vector2(0,0));
+
+    if (objfile.is_open()) {
+        int i = 0;
+        int pi = 0;
+        int t = 0;
+        int pt = 0;
+		while (objfile.good()) {
+			getline(objfile,line);
+            
+            std::stringstream ss(line);
+            std::stringstream s2;
+            std::string token;
+
+            token = "";
+            getline(ss, token, ' ');
+            if (token == "v") {
+                Vector p;
+                token = ""; getline(ss, token, ' ');
+                p.x = stof(token) * scale;
+                token = ""; getline(ss, token, ' ');
+                p.z = stof(token) * scale;
+                token = ""; getline(ss, token, ' ');
+                p.y = stof(token) * scale;
+                
+                vertexs[i-1]->p = p + position;
+
+                //cout << vertexs[i-1]->p << vertexs[i-1]->n << endl;
+            } else if (token == "vn") {
+                Vector p;
+                token = ""; getline(ss, token, ' ');
+                p.x = stof(token);
+                token = ""; getline(ss, token, ' ');
+                p.z = stof(token);
+                token = ""; getline(ss, token, ' ');
+                p.y = stof(token);
+
+                i += 1;
+                vertexs.push_back(new Vertex( i, Vector(0,0,0), p ));
+                if ( i > (pi + 10000)) {
+                    std::cout << "." << std::flush;
+                    pi = i;
+                }
+
+            } else if (token == "f") {
+                std::string vert;
+                int v0, v1, v2;
+
+                token = ""; getline(ss, token, ' '); s2.str(token);
+                vert = ""; getline(s2, vert, '/');
+                v0 = int(stof(vert) - 1);
+
+                token = ""; getline(ss, token, ' '); s2.str(token);
+                vert = ""; getline(s2, vert, '/');
+                v1 = int(stof(vert) - 1);
+
+                token = ""; getline(ss, token, ' '); s2.str(token);
+                vert = ""; getline(s2, vert, '/');
+                v2 = int(stof(vert) - 1);
+
+                Vector n = (vertexs[v0]->n + vertexs[v1]->n + vertexs[v2]->n) / 3.0;
+
+                //cout << v0 << "," << v1 << "," << v2 << endl;
+
+                add( new Triangle( i,
+                    vertexs[v0],
+                    vertexs[v1],
+                    vertexs[v2],
+                    uvpoints[0],
+                    uvpoints[0],
+                    uvpoints[0],
+                    1,
+                    n) );
+
+                t += 1;
+                if ( t > (pt + 10000)) {
+                    std::cout << "," << std::flush;
+                    pt = t;
+                }
+
+            }
+
+		}
+		objfile.close();
+
+        std::cout << std::endl;
+
+        std::cout << "  mesh " << vertexs.size() << " verts, " << triangles.size() << " trigs" << endl;
+        setBounds();
+        return true;
+	}
+	
+    std::cout << "Unable to open file " << filename << std::endl;
+    return false;
+}
+
