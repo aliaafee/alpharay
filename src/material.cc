@@ -117,13 +117,20 @@ Vector Material::getColor(Vector &reflection) {
 
 Vector Material::getColor(Vector &point, UVTriangle *uvtriangle, Vector &reflection) {
 	if (diffuseMap_ != NULL) {
-        float u, v;
-
 		diffuseColor_   = diffuseMap_->getColor(point, uvtriangle);
 	}
 
     return getColor(reflection);
     //return diffuseColor_;
+}
+
+
+Vector Material::getNormal(Vector &point, UVTriangle *uvtriangle) {
+    Vector normal(0,0,0);
+    if (normalMap_ != NULL) {
+        normal = normalMap_->getColor(point, uvtriangle);
+    }
+    return normal;
 }
 
 void Material::resetLights() {

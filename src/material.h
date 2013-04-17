@@ -67,6 +67,8 @@ public:
 	virtual Vector getColor(Vector &point, UVTriangle *uvtriangle, Vector &reflection);
     virtual Vector getReflection();
 
+    virtual Vector getNormal(Vector &point, UVTriangle *uvtriangle);
+
 	virtual void resetLights();
     virtual void addLight(Vector &lightIntensity, Vector &lightPosition, Vector &rayDirection, Vector &point, Vector &normal);
 

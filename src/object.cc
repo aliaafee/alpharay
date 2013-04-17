@@ -47,6 +47,7 @@ void Object::GenerateTransformationMatrix() {
 	transMatrixInv = iscale * izrot * iyrot * ixrot * itranslation;
 	transMatrixND = xrot * yrot * zrot * scale;
 	transMatrixNormal = xrot * yrot * zrot * iscale;
+    transMatrixNormalInv = scale * izrot * iyrot * ixrot;
 	transMatrixNDInv = iscale * izrot * iyrot * ixrot;
 }
 
@@ -98,6 +99,10 @@ Vector Object::transformNormal(Vector normal) {
     Vector result;
     V_MUL_MATRIX(result, normal, transMatrixNormal);
     return result;
+}
+
+Vector Object::transformNormalInv(Vector normal) {
+    return normal * transMatrixNormalInv;
 }
 
 Ray Object::transformRay(Ray ray) {

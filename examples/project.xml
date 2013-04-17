@@ -4,7 +4,7 @@
     <preview width="320"  height="240" />
     <final   width="320" height="240" />
     <scene>
-        <camera position="1,7.5,4" target="0,-1,2" fov="1" tilt="0" />
+        <camera position="1,7.5,4" target="0,1,2" fov="1" tilt="0" />
         <lights>
             <pointlight
                 name="arey2" 
@@ -41,7 +41,16 @@
         <images>
             <cimgimage 
                 name="earthimg" 
-                filename="/Users/ali/Pictures/Work/earth.jpg" />
+                filename="/Users/ali/Pictures/Work/bunny.png" />
+
+            <cimgimage 
+                name="cubeimg" 
+                filename="/Users/ali/Pictures/Work/cubeUV.png" />
+
+
+            <cimgimage 
+                name="normalimg" 
+                filename="/Users/ali/Pictures/Work/normalmap.gif" />
 
             <checker2d 
                 name="check" 
@@ -72,7 +81,7 @@
                 rotation="0,0,0" 
                 scale="1,1,1" 
                 imagescale="1,1" 
-                image="earthimg" />
+                image="cubeimg" />
 
         </maps>
 
@@ -117,11 +126,11 @@
                 scatterfactor="0.0" 
                 scattersamples="1" 
                 ka="0.0" 
-                kd="0.8" 
+                kd="1.0" 
                 ks="1.0" 
                 alpha="15" 
                 flatshading="false"
-                diffusemap="" 
+                diffusemap="earthuv" 
                 normalmap="" />
         </materials>
 
@@ -133,21 +142,52 @@
                 scale="1,1,1" 
                 material="floormat" />
 
-            <mesh name="cube" position="1.5,-1,0" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
-                <file filename="/Users/ali/Projects/raytracera/examples/bunny.xml" />
-
-                <file filename="/Users/ali/Projects/raytracera/examples/sphere.xml" />
-                <file filename="/Users/ali/Projects/raytracera/examples/icosahedron.xml" />
-                <file filename="/Users/ali/Projects/raytracera/examples/cube.xml" />
-                                <file filename="/Users/ali/Projects/raytracera/examples/bunny-n.xml" />
-            </mesh>
-            
             <sphere 
                 name="earth" 
                 position="-2,0,1" 
                 rotation="0,0,3" 
                 scale="1,1,1" 
-                material="earthmat" /> -->
+                material="earthmat" />
+
+            <mesh0 name="cube" position="1.5,-1,1" rotation="0,0,0" scale="1,1,1" material="meshmat">
+                 <file type="obj" scale="1" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/untitled.obj" />
+            </mesh0 >
+
+            <mesh name="cube" position="1.5,-1,1" rotation="0,0,0" scale="1,1,1" material="meshmat">
+                 <file type="obj" scale="1" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/untitled2.obj" />
+            </mesh>
+
+
+            <!--
+            <mesh name="cube1" position="1.5,1,0" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
+                <file type="obj" scale="50" position="0,0,-2" filename="/Users/ali/Projects/raytracera/examples/dragon-big.obj" />
+            </mesh>
+
+            <mesh name="cube2" position="1.5,-1,0" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
+                <file type="obj" scale="0.5" position="0,0,-9" filename="/Users/ali/Projects/raytracera/examples/angel.obj" />
+
+                <file type="obj" scale="50" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/dragon-big.obj" />
+
+                <file filename="/Users/ali/Projects/raytracera/examples/dragon.xml" />
+
+                <file filename="/Users/ali/Projects/raytracera/examples/bunny.xml" />
+
+                <file filename="/Users/ali/Projects/raytracera/examples/icosahedron.xml" />
+
+                <file filename="/Users/ali/Projects/raytracera/examples/bunny-n.xml" />
+
+                <file filename="/Users/ali/Projects/raytracera/examples/cube.xml" />
+
+                <file filename="/Users/ali/Projects/raytracera/examples/bunny-n.xml" />
+            </mesh>
+
+            <mesh name="cube3" position="1.5,1,0" rotation="0,0,0" scale="0.5,0.5,0.5" material="meshmat">
+                <file type="obj" scale="0.25" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/bunny-big.obj" />
+            </mesh>
+
+            
+            
+            -->
 
         </objects>
 

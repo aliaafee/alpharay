@@ -3,10 +3,16 @@ scale = 50.0
 filename = "../examples/bunny-sn.obj"
 trans = (0.0, 0.0, -1.8)
 '''
-
+'''
 scale = 1.0
 filename = "../examples/sphere.obj"
 trans = (0.0, 0.0, 0.0)
+'''
+
+scale = 1.0
+filename = "../examples/dragon-big.obj"
+trans = (0.0, 0.0, 0.0)
+
 
 
 def loadOBJ(filename):

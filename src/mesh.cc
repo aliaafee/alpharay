@@ -68,9 +68,17 @@ void Mesh::setBounds() {
 }
 
 Vector Mesh::normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
-    return transformNormal(
+    if (material->normalMap_ == NULL) {
+        return transformNormal(
                 uvtriangle->getNormal(localPoint, !(material->flatShading_))
             );
+    } else {
+        //Get from normal map
+        Vector imageNormal = material->getNormal(localPoint, uvtriangle);
+        return transformNormal(
+                uvtriangle->getNormal(localPoint, imageNormal, !(material->flatShading_))
+            );
+    }
 }
 	
 Object* Mesh::intersection(
@@ -305,6 +313,7 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
         int pi = 0;
         int t = 0;
         int pt = 0;
+        int m = 0;
 		while (objfile.good()) {
 			getline(objfile,line);
             
@@ -342,21 +351,43 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                     pi = i;
                 }
 
+            } else if (token == "vt") {
+                Vector2* p = new Vector2();
+
+                token = ""; getline(ss, token, ' ');
+                p->x = 1.0f - stof(token);
+                token = ""; getline(ss, token, ' ');
+                p->y = 1.0f - stof(token);
+
+                m += 1;
+                p->i = m;
+
+                //cout << *p << endl;
+
+                uvpoints.push_back(p);
+
             } else if (token == "f") {
-                std::string vert;
+                std::string vert,map;
                 int v0, v1, v2;
+                int m0, m1, m2;
 
                 token = ""; getline(ss, token, ' '); s2.str(token);
                 vert = ""; getline(s2, vert, '/');
                 v0 = int(stof(vert) - 1);
+                map = "0"; getline(s2, map, '/');
+                m0 = int(stof(map));
 
                 token = ""; getline(ss, token, ' '); s2.str(token);
                 vert = ""; getline(s2, vert, '/');
                 v1 = int(stof(vert) - 1);
+                map = "0"; getline(s2, map, '/');
+                m1 = int(stof(map));
 
                 token = ""; getline(ss, token, ' '); s2.str(token);
                 vert = ""; getline(s2, vert, '/');
                 v2 = int(stof(vert) - 1);
+                map = "0"; getline(s2, map, '/');
+                m2 = int(stof(map));
 
                 Vector n = (vertexs[v0]->n + vertexs[v1]->n + vertexs[v2]->n) / 3.0;
 
@@ -366,9 +397,9 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                     vertexs[v0],
                     vertexs[v1],
                     vertexs[v2],
-                    uvpoints[0],
-                    uvpoints[0],
-                    uvpoints[0],
+                    uvpoints[m0],
+                    uvpoints[m1],
+                    uvpoints[m2],
                     1,
                     n) );
 

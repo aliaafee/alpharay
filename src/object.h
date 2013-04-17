@@ -91,6 +91,7 @@ public:
     virtual bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials);
     virtual TiXmlElement* getXml();
 
+    Vector transformNormalInv(Vector);
 protected:
 	void GenerateTransformationMatrix();
 	Vector transformPoint(Vector);
@@ -105,6 +106,7 @@ private:
 	Matrix4 transMatrixInv; // S^R^T^
 	Matrix4 transMatrixND; //RS
 	Matrix4 transMatrixNormal; // RS^
+    Matrix4 transMatrixNormalInv; // SR^
 	Matrix4 transMatrixNDInv; // S^R^
 };
 

@@ -23,6 +23,13 @@
 #define     BIG_NUM 1000000000
 #define   SMALL_NUM 0.0000001
 
+#include <cfloat>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <math.h>
+#include "matrix4.h"
+
 #define  ARRAY(x, y, z, w, h, d) (x*w*d + y*d + z)
 
 #define V_CROSS(dest, v1, v2) \
@@ -64,11 +71,21 @@
 
 #define V_EQUAL(v1, v2) ( (v1.x == v2.x) && (v1.y == v2.y) && (v1.z == v2.z) )
 
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <math.h>
-#include "matrix4.h"
+
+inline float divide(float a, float b) {
+    if (b > -FLT_EPSILON && b < FLT_EPSILON) {
+        if (a == 0) {
+            return 0;
+        } else if (a > 0) {
+            return FLT_MAX;
+        } else {
+            return -FLT_MAX;
+        }
+    } else {
+        return a/b;
+    }
+}
+
 
 inline std::string ftos(float value) {
     std::stringstream ss (std::stringstream::in | std::stringstream::out);

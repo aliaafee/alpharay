@@ -6,71 +6,67 @@
 
 class UVTriangle {
     public:
-        Vertex* v0;
-        Vertex* v1;
-        Vertex* v2;
+        Vertex*  v[3];
+        Vector2* m[3];
+
+        Vector T;
+        Vector B;
+
+        float weight[3];
 
         Vector* n;
-
-        Vector2* uv0;
-        Vector2* uv1;
-        Vector2* uv2;
-
-        float weight0;
-        float weight1;
-        float weight2;
 
         Vector currentPoint;
             
         UVTriangle (Vertex* v0_, Vector2* uv0_,
                     Vertex* v1_, Vector2* uv1_,
                     Vertex* v2_, Vector2* uv2_, Vector* n_) {
-            v0 = v0_;
-            uv0 = uv0_;
+            v[0] = v0_;
+            m[0] = uv0_;
 
-            v1 = v1_;
-            uv1 = uv1_;
+            v[1] = v1_;
+            m[1] = uv1_;
 
-            v2 = v2_;
-            uv2 = uv2_;
+            v[2] = v2_;
+            m[2] = uv2_;
 
             n = n_;
 
-            weight0 = 0.0f;
-            weight1 = 0.0f;
-            weight2 = 0.0f;
+            weight[0] = 0.0f;
+            weight[1] = 0.0f;
+            weight[2] = 0.0f;
+
+            calculateTangentSpace();
         };
 
         UVTriangle (UVTriangle* source) {
             if (source) {
-                v0 = source->v0;
-                uv0 = source->uv0;
-
-                v1 = source->v1;
-                uv1 = source->uv1;
-
-                v2 = source->v2;
-                uv2 = source->uv2;
+                for (int i = 0; i <  3; i++) {
+                    v[i] = source->v[i];
+                    m[i] = source->m[i];
+                    weight[i] = 0;
+                }
 
                 n = source->n;
 
-                weight0 = 0.0f;
-                weight1 = 0.0f;
-                weight2 = 0.0f;
+                calculateTangentSpace();
             }
         };
 
         bool isNull () {
-            if (v0 == NULL || v1 == NULL || v2 == NULL || 
-                uv0== NULL || uv1== NULL || uv2== NULL) {
+            if (v[0] == NULL || v[1] == NULL || v[2] == NULL || 
+                m[0] == NULL || m[1] == NULL || m[2] == NULL) {
                 return true;
             }
             return false;
         };
 
         Vector getNormal(Vector point, bool interpolated);
+        Vector getNormal(Vector point, Vector normalFromMap, bool interpolated);
+        Vector getTangent(Vector point);
         Vector2 getUV(Vector point);
         
+        void calculateTangentSpace();
         void calculateWeights(Vector point);
 };
 

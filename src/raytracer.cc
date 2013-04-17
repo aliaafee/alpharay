@@ -257,6 +257,8 @@ Vector Raytracer::raytrace(Scene &scene ,Ray ray, int *reflectionDepth, Object* 
         }
 
 		return material.getColor(intersectionPointLocal, &uvtriangle, reflection);
+        //return (closestObject->transformNormalInv(intersectionNormal));
+        //return intersectionNormal;
 	}
 	
 	return Vector(0, 0, 0);

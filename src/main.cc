@@ -53,7 +53,7 @@ void animate(int etc) {
     glutPostRedisplay();
     //project.scene.camera_.orbitZ(-1 * M_PI/90);
     if (actor != NULL) {
-        //actor->rotation_.x += 0.05;
+        actor->rotation_.x += 0.05;
         actor->rotation_.z += 0.05;
         //actor->position_.z -= 0.01;
         //actor->position_.z += 0.01;
@@ -135,7 +135,7 @@ int test(Object *obj=NULL) {
 
     w.add(NULL, 0);
     */
-
+    /*
     Vertex v1( 0, Vector(0,0,10) , Vector(1,1,1) );
     Vertex v2( 1, Vector(0,1,10) , Vector(1,1,1) );
     Vertex v3( 2, Vector(1,0,10) , Vector(1,1,1) );
@@ -146,6 +146,8 @@ int test(Object *obj=NULL) {
     Vector max(0.75,0.75,0.75);
 
     trig.inbounds( min, max );
+    */
+    cout << "test -1/0 " << divide(-1, 0) << endl;
 
 }
 

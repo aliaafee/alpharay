@@ -40,10 +40,12 @@ class Triangle
         int i;
         
         Vertex* v[3];
+        Vector* n[3];
+        Vector* m[3];
 
         UVTriangle* uvtriangle;
 
-        Vector n;
+        Vector faceNormal;
         Vector edge1;
         Vector edge2;
 
@@ -65,10 +67,10 @@ class Triangle
             uvtriangle = new UVTriangle(
                     v[0], uv0,
                     v[1], uv1,
-                    v[2], uv2, &n);
+                    v[2], uv2, &faceNormal);
             
             //average out vertex normals to get face normal
-            n = (v[0]->n + v[1]->n + v[2]->n) / 3.0f;
+            faceNormal = (v[0]->n + v[1]->n + v[2]->n) / 3.0f;
         };
 
         void transform() {
@@ -77,12 +79,12 @@ class Triangle
 
             Vector n2 = e1 % e2;
 
-            if (n*n2 >= 0) {
-                n = n2;
+            if (faceNormal*n2 >= 0) {
+                faceNormal = n2;
                 edge1 = e1;
                 edge2 = e2;
             } else {
-                n = n2 * -1;
+                faceNormal = n2 * -1;
                 edge1 = e2;
                 edge2 = e1;
             }
@@ -98,15 +100,15 @@ class Triangle
 
             root->SetAttribute("i", i);
 
-            root->SetAttribute("n", n.str());
+            root->SetAttribute("n", faceNormal.str());
 
             root->SetAttribute("v0", v[0]->i);
             root->SetAttribute("v1", v[1]->i);
             root->SetAttribute("v2", v[2]->i);
 
-            root->SetAttribute("m0", uvtriangle->uv0->i);
-            root->SetAttribute("m1", uvtriangle->uv1->i);
-            root->SetAttribute("m2", uvtriangle->uv2->i);
+            root->SetAttribute("m0", uvtriangle->m[0]->i);
+            root->SetAttribute("m1", uvtriangle->m[1]->i);
+            root->SetAttribute("m2", uvtriangle->m[2]->i);
 
             return root;
         } 
