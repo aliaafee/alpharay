@@ -2,39 +2,42 @@
 <project>
     <raytracer reflectiondepth="5" subsamplesx="1" subsamplesy="1" exposure="-1" />
     <preview width="320"  height="240" />
-    <final   width="320" height="240" />
+    <final   width="1280" height="768" />
     <scene>
-        <camera position="1,7.5,4" target="0,1,2" fov="1" tilt="0" />
+        <camera0 position="1,15,8" target="-1,0,2" fov="1" tilt="0" />
+        <camera position="1,15,8" target="1.5,1,4" fov="1" tilt="0" />
+        <camera0 position="1,1,50" target="1.5,1,4" fov="1" tilt="0" />
+        
         <lights>
-            <pointlight
+            <arealight
                 name="arey2" 
-                position="-10,0,10" 
+                position="-10,0,20" 
+                intensity="150,150,150"
+                shadow="true"
+                target="0,0,0" 
+                angle="0.628319" 
+                anglefalloff="0.628319" 
+                lightradius="2" 
+                samples="10" />
+            <arealight
+                name="arey3" 
+                position="-10,10,20" 
                 intensity="100,100,100"
                 shadow="true"
                 target="0,0,0" 
                 angle="0.628319" 
                 anglefalloff="0.628319" 
-                lightradius="0.1" 
-                samples="30" />
-            <pointlight
+                lightradius="2" 
+                samples="10" />
+            <spotlight
                 name="arey3" 
-                position="-10,10,10" 
-                intensity="100,100,100"
-                shadow="true"
-                target="0,0,0" 
-                angle="0.628319" 
-                anglefalloff="0.628319" 
-                lightradius="0.1" 
-                samples="30" />
-            <pointlight
-                name="arey3" 
-                position="10,10,5" 
+                position="20,20,5" 
                 intensity="60,60,60"
-                shadow="false"
+                shadow="true"
                 target="0,0,0" 
                 angle="0.628319" 
                 anglefalloff="0.628319" 
-                lightradius="0.1" 
+                lightradius="5" 
                 samples="30" />
 
         </lights>
@@ -49,17 +52,17 @@
 
 
             <cimgimage 
-                name="normalimg" 
-                filename="/Users/ali/Pictures/Work/normalmap.gif" />
+                name="earthimg" 
+                filename="/Users/ali/Pictures/Work/earth-sml.jpg" />
 
             <checker2d 
                 name="check" 
-                color1="1.0,0.0,0.0" 
-                color2="0.0,1.0,0.0" />
+                color1="1.0,1.0,1.0" 
+                color2="0.411,0.549,0.839" />
         </images>
 
         <maps>
-            <map2dplane 
+            <map2dplane
                 name="floormap" 
                 position="0,0,0" 
                 rotation="0,0,0" 
@@ -75,8 +78,8 @@
                 imagescale="1,1" 
                 image="earthimg" />
 
-            <uvmap
-                name="earthuv" 
+            <map2dplane
+                name="cubemap" 
                 position="0,0,0" 
                 rotation="0,0,0" 
                 scale="1,1,1" 
@@ -99,14 +102,14 @@
                 kd="0.8" 
                 ks="0.8" 
                 alpha="40" 
-                diffusemap="" 
+                diffusemap="floormap" 
                 normalmap="" />
 
             <material 
                 name="floormat" 
                 diffusecolor="1,1,0" 
                 highlightcolor="1,1,1" 
-                reflectivity="0.0" 
+                reflectivity="0.2" 
                 dielectric="0" 
                 scatterfactor="0.0" 
                 scattersamples="5" 
@@ -119,9 +122,9 @@
 
             <material 
                 name="meshmat" 
-                diffusecolor="0,1,1" 
+                diffusecolor="0.921,0.528,0.227" 
                 highlightcolor="1,1,1" 
-                reflectivity="0.0" 
+                reflectivity="0.7" 
                 dielectric="false" 
                 scatterfactor="0.0" 
                 scattersamples="1" 
@@ -130,7 +133,7 @@
                 ks="1.0" 
                 alpha="15" 
                 flatshading="false"
-                diffusemap="earthuv" 
+                diffusemap="" 
                 normalmap="" />
         </materials>
 
@@ -142,20 +145,35 @@
                 scale="1,1,1" 
                 material="floormat" />
 
-            <sphere 
-                name="earth" 
-                position="-2,0,1" 
+            
+            <sphere0
+                name="cube" 
+                position="1.5,1,5" 
+                rotation="0,0,3" 
+                scale="3,3,3" 
+                material="meshmat" />
+
+            <sphere0 
+                name="cube" 
+                position="-1,0,1" 
                 rotation="0,0,3" 
                 scale="1,1,1" 
                 material="earthmat" />
 
-            <mesh0 name="cube" position="1.5,-1,1" rotation="0,0,0" scale="1,1,1" material="meshmat">
-                 <file type="obj" scale="1" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/untitled.obj" />
-            </mesh0 >
-
-            <mesh name="cube" position="1.5,-1,1" rotation="0,0,0" scale="1,1,1" material="meshmat">
-                 <file type="obj" scale="1" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/untitled2.obj" />
+            
+            <mesh name="cube1" position="1.5,1,0" rotation="0,0,0" scale="1,1,1" material="meshmat">
+                <file type="obj" scale="50" position="0,0,-2" filename="/Users/ali/Projects/raytracera/examples/dragon-big.obj" />
             </mesh>
+
+
+            <mesh0 name="cube" position="1.5,1,2" rotation="0,0,0" scale="1.5,1.5,1.5" material="meshmat">
+                <file type="obj" scale="1" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/untitled2.obj" />
+            </mesh0> 
+
+            <mesh0 name="cube" position="1.5,1,2" rotation="0,0,0" scale="1.5,1.5,1.5" material="meshmat">
+                <file type="obj" scale="1" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/sphere.obj" />
+            </mesh0>   
+            
 
 
             <!--
