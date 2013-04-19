@@ -1,10 +1,272 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 
-#include <string>
-#include <tinyxml.h>
-
 #include "mesh.h"
 
+
+void Mesh::transform()
+{
+    Object::transform();
+
+    for (int i=0; i < triangles.size(); i++) {
+        triangles[i]->transform();
+    }
+
+}
+
+
+void Mesh::genBounds()
+{
+    Bounds b = bounds();
+
+    std::cout << "   gen octree " << b.min << b.max << std::endl;
+
+    int leafCount = 0;
+
+    octree_ = Octree(b.min, b.max, 10, 25);
+
+    octree_.add(&triangles, 0, &leafCount);
+
+    std::cout << "     leaves " << leafCount << std::endl;
+}
+
+
+Bounds Mesh::bounds()
+{
+    Vector max(-BIG_NUM, -BIG_NUM, -BIG_NUM);
+    Vector min( BIG_NUM,  BIG_NUM,  BIG_NUM);
+
+    for (int i=0; i < vertexs.size(); i++) {
+        if (vertexs[i]->x < min.x) min.x = vertexs[i]->x;
+        if (vertexs[i]->x > max.x) max.x = vertexs[i]->x;
+
+        if (vertexs[i]->y < min.y) min.y = vertexs[i]->y;
+        if (vertexs[i]->y > max.y) max.y = vertexs[i]->y;
+
+        if (vertexs[i]->z < min.z) min.z = vertexs[i]->z;
+        if (vertexs[i]->z > max.z) max.z = vertexs[i]->z;
+    }
+
+    //This fixes a precision error
+    min -= Vector(0.01,0.01,0.01);
+    max += Vector(0.01,0.01,0.01);
+
+    return Bounds(min, max);
+}
+
+
+BaseObject* Mesh::intersection(Ray &ray, float *distance, float limit)
+{
+    Ray rayt = transformRay(ray);
+
+    BaseObject* closest=NULL;
+
+    closest = octree_.intersection(rayt, distance, limit);
+
+    if (closest == NULL)
+        return NULL;
+
+	return closest;
+}
+
+
+TiXmlElement* Mesh::getXml()
+{
+    TiXmlElement* root = Object::getXml();
+
+    return root;
+}
+
+
+bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> *linkMaterials)
+{
+    init();
+
+    Object::loadXml(pElem, path, linkMaterials);
+
+    TiXmlHandle hRoot = TiXmlHandle(pElem);
+
+    //if file is specified load mesh from file
+    TiXmlDocument doc;
+    pElem = hRoot.FirstChild( "file" ).Element();
+    if (pElem) {
+        std::string filename("");
+        pElem->QueryStringAttribute ("filename", &filename);
+        std::string type("");
+        pElem->QueryStringAttribute ("type", &type);
+        if (type == "" || type == "xml") {
+            //Load an xml object file
+            /*
+            if (filename != "") {
+                TiXmlHandle hDoc(&doc);
+                if (doc.LoadFile(filename)) {
+                    pElem = hDoc.FirstChildElement().Element();
+                    if (pElem) {
+                        hRoot = TiXmlHandle(pElem);
+                    }
+                }
+            }
+            */
+        } else if (type == "obj") {
+            //Load wavefront obj file
+            Vector position(0,0,0);
+            float scale=1;
+            pElem->QueryValueAttribute <Vector> ("position", &position);
+            pElem->QueryFloatAttribute("scale", &scale);
+            return loadWavefrontObj(filename, scale, position);
+        }
+    }
+
+    //TODO: XML loading
+
+
+    return true;
+}
+
+
+bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) {
+    /*
+       Wavefront Obj loader
+       --------------------
+       Needs a bit of work (bit slow)
+    */
+    std::cout << "  Loading obj file" << std::flush;
+
+    std::string line;
+    std::ifstream objfile (filename.c_str());
+
+    uvpoints.push_back( new MapPoint2(0, 0, 0) );
+
+    if (objfile.is_open()) {
+        int v = 0;
+        int m = 0;
+        int n = 0;
+        int t = 0;
+        int pcount = 0;
+		while (objfile.good()) {
+			getline(objfile,line);
+            
+            std::stringstream ss(line);
+            std::string token;
+
+            token = "";
+            getline(ss, token, ' ');
+            if (token == "v") {
+                //Vertex
+                Vector p;
+                token = "0"; getline(ss, token, ' ');
+                p.x = stof(token) * scale;
+                token = "0"; getline(ss, token, ' ');
+                p.z = stof(token) * scale;
+                token = "0"; getline(ss, token, ' ');
+                p.y = stof(token) * scale;
+
+                p += position;
+
+                v += 1;
+
+                vertexs.push_back( new Vertex(v, p.x, p.y, p.z) );
+                
+                
+            } else if (token == "vn") {
+                //Normal
+                Vector p;
+                token = "0"; getline(ss, token, ' ');
+                p.x = stof(token);
+                token = "0"; getline(ss, token, ' ');
+                p.z = stof(token);
+                token = "0"; getline(ss, token, ' ');
+                p.y = stof(token);
+
+                n += 1;
+                
+                normals.push_back( new Normal(n, p.x, p.y, p.z) );
+
+            } else if (token == "vt") {
+                //UVMapping
+                Vector2 p;
+                token = "0"; getline(ss, token, ' ');
+                p.x = 1.0f - stof(token);
+                token = "0"; getline(ss, token, ' ');
+                p.y = 1.0f - stof(token);
+
+                m += 1;
+
+                uvpoints.push_back( new MapPoint2(v, p.x, p.y) );
+
+            } else if (token == "f") {
+                //Triangles
+                std::string vert,map,norm;
+                int v0, v1, v2;
+                int m0, m1, m2;
+                int n0, n1, n2;
+
+                token = ""; getline(ss, token, ' '); 
+                std::stringstream s0(token);
+                vert = "0"; getline(s0, vert, '/'); 
+                v0 = int(stof(vert)) -1;
+                map = "0"; getline(s0, map, '/'); 
+                m0 = int(stof(map));
+                norm = "0"; getline(s0, norm, '/');
+                n0 = int(stof(norm)) -1;
+
+                token = ""; getline(ss, token, ' '); 
+                std::stringstream s1(token);
+                vert = "0"; getline(s1, vert, '/'); 
+                v1 = int(stof(vert)) -1;
+                map = "0"; getline(s1, map, '/'); 
+                m1 = int(stof(map));
+                norm = "0"; getline(s1, norm, '/');
+                n1 = int(stof(norm)) -1;
+
+                token = ""; getline(ss, token, ' '); 
+                std::stringstream s2(token);
+                vert = "0"; getline(s2, vert, '/'); 
+                v2 = int(stof(vert)) -1;
+                map = "0"; getline(s2, map, '/'); 
+                m2 = int(stof(map));
+                norm = "0"; getline(s2, norm, '/');
+                n2 = int(stof(norm)) -1;
+
+                Vector n = ((*normals[n0]) + (*normals[n1]) + (*normals[n2])) / 3.0;
+
+                t += 1;
+
+                Triangle* trig = new Triangle(t, this);
+
+                trig->set( vertexs[v0],  vertexs[v1],  vertexs[v2],
+                          normals[n0],  normals[n1],  normals[n2],
+                          uvpoints[m0], uvpoints[m1], uvpoints[m2],
+                          Vector(n.x, n.y, n.z) );
+
+                triangles.push_back(trig);
+                          
+            }
+
+            //status
+            if ( v+n+m+t > pcount + 5000) {
+                pcount = v+n+m+t;
+                std::cout << "." << std::flush;
+            }
+
+		}
+		objfile.close();
+
+        std::cout << std::endl;
+
+        std::cout << "  mesh " << vertexs.size() << " verts, " << uvpoints.size() 
+            << " uvps, " << normals.size() << " norms, " << triangles.size() << " trigs" << std::endl;
+        
+        genBounds();
+        
+        return true;
+	}
+	
+    std::cout << "Unable to open file " << filename << std::endl;
+    return false;
+}
+
+
+/*
 Mesh::Mesh (std::string name, Vector position, Material *material) 
     : Object(name, position, material) 
 {	
@@ -88,55 +350,8 @@ Object* Mesh::intersection(
             UVTriangle **intersectionUVTriangle=NULL,
             float *distance=NULL) 
 {
-	//transform the ray to fit into object space
-    /*
-	Vector Ro = transformPointInv(ray.position_);
-	Vector Rd = transformDisplacementInv(ray.direction_);
-    */
-
     Ray rayt = transformRay(ray);
 
-    /*
-    //Check for bounding box intersection
-    if ( !(bbox_.intersection(Ro, Rd)) )
-        return NULL;
-
-    bool result;
-    Triangle* curI=NULL;
-    float curt;
-
-    Triangle* cloI=NULL;
-    float clot;
-
-    int closestTrig = -1;
-
-    clot = BIG_NUM;
-
-    Vector pvec, tvec, qvec;
-    float det, inv_det, u, v;
-
-    for (int i=0; i < triangles.size(); i++) {
-        //This is real ugly, but kinda fast. is it worth it?
-        RAY_TRIG(result, (triangles[i]), Ro, Rd, curt, pvec, tvec, qvec, det, inv_det, u, v);
-
-        //Or use the function alternative. Much nicer looking. But a teeny bit slower
-        //result = triangles[i]->intersection(Ro, Rd, &curt);
-
-        if (result) {
-            if (curt > 0.0001 && curt < clot) {
-                closestTrig = i;
-                clot = curt;
-            }
-        }
-    }
-
-    if (closestTrig == -1) {
-        return NULL;
-    }
-
-    cloI = triangles[closestTrig];
-    
-    */
     Triangle* cloI=NULL;
     float clot;
 
@@ -289,139 +504,8 @@ TiXmlElement* Mesh::getXml() {
 
     return root;
 }
+*/
 
 
 
-bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) {
-    /*
-       Wavefront Obj loader
-       --------------------
-       Needs a bit of work
-       TODO: fix the mesh to store normals separately from vertices
-
-    */
-    cout << "  Loading obj file..." << endl;
-
-    std::string line;
-    std::ifstream objfile (filename.c_str());
-
-    //default mapping
-    add(new Vector2(0,0));
-
-    if (objfile.is_open()) {
-        int i = 0;
-        int pi = 0;
-        int t = 0;
-        int pt = 0;
-        int m = 0;
-		while (objfile.good()) {
-			getline(objfile,line);
-            
-            std::stringstream ss(line);
-            std::stringstream s2;
-            std::string token;
-
-            token = "";
-            getline(ss, token, ' ');
-            if (token == "v") {
-                Vector p;
-                token = ""; getline(ss, token, ' ');
-                p.x = stof(token) * scale;
-                token = ""; getline(ss, token, ' ');
-                p.z = stof(token) * scale;
-                token = ""; getline(ss, token, ' ');
-                p.y = stof(token) * scale;
-                
-                vertexs[i-1]->p = p + position;
-
-                //cout << vertexs[i-1]->p << vertexs[i-1]->n << endl;
-            } else if (token == "vn") {
-                Vector p;
-                token = ""; getline(ss, token, ' ');
-                p.x = stof(token);
-                token = ""; getline(ss, token, ' ');
-                p.z = stof(token);
-                token = ""; getline(ss, token, ' ');
-                p.y = stof(token);
-
-                i += 1;
-                vertexs.push_back(new Vertex( i, Vector(0,0,0), p ));
-                if ( i > (pi + 10000)) {
-                    std::cout << "." << std::flush;
-                    pi = i;
-                }
-
-            } else if (token == "vt") {
-                Vector2* p = new Vector2();
-
-                token = ""; getline(ss, token, ' ');
-                p->x = 1.0f - stof(token);
-                token = ""; getline(ss, token, ' ');
-                p->y = 1.0f - stof(token);
-
-                m += 1;
-                p->i = m;
-
-                //cout << *p << endl;
-
-                uvpoints.push_back(p);
-
-            } else if (token == "f") {
-                std::string vert,map;
-                int v0, v1, v2;
-                int m0, m1, m2;
-
-                token = ""; getline(ss, token, ' '); s2.str(token);
-                vert = ""; getline(s2, vert, '/');
-                v0 = int(stof(vert) - 1);
-                map = "0"; getline(s2, map, '/');
-                m0 = int(stof(map));
-
-                token = ""; getline(ss, token, ' '); s2.str(token);
-                vert = ""; getline(s2, vert, '/');
-                v1 = int(stof(vert) - 1);
-                map = "0"; getline(s2, map, '/');
-                m1 = int(stof(map));
-
-                token = ""; getline(ss, token, ' '); s2.str(token);
-                vert = ""; getline(s2, vert, '/');
-                v2 = int(stof(vert) - 1);
-                map = "0"; getline(s2, map, '/');
-                m2 = int(stof(map));
-
-                Vector n = (vertexs[v0]->n + vertexs[v1]->n + vertexs[v2]->n) / 3.0;
-
-                //cout << v0 << "," << v1 << "," << v2 << endl;
-
-                add( new Triangle( i,
-                    vertexs[v0],
-                    vertexs[v1],
-                    vertexs[v2],
-                    uvpoints[m0],
-                    uvpoints[m1],
-                    uvpoints[m2],
-                    1,
-                    n) );
-
-                t += 1;
-                if ( t > (pt + 10000)) {
-                    std::cout << "," << std::flush;
-                    pt = t;
-                }
-
-            }
-
-		}
-		objfile.close();
-
-        std::cout << std::endl;
-
-        std::cout << "  mesh " << vertexs.size() << " verts, " << triangles.size() << " trigs" << endl;
-        setBounds();
-        return true;
-	}
-	
-    std::cout << "Unable to open file " << filename << std::endl;
-    return false;
-}
 

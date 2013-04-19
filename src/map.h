@@ -1,6 +1,126 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#include "vector.h"
+#include "matrix4.h"
+#include "xmlobject.h"
+#include "image.h"
+#include "linklist.h"
+
+
+class Map : virtual public XmlObjectNamed
+{
+    public:
+        virtual void init() { XmlObjectNamed::init(); }
+        
+        Map() 
+            :XmlObjectNamed("map", "")
+            { init(); }
+
+        Map( std::string name ) 
+            :XmlObjectNamed("map", name)
+            { init(); }
+
+        ~Map() { } ;
+
+        virtual void transform() {};
+
+        virtual Color color(Vector  point, Vector2 point2) { return Color(0, 0, 0); }
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages);
+
+};
+
+
+class Map2d : public Map, virtual public XmlObjectNamed
+{
+    public:
+        virtual void init();
+        
+        Map2d( std::string name ) 
+            : XmlObjectNamed("map2d", name)
+            { init(); }
+
+        ~Map2d() { } ;
+
+        virtual Color color(Vector  point, Vector2 point2);
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages);
+
+    protected:
+        Image* image_;
+        Vector2 imageScale_;
+
+        virtual Color color(Vector2 point2);
+};
+
+
+class Map2dPlane : public Map2d, virtual public XmlObjectNamed
+{
+    public:
+        virtual void init();
+        
+        Map2dPlane( std::string name ) 
+            : Map2d(name), XmlObjectNamed("map2dplane", name)
+            { init(); }
+
+        ~Map2dPlane() { } ;
+
+        virtual void transform();
+
+        virtual Color color(Vector  point, Vector2 point2);
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages);
+
+    protected:
+        Vector position_;
+	    Vector rotation_;
+	    Vector scale_;
+
+        Vector transformPoint(Vector point);
+        Vector transformPointInv(Vector point);
+        
+    private:
+        Matrix4 transMatrix; // TRS
+	    Matrix4 transMatrixInv; // S^R^T^
+};
+
+
+class Map2dCylindrical : public Map2dPlane, virtual public XmlObjectNamed
+{
+    public:
+        virtual void init() { Map2dPlane::init(); }
+        
+        Map2dCylindrical( std::string name ) 
+            : Map2dPlane(name), XmlObjectNamed("map2dcylindrical", name)
+            { init(); }
+
+        ~Map2dCylindrical() { } ;
+
+        virtual Color color(Vector  point, Vector2 point2);
+};
+
+
+class Map2dSpherical : public Map2dPlane, virtual public XmlObjectNamed
+{
+    public:
+        virtual void init() { Map2dPlane::init(); }
+        
+        Map2dSpherical( std::string name ) 
+            : Map2dPlane(name), XmlObjectNamed("map2dcylindrical", name)
+            { init(); }
+
+        ~Map2dSpherical() { } ;
+
+        virtual Color color(Vector  point, Vector2 point2);
+};
+
+
+
+/*
 #include <string>
 #include <tinyxml.h>
 
@@ -206,7 +326,5 @@ class UVMap : public Map2dPlane {
 
             return getColor2d(uv.x, uv.y);
         }
-};
-
-
+};*/
 #endif // _MAP_H_

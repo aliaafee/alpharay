@@ -6,6 +6,7 @@
 #include "image.h"
 #include "vector.h"
 #include "scene.h"
+#include "baseobject.h"
 #include "ray.h"
 #include "map.h"
 #include "material.h"
@@ -61,19 +62,14 @@ private:
     void renderLetterBox (Scene &scene, Image *image, int x0, int y0, int x1, int y1, float* done);
     void renderLetterBoxThread (Scene &scene, Image *image, int x0, int y0, int x1, int y1, int threadId);//, boost::barrier* bar);
 
-	Object* getClosestIntersection(Scene &scene, 
-                                          Ray &ray,
-                                          Vector *closestIntersectionPoint,
-                                          Vector *closestIntersectionPointLocal,
-                                          UVTriangle **closestIntersectionUVTriangle,
-                                          Object *ignore);
+	BaseObject* getClosestIntersection(Scene &scene, Ray &ray, float *t);
 
     void setLighting(Scene &scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
 	
-    Vector raytrace(Scene &scene ,Ray ray, int *reflectionDepth, Object* ignore);
+    Vector raytrace(Scene &scene ,Ray ray, int *reflectionDepth);
 
     Vector raytraceDistributed(Scene &scene, Ray ray, int *reflectionDepth, 
-                                        float scatterFactor, int scatterSamples, Object* ignore);
+                                        float scatterFactor, int scatterSamples);
 
     Vector correctExposure(Vector color);
 

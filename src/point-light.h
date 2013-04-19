@@ -5,6 +5,35 @@
 
 #include "light.h"
 
+
+class PointLight : public Light, virtual public XmlObjectNamed
+{
+    public:
+        virtual void init();
+
+        PointLight( std::string name ) 
+            :Light(name), XmlObjectNamed("light", name)
+            { init(); }
+
+        ~PointLight() { } ;
+
+        virtual Vector getIntensity(std::vector<BaseObject*>* objects, Vector &point, BaseObject *ignore=NULL) 
+            { return intensity_; }
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+
+    protected:
+    	Vector position_;
+    	Color intensity_;
+
+        bool shadowsOn_;
+
+        virtual Vector getIntensityByDistance(Vector &intensity, float &distance);
+        virtual BaseObject* getFirstIntersection(std::vector<BaseObject*>* objects, Ray &ray, float rayLimit, BaseObject *ignore);
+};
+
+/*
 class PointLight: public Light 
 {
 public:
@@ -21,5 +50,6 @@ public:
     virtual bool loadXml(TiXmlElement* pElem);
     virtual TiXmlElement* getXml();
 };
+*/
 
 #endif // _POINT_LIGHT_H_

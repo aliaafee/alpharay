@@ -3,40 +3,28 @@
 #ifndef _PLANE_H_
 #define _PLANE_H_
 
-#include <string>
-#include <tinyxml.h>
-
 #include "object.h"
 
-class Plane: public Object 
+
+class Plane : virtual public Object, virtual public XmlObjectNamed
 {
-public:
-    Vector normal_;
+    public:
+        void init() { Object::init(); normal_ = Vector(0, 0, 1);}
 
-    virtual void init() { xmlName = "plane"; normal_ = Vector(0, 0, 1);}
+        Plane(std::string name, BaseObject* parent=NULL) 
+            : XmlObjectNamed ("plane", name) 
+            { init(); parent_ = parent; }
 
-    Plane () {init();}
-    Plane (std::string name, Vector position, Material *material);
+        ~Plane() {};
 
-    Vector normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
-        return transformNormal(normal_);
-    }; 
+        virtual Bounds bounds();
+        
+        virtual Vector normal(Vector point);
 
-    Object* intersection(
-            Ray &ray,
-            Vector *intersectionPoint,
-            Vector *intersectionPointLocal,
-            UVTriangle **intersectionUVTriangle,
-            float *distance);
-
-    bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
-        return Object::loadXml(pElem, linkMaterials);
-    }
-
-    TiXmlElement* getXml() {
-        TiXmlElement* root = Object::getXml();
-        return root;
-    }
+        virtual BaseObject* intersection(Ray &ray, float *t, float limit);
+    
+    private:
+        Vector normal_;
 };
 
 #endif // _PLANE_H_

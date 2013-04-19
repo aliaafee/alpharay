@@ -2,47 +2,25 @@
 
 #include "raytracer.h"
 
-Object* Raytracer::getClosestIntersection(Scene &scene, 
-                                          Ray &ray,
-                                          Vector *closestIntersectionPoint,
-                                          Vector *closestIntersectionPointLocal,
-                                          UVTriangle **closestIntersectionUVTriangle,
-                                          Object *ignore=NULL) 
+BaseObject* Raytracer::getClosestIntersection(Scene &scene, Ray &ray, float *closest) 
 {
-    UVTriangle *intersectionUVTriangle;
-	Vector intersectionPoint, intersectionPointLocal;
-
 	float distance;
-
-	float closesetDistace = BIG_NUM;
+	*closest = BIG_NUM;
 	
-	Object *currentObject = NULL;
-	Object *closestObject = NULL;
+	BaseObject *currentObject = NULL;
+	BaseObject *closestObject = NULL;
 	
 	for (int i=0; i < scene.objects.size(); i++) {
-        //std::cout << "intersecting with " << scene.objects[i]->name_ << std::endl;
-		if (scene.objects[i] != ignore) {
-            
-            //std::cout << "A" << std::endl;
-			currentObject = scene.objects[i]->intersection(
-                    ray,
-                    &intersectionPoint,
-                    &intersectionPointLocal, 
-                    &intersectionUVTriangle,
-                    &distance);   
+			currentObject = scene.objects[i]->intersection(ray, &distance, BIG_NUM);   
 
 			if (currentObject != NULL) {
-                if (distance > 0.001) {
-				    if (distance < closesetDistace) {
-				    	closesetDistace = distance;
-                        *closestIntersectionPointLocal = intersectionPointLocal;
-					    *closestIntersectionPoint = intersectionPoint;
-                        *closestIntersectionUVTriangle = intersectionUVTriangle;
-					    closestObject = currentObject;
+                if (distance > 0.0001) {
+				    if (distance < *closest) {
+                        closestObject = currentObject;
+                        *closest = distance;
 				    }
                 }
 			}
-		}
 	}
 	return closestObject;
 }
@@ -50,7 +28,7 @@ Object* Raytracer::getClosestIntersection(Scene &scene,
 
 void Raytracer::setLighting(Scene &scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection) 
 {
-    material.resetLights();
+    //material.resetLights();
 
     for (int l=0; l < scene.lights.size(); l++) {
         Vector lightIntensity = scene.lights[l]->getIntensity(&(scene.objects), point);
@@ -139,13 +117,14 @@ Vector Raytracer::traceFresnel(Scene &scene, Ray ray,
             Ray rRefl(intersectionPoint, intersectionPoint+Vrefl);
             Ray rTran(intersectionPoint, intersectionPoint+Vtran);
             if (material.scatterFactor_ == 0) {
-                fRefl = raytrace(scene, rRefl, reflectionDepth, NULL);
-                fTran = raytrace(scene, rTran, reflectionDepth, NULL);
+                fRefl = raytrace(scene, rRefl, reflectionDepth);
+                fTran = raytrace(scene, rTran, reflectionDepth);
             } else {
-                fRefl = raytraceDistributed(scene, rRefl, reflectionDepth,material.scatterFactor_,material.scatterSamples_, NULL);
-                fTran = raytraceDistributed(scene, rTran, reflectionDepth,material.scatterFactor_,material.scatterSamples_, NULL);
+                fRefl = raytraceDistributed(scene, rRefl, reflectionDepth,material.scatterFactor_,material.scatterSamples_);
+                fTran = raytraceDistributed(scene, rTran, reflectionDepth,material.scatterFactor_,material.scatterSamples_);
             }
-            color = (fRefl + material.getReflection()) * Crefl + fTran * Ctran;
+            //color = (fRefl + material.getReflection()) * Crefl + fTran * Ctran;
+            color = fRefl * Crefl + fTran * Ctran;
         } else {
             //Exiting object
             getFresnelValues(ray.direction_, intersectionNormal*-1,
@@ -157,9 +136,9 @@ Vector Raytracer::traceFresnel(Scene &scene, Ray ray,
             Vector fTran;
             Ray rTran(intersectionPoint, intersectionPoint+Vtran);
             if (material.scatterFactor_ == 0) {
-                fTran = raytrace(scene, rTran, reflectionDepth, NULL);
+                fTran = raytrace(scene, rTran, reflectionDepth);
             } else {
-                fTran = raytraceDistributed(scene, rTran, reflectionDepth,material.scatterFactor_,material.scatterSamples_, NULL);
+                fTran = raytraceDistributed(scene, rTran, reflectionDepth,material.scatterFactor_,material.scatterSamples_);
             }
 
             color = fTran;
@@ -184,23 +163,21 @@ Vector Raytracer::traceReflection(Scene &scene, Ray ray,
             //Plane Reflections
             reflection = raytrace(scene, 
                                     reflectedRay, 
-                                    reflectionDepth, 
-                                    NULL);
+                                    reflectionDepth);
         } else {
             //Scattered Reflections
             reflection = raytraceDistributed(scene, 
                                     reflectedRay, 
                                     reflectionDepth, 
                                     material.scatterFactor_,
-                                    material.scatterSamples_,
-                                    NULL);
+                                    material.scatterSamples_);
         }
     }
     return reflection;
 }
 
 Vector Raytracer::raytraceDistributed(Scene &scene, Ray ray, int *reflectionDepth, 
-                                        float scatterFactor, int scatterSamples, Object* ignore=NULL) {
+                                        float scatterFactor, int scatterSamples) {
     Vector color;
     float sf = scatterFactor * M_PI/2;
     float theta = acos(ray.direction_.z);
@@ -212,53 +189,50 @@ Vector Raytracer::raytraceDistributed(Scene &scene, Ray ray, int *reflectionDept
         ray.direction_.x = sin(t) * cos(p);
         ray.direction_.y = sin(t) * sin(p);
         ray.direction_.z = cos(t);
-        color += raytrace(scene, ray, reflectionDepth, ignore);
+        color += raytrace(scene, ray, reflectionDepth);
     }
     color /= float(scatterSamples);
     return color;
 }
 
 
-Vector Raytracer::raytrace(Scene &scene ,Ray ray, int *reflectionDepth, Object* ignore=NULL) {
-    UVTriangle *intersectionUVTriangle = NULL;
-	Vector intersectionPoint, intersectionPointLocal;
-	Vector diffuse,reflection;
+Vector Raytracer::raytrace(Scene &scene ,Ray ray, int *reflectionDepth) {
+    float t;
 
     rayCount_ += 1;
 
-	Object *closestObject = getClosestIntersection(scene, 
-                                                   ray, 
-                                                   &intersectionPoint,
-                                                   &intersectionPointLocal,
-                                                   &intersectionUVTriangle,
-                                                   ignore);
+	BaseObject *closestObject = getClosestIntersection(scene, ray, &t);
 	
     if (closestObject != NULL) {
-        //Make a copy of the material and uvtriangle
-        Material material(closestObject->material_);
-        UVTriangle uvtriangle(intersectionUVTriangle);
+        //TODO: Optimize
+        Material material = closestObject->material();
 
-        //Get normal at given point
-        Vector intersectionNormal = closestObject->normal(intersectionPointLocal, &uvtriangle, &material);
-        intersectionNormal.normalize();
+        Vector intPoint = closestObject->point(ray, t);
+        Vector intPointLocal = closestObject->pointLocal(ray, t);
 
-        setLighting(scene, material, intersectionPoint, intersectionNormal, ray.direction_);
+        Vector intNormal = closestObject->normal(intPointLocal);
 
-        if (material.reflectivity_ > 0) {
+        setLighting(scene, material, intPoint, intNormal, ray.direction_);
+
+        Color reflection;
+
+        if (material.reflectivity() > 0) {
             if (material.dielectric_) {
                 reflection = traceFresnel(scene, ray, 
-                                            intersectionPoint, intersectionNormal, 
+                                            intPoint, intNormal, 
                                             material, reflectionDepth);
             } else {
                 reflection = traceReflection(scene, ray, 
-                                            intersectionPoint, intersectionNormal, 
+                                            intPoint, intNormal, 
                                             material, reflectionDepth);
             }
         }
 
-		return material.getColor(intersectionPointLocal, &uvtriangle, reflection);
-        //return (closestObject->transformNormalInv(intersectionNormal));
-        //return intersectionNormal;
+        material.addReflection(reflection);
+
+        Color color = closestObject->color(intPointLocal, &material);
+
+        return Vector(color.x, color.y, color.z);
 	}
 	
 	return Vector(0, 0, 0);

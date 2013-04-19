@@ -4,12 +4,49 @@
 #define _LIGHT_H_
 
 #include <vector>
-#include <string>
-#include <tinyxml.h>
 
 #include "vector.h"
 #include "ray.h"
+#include "xmlobject.h"
+#include "baseobject.h"
 #include "object.h"
+
+
+class Light : virtual public XmlObjectNamed
+{
+    public:
+        virtual void init();
+
+        Light( std::string name ) 
+            :XmlObjectNamed("pointlight", name)
+            { init(); }
+
+        ~Light() { } ;
+
+        virtual Color getIntensity(std::vector<Object*>* objects, Vector &point);
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+
+    //protected:
+    	Vector position_;
+    	Color intensity_;
+
+        bool shadowsOn_;
+
+        virtual Color getIntensityByDistance(Color intensity, float &distance);
+        virtual BaseObject* getFirstIntersection(std::vector<Object*>* objects, Ray &ray, float rayLimit);
+};
+
+
+
+/*
+
+#include <vector>
+#include <string>
+#include <tinyxml.h>
+
+
 
 class Light {
 public:
@@ -41,6 +78,6 @@ public:
 
     //virtual Vector getIntensity(Vector &point, float &distance) {return Vector(0,0,0);}
 };
-
+*/
 
 #endif // _LIGHT_H_

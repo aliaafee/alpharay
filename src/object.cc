@@ -2,7 +2,22 @@
 
 #include "object.h"
 
-void Object::GenerateTransformationMatrix() {
+
+void Object::init()
+{
+    BaseObject::init(); 
+    XmlObjectNamed::init();
+
+    position_ = Vector(0, 0, 0);
+    rotation_ = Vector(0, 0, 0);
+    scale_ = Vector(1, 1, 1);
+}
+
+void Object::transform() {
+    if (material_ != NULL) {
+        material_->transform();
+    }
+
 	Matrix4 scale(
 		scale_.x , 0, 0, 0,
 	    0, scale_.y, 0, 0,
@@ -45,65 +60,67 @@ void Object::GenerateTransformationMatrix() {
 
 	transMatrix = translation * xrot * yrot * zrot * scale;
 	transMatrixInv = iscale * izrot * iyrot * ixrot * itranslation;
-	transMatrixND = xrot * yrot * zrot * scale;
+    transMatrixND = xrot * yrot * zrot * scale;
+    transMatrixNDInv = iscale * izrot * iyrot * ixrot;
 	transMatrixNormal = xrot * yrot * zrot * iscale;
     transMatrixNormalInv = scale * izrot * iyrot * ixrot;
-	transMatrixNDInv = iscale * izrot * iyrot * ixrot;
 }
 
-Vector Object::transformPoint(Vector vector) {
+
+Vector Object::transformPoint(Vector &vector) {
 	if (parent_ != NULL) {
 		vector = parent_->transformPoint(vector);
 	}
-	//return vector * transMatrix;
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrix);
     return result;
 }
 
-Vector Object::transformPointInv(Vector vector) {
+
+Vector Object::transformPointInv(Vector &vector) {
 	if (parent_ != NULL) {
 		vector = parent_->transformPointInv(vector);
 	}
-	//return vector * transMatrixInv;
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrixInv);
     return result;
 }
 
-Vector Object::transformDisplacement(Vector vector) {
+
+Vector Object::transformDisplacement(Vector &vector) {
 	if (parent_ != NULL) {
 		vector = parent_->transformDisplacement(vector);
 	}
-	//return vector * transMatrixND;
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrixND);
     return result;
 }
 
-Vector Object::transformDisplacementInv(Vector vector) {
+
+Vector Object::transformDisplacementInv(Vector &vector) {
 	if (parent_ != NULL) {
 		vector = parent_->transformDisplacementInv(vector);
 	}
-	//return vector * transMatrixNDInv;
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrixNDInv);
     return result;
 }
 
-Vector Object::transformNormal(Vector normal) {
+
+Vector Object::transformNormal(Vector &normal) {
     if (parent_ != NULL) {
 		normal = parent_->transformNormal(normal);
 	}
-	//return normal * transMatrixNormal;
     Vector result;
     V_MUL_MATRIX(result, normal, transMatrixNormal);
     return result;
 }
 
-Vector Object::transformNormalInv(Vector normal) {
+
+Vector Object::transformNormalInv(Vector &normal) {
     return normal * transMatrixNormalInv;
 }
+
 
 Ray Object::transformRay(Ray ray) {
     Ray result;
@@ -113,10 +130,12 @@ Ray Object::transformRay(Ray ray) {
     return result;
 }
 
-bool Object::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
-    name_ = "object"; 
 
-    pElem->QueryStringAttribute ("name", &name_);
+bool Object::loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> *linkMaterials) {
+    init();
+
+    XmlObjectNamed::loadXml(pElem, path);
+
     pElem->QueryValueAttribute <Vector> ("position", &position_);
     pElem->QueryValueAttribute <Vector> ("rotation", &rotation_);
     pElem->QueryValueAttribute <Vector> ("scale", &scale_);
@@ -133,9 +152,8 @@ bool Object::loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
 }
 
 TiXmlElement* Object::getXml() {
-    TiXmlElement* root = new TiXmlElement(xmlName.c_str());
+    TiXmlElement* root = XmlObjectNamed::getXml();
 
-    root->SetAttribute("name", name_);
     root->SetAttribute("position", position_.str());
     root->SetAttribute("rotation", rotation_.str());
     root->SetAttribute("scale", scale_.str());
@@ -143,7 +161,7 @@ TiXmlElement* Object::getXml() {
     if (material_ == NULL) {
         root->SetAttribute("material", "");
     } else {
-        root->SetAttribute("material", material_->name_);
+        root->SetAttribute("material", material_->name());
     }
 
 

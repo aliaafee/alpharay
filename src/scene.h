@@ -7,14 +7,13 @@
 #include <tinyxml.h>
 #include <string>
 
-#include <linklist.h>
+#include "linklist.h"
 
 #include "vector.h"
 
 #include "camera.h"
 
 #include "light.h"
-#include "point-light.h"
 #include "spot-light.h"
 #include "area-light.h"
 
@@ -27,13 +26,13 @@
 
 #include "object.h"
 #include "sphere.h"
-#include "mesh.h"
 #include "plane.h"
+#include "mesh.h"
 
 
-class Scene {
+class Scene : public XmlObject 
+{
 public:
-    std::string xmlName;
     Camera camera_;
 
     std::vector<Light*> lights;
@@ -42,7 +41,7 @@ public:
     std::vector<Material*> materials;
     std::vector<Object*> objects;
 
-	Scene () { xmlName="scene"; };
+	Scene () : XmlObject("scene") {};
 	
     void transformVertices();
 
@@ -71,8 +70,8 @@ public:
     Object* getObject(std::string name)
         {return getByName <Object> (name, objects);}
 
-    TiXmlElement* getXml();
-    bool loadXml(TiXmlHandle &hRoot);
+    virtual TiXmlElement* getXml();
+    virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
 private:
     LinkList <Image> linkImages;
@@ -82,7 +81,7 @@ private:
 
     template <typename T> T* getByName(std::string name, std::vector<T*> &list) {
         for (int i = 0; i < list.size(); i++) {
-            if (list[i]->name_ == name) {
+            if (list[i]->name() == name) {
                 return list[i];
             }
         }
@@ -91,7 +90,7 @@ private:
     
     template <typename T> void linkList ( LinkList <T> list, std::vector<T*> &things) {
         for (int i = 0; i < list.size(); i++) {
-            string source;
+            std::string source;
             T** target;
             list.get(i , &source, &target);
             *target = getByName <T> (source, things);
@@ -105,13 +104,13 @@ private:
         linkList <Object> (linkObjects, objects);
     }
 
-    bool fromXml(TiXmlElement* pElem, Light** light);
-    bool fromXml(TiXmlElement* pElem, Image** image);
-    bool fromXml(TiXmlElement* pElem, Map** map);
-    bool fromXml(TiXmlElement* pElem, Material** mat);
-    bool fromXml(TiXmlElement* pElem, Object** object);
+    bool fromXml(TiXmlElement* pElem, Light** light, std::string path);
+    bool fromXml(TiXmlElement* pElem, Image** image, std::string path);
+    bool fromXml(TiXmlElement* pElem, Map** map, std::string path);
+    bool fromXml(TiXmlElement* pElem, Material** mat, std::string path);
+    bool fromXml(TiXmlElement* pElem, Object** object, std::string path);
 
-    template< typename T > void addFromXml(TiXmlElement* pElem);
+    template< typename T > void addFromXml(TiXmlElement* pElem, std::string path);
 
 };
 

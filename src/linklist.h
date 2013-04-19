@@ -1,3 +1,4 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 
 #ifndef _LINKLIST_H_
 #define _LINKLIST_H_
@@ -5,18 +6,17 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
 template <typename T>
 class LinkList
 {
 public:
-    vector<string> sources;
-    vector<T**> targets;
+    std::vector<std::string> sources;
+    std::vector<T**> targets;
 
     LinkList() {};
 
-    void add(string source, T** target) {
+    void add(std::string source, T** target) {
         sources.push_back(source);
         targets.push_back(target);
     }
@@ -25,7 +25,7 @@ public:
         return sources.size();
     }
 
-    bool get(int i, string* source, T*** target) {
+    bool get(int i, std::string* source, T*** target) {
         if (i >= 0 && i < sources.size()) {
             *source = sources[i];
             *target = targets[i];
@@ -33,5 +33,5 @@ public:
     }
 };
 
-#endif // _LINKLIST_H_
 
+#endif // _LINKLIST_H_

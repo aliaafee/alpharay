@@ -16,6 +16,8 @@ public:
 
     virtual void init() { xmlName = "image";}
 
+    std::string name() { return name_;}
+
     Image() {init();}
     Image(std::string name) {
         init();

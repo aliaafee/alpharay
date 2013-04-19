@@ -8,28 +8,28 @@ void Scene::transformVertices() {
 	}
 }
 
-bool Scene::fromXml(TiXmlElement* pElem, Light** light){
+bool Scene::fromXml(TiXmlElement* pElem, Light** light, std::string path){
     //std::cout << "light " << pElem->Value() << std::endl;
     std::string name(pElem->Value());
     *light = NULL;
 
     if (name == "pointlight") {
-        *light = new PointLight();
+        *light = new Light("");
     } else if (name == "spotlight") {
-        *light = new SpotLight();
+        *light = new SpotLight("");
     } else if (name == "arealight") {
-        *light = new AreaLight();
+        *light = new AreaLight("");
     }
 
     if (*light) {
-        (*light)->loadXml(pElem);
+        (*light)->loadXml(pElem, path);
         return true;
     }
     return false;
 }
 
 
-bool Scene::fromXml(TiXmlElement* pElem, Image** image) {
+bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
     //std::cout << "image " << pElem->Value() << std::endl;
     std::string name(pElem->Value());
     *image = NULL;
@@ -49,23 +49,23 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image) {
 }
 
 
-bool Scene::fromXml(TiXmlElement* pElem, Map** map) {
+bool Scene::fromXml(TiXmlElement* pElem, Map** map, std::string path) {
     //std::cout << "map " << pElem->Value() << std::endl;
     std::string name(pElem->Value());
     *map = NULL;
 
-    if (name == "map2dplane") {
-        *map = new Map2dPlane();
+    if (name == "map2d") {
+        *map = new Map2d("");
+    } else if (name == "map2dplane") {
+        *map = new Map2dPlane("");
     } else if (name == "map2dcylindrical") {
-        *map = new Map2dCylindrical;
+        *map = new Map2dCylindrical("");
     } else if (name == "map2dspherical") {
-        *map = new Map2dSpherical();
-    } else if (name == "uvmap") {
-        *map = new UVMap;
+        *map = new Map2dSpherical("");
     }
 
     if (*map) {
-        (*map)->loadXml(pElem, &linkImages);
+        (*map)->loadXml(pElem, path, &linkMaps, &linkImages);
         return true;
     }
 
@@ -73,17 +73,17 @@ bool Scene::fromXml(TiXmlElement* pElem, Map** map) {
 }
 
 
-bool Scene::fromXml(TiXmlElement* pElem, Material** mat) {
+bool Scene::fromXml(TiXmlElement* pElem, Material** mat, std::string path) {
     //std::cout << "mat " << pElem->Value() << std::endl;
     std::string name(pElem->Value());
     *mat = NULL;
 
     if (name == "material") {
-        *mat = new Material();
+        *mat = new Material("");
     }
 
     if (*mat) {
-        (*mat)->loadXml(pElem, &linkMaps, &linkMaterials);
+        (*mat)->loadXml(pElem, path, &linkMaps, &linkMaterials);
         return true;
     }
 
@@ -91,21 +91,21 @@ bool Scene::fromXml(TiXmlElement* pElem, Material** mat) {
 }
 
 
-bool Scene::fromXml(TiXmlElement* pElem, Object** object) {
+bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
     //std::cout << "object " << pElem->Value() << std::endl;
     std::string name(pElem->Value());
     *object = NULL;
 
     if (name == "sphere") {
-        *object = new Sphere();
+        *object = new Sphere("");
     } else if (name == "plane") {
-        *object = new Plane();
+        *object = new Plane("");
     } else if (name == "mesh") {
-        *object = new Mesh();
+        *object = new Mesh("");
     }
 
     if (*object) {
-        (*object)->loadXml(pElem, &linkMaterials);
+        (*object)->loadXml(pElem, path, &linkMaterials);
 
         return true;
     }
@@ -113,11 +113,11 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object) {
 }
 
 
-template< typename T > void Scene::addFromXml(TiXmlElement* pElem) {
+template< typename T > void Scene::addFromXml(TiXmlElement* pElem, std::string path) {
     if (pElem) {
         for (pElem; pElem; pElem = pElem->NextSiblingElement()) {
             T* newthing;
-            fromXml(pElem, &newthing);
+            fromXml(pElem, &newthing, path);
             if (newthing) {
                 add(newthing);
             }
@@ -127,7 +127,7 @@ template< typename T > void Scene::addFromXml(TiXmlElement* pElem) {
 
 
 TiXmlElement* Scene::getXml() {
-    TiXmlElement* root = new TiXmlElement(xmlName.c_str()); 
+    TiXmlElement* root = XmlObject::getXml();
 
     //camera
     root->LinkEndChild(camera_.getXml());
@@ -176,41 +176,41 @@ TiXmlElement* Scene::getXml() {
 }
 
 
-bool Scene::loadXml(TiXmlHandle &hTopRoot) {
-    TiXmlElement* root = hTopRoot.FirstChild( xmlName.c_str() ).Element();
-    if (!root) return false;
+bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
+    XmlObject::loadXml(pElem, path);
+
     std::cout << " Loading Scene..." << std::endl;
 
-    TiXmlHandle hRoot = TiXmlHandle(root);
-    TiXmlElement* pElem;
+    TiXmlHandle hRoot = TiXmlHandle(pElem);
 
     //camera
-    std::cout << "  Setting up camera" << std::endl; 
-    camera_.loadXml(hRoot);
+    std::cout << "  Setting up camera" << std::endl;
+    pElem = hRoot.FirstChild( "camera" ).Element();
+    camera_.loadXml(pElem, path);
 
     //lights
     pElem = hRoot.FirstChild( "lights" ).FirstChild().Element();
-    addFromXml <Light> (pElem);
+    addFromXml <Light> (pElem, path);
     std::cout << "  " << lights.size() << " lights" << std::endl; 
 
     //images
     pElem = hRoot.FirstChild( "images" ).FirstChild().Element();
-    addFromXml <Image> (pElem);
+    addFromXml <Image> (pElem, path);
     std::cout << "  " << images.size() << " images" << std::endl;
 
     //maps
     pElem = hRoot.FirstChild( "maps" ).FirstChild().Element();
-    addFromXml <Map> (pElem);
+    addFromXml <Map> (pElem, path);
     std::cout << "  " << maps.size() << " maps" << std::endl;
 
     //materials
     pElem = hRoot.FirstChild( "materials" ).FirstChild().Element();
-    addFromXml <Material> (pElem);
+    addFromXml <Material> (pElem, path);
     std::cout << "  " << materials.size() << " materials" << std::endl;
 
     //objects
     pElem = hRoot.FirstChild( "objects" ).FirstChild().Element();
-    addFromXml <Object> (pElem);
+    addFromXml <Object> (pElem, path);
     std::cout << "  " << objects.size() << " objects" << std::endl;
 
     //Linking

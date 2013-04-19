@@ -31,7 +31,7 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth, int *le
 
                 subtrig = new std::vector<Triangle*>;
                 for (int i=0; i < newtriangles->size(); i++) {
-                    if ( (*newtriangles)[i]->inbounds(submin, submax) ) {
+                    if ( (*newtriangles)[i]->inBounds(Bounds(submin, submax)) ) {
                         subtrig->push_back( (*newtriangles)[i] );
                     }
                 }
@@ -58,45 +58,40 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth, int *le
 }
 
 
-Triangle* Octree::intersection(const Ray &ray, float *t) {
+BaseObject* Octree::intersection(Ray &ray, float *t, float limit) {
     //Check for intersection with this bounding volume
     if (!BBox::intersection(ray.position_, ray.direction_)) {
         return NULL;
     }
 
-    Triangle* curI=NULL;
+    BaseObject* curI=NULL;
     float curt = 0;
 
-    Triangle* cloI=NULL;
+    BaseObject* cloI=NULL;
     float clot = 0;
 
     if (triangles != NULL) {
         //if triangles list available, then process as leaf
 
-        bool result;
+        BaseObject *currentTrig = NULL;
 
-        int closestTrig = -1;
+        BaseObject *closestTrig = NULL;
 
         clot = BIG_NUM;
 
         for (int i=0; i < triangles->size(); i++) {
-            result = (*triangles)[i]->intersection(ray, &curt);
-
-            if (result) {
+            currentTrig = (*triangles)[i]->intersection(ray, &curt, limit); 
+            if (currentTrig != NULL) {
                 if (curt > 0.0001 && curt < clot) {
-                    closestTrig = i;
+                    closestTrig = currentTrig;
                     clot = curt;
                 }
             }
         }
 
-
-        if (closestTrig < 0) {
-            return NULL;
-        }
-
         *t = clot;
-        return (*triangles)[closestTrig];
+
+        return closestTrig;
     } else {
         //Check for intersection with twigs
         clot = BIG_NUM;
@@ -107,7 +102,7 @@ Triangle* Octree::intersection(const Ray &ray, float *t) {
         for (int z = 0; z < 2; z++)
         {
             if (children[x][y][z] != NULL) {
-                curI = (children[x][y][z])->intersection(ray, &curt);
+                curI = (children[x][y][z])->intersection(ray, &curt, limit);
                 //Pick the closest  intersection
                 if (curI != NULL) {
                     if (curt < clot) {

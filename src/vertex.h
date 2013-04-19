@@ -3,7 +3,111 @@
 
 #include <tinyxml.h>
 #include "vector.h"
+#include "xmlobject.h"
 
+class Vertex : public Vector, public XmlObjectIndexed
+{
+    public:
+        Vertex(int i, float x, float y, float z)
+            : Vector (x,y,z), XmlObjectIndexed("vert", i)
+            {};
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+};
+
+
+inline TiXmlElement* Vertex::getXml() {
+    TiXmlElement* root = XmlObjectIndexed::getXml();
+
+    root->SetAttribute("p", str());
+
+    return root;
+}
+
+
+inline bool Vertex::loadXml(TiXmlElement* pElem, std::string path) {
+    XmlObjectIndexed::loadXml(pElem, path);
+
+    x = 0; y = 0; z = 0;
+
+    pElem->QueryValueAttribute <Vector> ("p", this);
+
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+class Normal : public Vector, public XmlObjectIndexed
+{
+    public:
+        Normal(int i, float x, float y, float z)
+            : Vector (x,y,z), XmlObjectIndexed("norm", i)
+            {};
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+};
+
+
+inline TiXmlElement* Normal::getXml() {
+    TiXmlElement* root = XmlObjectIndexed::getXml();
+
+    root->SetAttribute("n", str());
+
+    return root;
+}
+
+
+inline bool Normal::loadXml(TiXmlElement* pElem, std::string path) {
+    XmlObjectIndexed::loadXml(pElem, path);
+
+    x = 0; y = 0; z = 0;
+
+    pElem->QueryValueAttribute <Vector> ("n", this);
+
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+class MapPoint2 : public Vector2, public XmlObjectIndexed
+{
+    public:
+        MapPoint2(int i, float x, float y)
+            : Vector2 (x,y), XmlObjectIndexed("uvpt", i)
+            {};
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+};
+
+
+inline TiXmlElement* MapPoint2::getXml() {
+    TiXmlElement* root = XmlObjectIndexed::getXml();
+
+    root->SetAttribute("p", str());
+
+    return root;
+}
+
+
+inline bool MapPoint2::loadXml(TiXmlElement* pElem, std::string path) {
+    XmlObjectIndexed::loadXml(pElem, path);
+
+    x = 0; y = 0;
+
+    pElem->QueryValueAttribute <Vector2> ("p", this);
+
+    return true;
+}
+
+
+
+
+
+
+/*
 class Vertex
 {
     public:
@@ -39,5 +143,6 @@ class Vertex
             return root;
         }
 };
+*/
 
 #endif // _VERTEX_H_

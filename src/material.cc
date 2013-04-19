@@ -2,18 +2,13 @@
 
 #include "material.h"
 
-/*Phong reflection model
- *
- *src: http://en.wikipedia.org/wiki/Phong_reflection_model
- */
-
 
 void Material::init() { 
-    xmlName = "material"; 
-    name_ = "material";
+    XmlObjectNamed::init();
 
-	diffuseColor_ = Vector(255,255,255);
-	highlightColor_ = Vector(255,255,255);
+    //Generates a default material
+	diffuseColor_ = Color(1,1,1);
+	highlightColor_ = Color(1,1,1);
 	reflectivity_ = 0;
     opticDensity_ = 1.66f;
     dielectric_ = false;
@@ -30,6 +25,149 @@ void Material::init() {
     normalMap_ = NULL;
 }
 
+
+void Material::transform() 
+{
+    if (diffuseMap_ != NULL) {
+        diffuseMap_->transform();
+    }
+    if (normalMap_ != NULL) {
+        normalMap_->transform();
+    }
+
+}
+
+
+void Material::addReflection(Vector &reflection)
+{
+    reflection_ += reflection;
+}
+
+
+void Material::addLight(Vector &lightIntensity, 
+                        Vector &lightPosition, 
+                        Vector &viewerDirection, 
+                        Vector &point, 
+                        Vector &N)
+{
+    //Phong reflection model
+    //
+    //src: http://en.wikipedia.org/wiki/Phong_reflection_model
+
+    Vector L = (lightPosition - point).getUnitVector();
+    N.normalize();
+	Vector R = L.getReflection(N);
+	Vector V = viewerDirection.getUnitVector();
+
+    double LdN = L*N;
+    double RdV = R*V;
+
+	if (LdN > 0.0) {
+        diffuseIntensity_ += lightIntensity * kd_ * LdN ;
+	    if (RdV > 0.0) {
+            highlightIntensity_ += lightIntensity * ks_ * pow(RdV,alpha_);
+        }
+    }
+
+}
+
+
+Color Material::color()
+{
+    Color col;
+
+    col = diffuseColor_;
+    
+    col.x = (col.x * ka_) + (col.x * diffuseIntensity_.x) ;
+    col.y = (col.y * ka_) + (col.y * diffuseIntensity_.y) ;
+    col.z = (col.z * ka_) + (col.z * diffuseIntensity_.z) ;  
+
+    col = col * ( 1.0f - reflectivity_ ) + reflection_ * reflectivity_; 
+
+    col.x += (highlightColor_.x * highlightIntensity_.x);
+    col.y += (highlightColor_.y * highlightIntensity_.y);
+    col.z += (highlightColor_.z * highlightIntensity_.z);
+
+    return col;
+}
+
+
+Color Material::color(Vector&  point, Vector2& point2)
+{
+    if (diffuseMap_ != NULL) {
+        diffuseColor_ = diffuseMap_->color(point, point2);
+    }
+    return color();
+}
+
+
+TiXmlElement* Material::getXml()
+{
+    TiXmlElement* root = XmlObjectNamed::getXml();
+
+    root->SetAttribute("diffusecolor", diffuseColor_.str());
+    root->SetAttribute("highlightcolor", highlightColor_.str());
+    root->SetAttribute("reflectivity", ftos(reflectivity_));
+    root->SetAttribute("dielectric", dielectric_);
+    root->SetAttribute("opticdensity", ftos(opticDensity_));
+    root->SetAttribute("scatterfactor", ftos(scatterFactor_));
+    root->SetAttribute("scattersamples", scatterSamples_);
+    root->SetAttribute("ka", ftos(ka_));
+    root->SetAttribute("kd", ftos(kd_));
+    root->SetAttribute("ks", ftos(ks_));
+    root->SetAttribute("alpha", ftos(alpha_));
+    root->SetAttribute("flatshading", flatShading_);
+    
+    if (diffuseMap_ == NULL) {
+        root->SetAttribute("diffusemap", "");
+    } else {
+        root->SetAttribute("diffusemap", diffuseMap_->name());
+    }
+
+    if (normalMap_ == NULL) {
+        root->SetAttribute("normalmap", "");
+    } else {
+        root->SetAttribute("normalmap", normalMap_->name());
+    }
+
+    return root;
+}
+
+
+bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Material> *linkMaterials)
+{
+    init();
+
+    XmlObjectNamed::loadXml(pElem, path);
+
+    pElem->QueryValueAttribute <Vector> ("diffusecolor", &diffuseColor_);
+    pElem->QueryValueAttribute <Vector> ("highlightcolor", &highlightColor_);
+    pElem->QueryFloatAttribute ("reflectivity", &reflectivity_);
+    pElem->QueryBoolAttribute ("dielectric", &dielectric_);
+    pElem->QueryFloatAttribute("opticdensity", &opticDensity_);
+    pElem->QueryFloatAttribute ("scatterfactor", &scatterFactor_);
+    pElem->QueryIntAttribute ("scattersamples", &scatterSamples_);
+    pElem->QueryFloatAttribute ("ka", &ka_);
+    pElem->QueryFloatAttribute ("kd", &kd_);
+    pElem->QueryFloatAttribute ("ks", &ks_);
+    pElem->QueryFloatAttribute ("alpha", &alpha_);
+    pElem->QueryBoolAttribute ("flatshading", &flatShading_);
+
+    std::string mapname; 
+
+    mapname = "";
+    pElem->QueryStringAttribute ("diffusemap", &mapname);
+    linkMaps->add(mapname, &diffuseMap_);
+
+    mapname = "";
+    pElem->QueryStringAttribute ("normalmap", &mapname);
+    linkMaps->add(mapname, &normalMap_);
+
+    return true;
+}
+
+
+/*
 Material::Material() {
     init();
 }
@@ -240,3 +378,5 @@ TiXmlElement* Material::getXml() {
 
     return root;
 }
+
+*/

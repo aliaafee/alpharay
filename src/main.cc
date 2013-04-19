@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -51,7 +52,7 @@ void idle(void)
 
 void animate(int etc) {
     glutPostRedisplay();
-    //project.scene.camera_.orbitZ(-1 * M_PI/90);
+    project.scene.camera_.orbitZ(-1 * M_PI/180);
     if (actor != NULL) {
         actor->rotation_.x += 0.05;
         actor->rotation_.z += 0.05;
@@ -95,7 +96,7 @@ void initGlut(int argc, char** argv)
     glutIdleFunc(idle);
 }
 
-int test(Object *obj=NULL) {
+//int test() {
     /*
     UVTriangle *intersectionUVTriangle;
 	Vector intersectionPoint, intersectionPointLocal;
@@ -147,15 +148,14 @@ int test(Object *obj=NULL) {
 
     trig.inbounds( min, max );
     */
+    /*
     cout << "test -1/0 " << divide(-1, 0) << endl;
-
-}
+    */
+//}
 
 
 int main(int argc, char** argv)
 {
-    //test(NULL); return 0;
-
     string filename = "";
     string outfile = "";
 
@@ -195,13 +195,13 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    //project.renderPreview();
+    project.renderPreview();
 
     //Display
     initGlut(argc, argv);
 
-    actor = project.scene.getObject("cube");
-    animate(0);
+    //actor = project.scene.getObject("cube");
+    //animate(0);
     
     glutMainLoop();
 

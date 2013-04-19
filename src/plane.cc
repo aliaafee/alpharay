@@ -2,19 +2,19 @@
 
 #include "plane.h"
 
-Plane::Plane (std::string name, Vector position, Material *material) 
-    : Object(name, position, material) 
-{	
-    init();
+Bounds Plane::bounds()
+{
+    return Bounds( Vector(-1, -1, -1), Vector(1, 1, 1) );
+}
+
+        
+Vector Plane::normal(Vector point)
+{
+    return transformNormal(normal_);
 }
 
 
-Object* Plane::intersection(
-            Ray &ray,
-            Vector *intersectionPoint=NULL,
-            Vector *intersectionPointLocal=NULL,
-            UVTriangle **intersectionUVTriangle=NULL,
-            float *distance=NULL)  
+BaseObject* Plane::intersection(Ray &ray, float *distance, float limit)  
 {
     /*
 	 Ray Plane Intersection
@@ -51,21 +51,7 @@ Object* Plane::intersection(
 		return NULL;
 	}
     
-    if (intersectionPointLocal != NULL) {
-        //*intersectionPointLocal = Ro + (Rd * t);
-        V_INT_POINT((*intersectionPointLocal), Ro, Rd, t);
-    }
-
-    if (intersectionPoint != NULL) {
-	    //*intersectionPoint = ray.position_ + (ray.direction_ * t);
-        V_INT_POINT((*intersectionPoint), ray.position_, ray.direction_, t);
-    }
-
-    if (intersectionUVTriangle != NULL)
-        *intersectionUVTriangle = NULL;
-
-    if (distance != NULL)
-	    *distance = t;
+    *distance = t;
 
     return this;
 }

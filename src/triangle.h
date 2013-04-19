@@ -3,6 +3,59 @@
 #ifndef _TRIANGLE_H_
 #define _TRIANGLE_H_
 
+#include "baseobject.h"
+#include "vertex.h"
+
+
+class Triangle : public BaseObject, public XmlObjectIndexed
+{
+    public:
+        void init() { BaseObject::init(); XmlObjectIndexed::init(); }
+
+        Triangle(int index, BaseObject* parent) 
+            : XmlObjectIndexed ("trig", index) 
+            { init(); parent_ = parent; }
+
+        ~Triangle() {};
+
+        void set(Vertex*  v0, Vertex*  v1, Vertex*  v2, 
+                 Normal*  n0, Normal*  n1, Normal*  n2, 
+                 MapPoint2* m0, MapPoint2* m1, MapPoint2* m2, Vector face_n_);
+
+        void transform();
+
+        Bounds bounds();
+        
+        Vector normal(Vector point);
+        Color color(Vector point, Material* material);
+
+        Material material() { return parent_->material(); }
+
+        BaseObject* intersection(Ray &ray, float *t, float limit);
+        
+        TiXmlElement* getXml();
+
+    protected:
+        Vertex* v[3];
+        Normal* n[3];
+        MapPoint2* m[3];
+
+        Vector face_n;
+
+        Vector edge[2];
+
+        Vector transformPoint(Vector &point) { return parent_->transformPoint(point); }
+        Vector transformPointInv(Vector &point) { return parent_->transformPointInv(point); }
+        Vector transformNormal(Vector &point) { return parent_->transformNormal(point); }
+        Vector transformNormalInv(Vector &point) { return parent_->transformNormalInv(point); }
+        Vector transformDisplacement(Vector &point) { return parent_->transformDisplacement(point); };
+    	Vector transformDisplacementInv(Vector &point) { return parent_->transformDisplacementInv(point); };
+
+    private:
+        void calculateWeights(Vector point, float *w0, float *w1, float *w2);
+};
+
+/*
 #define EPSILON 0.000001
 
 #include "vector.h"
@@ -31,7 +84,7 @@
     }\
 
 
-#define inRange(v, rmin, rmax) ( (rmin < v) && (v < rmax) )
+
 
 
 class Triangle
@@ -113,5 +166,5 @@ class Triangle
             return root;
         } 
 };
-
+*/
 #endif // _TRIANGLE_H_

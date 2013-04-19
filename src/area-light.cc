@@ -2,10 +2,20 @@
 
 #include "area-light.h"
 
-Vector AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point, Object *ignore) {
+
+void AreaLight::init() { 
+    SpotLight::init(); 
+
+    lightRadius_ = 0.6;
+    samples_ = 5;
+}
+
+
+Color AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point)
+{
     Ray lightRay(point, position_, true);
 
-    Vector intensity = intensity_;
+    Color intensity = intensity_;
     
     intensity = getIntensityByAngle(intensity, lightRay.direction_*-1, target_ - position_);
 
@@ -21,7 +31,7 @@ Vector AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point, Obj
         return intensity;
     }
 
-    Vector intensityTotal;
+    Color intensityTotal;
 
     Vector ldir = lightRay.direction_ * -1;
     Vector dist;// = target_ - position;
@@ -53,7 +63,7 @@ Vector AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point, Obj
                         ), 
                         true);*/
 
-        Object* intObject = getFirstIntersection(objects, lightRay, distance, ignore);
+        BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
 
         if (intObject == NULL) {
             intensityTotal += intensity;
@@ -65,21 +75,24 @@ Vector AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point, Obj
     return intensity;    
 }
 
-bool AreaLight::loadXml(TiXmlElement* pElem) {
-    SpotLight::loadXml(pElem);
-
-    pElem->QueryFloatAttribute("lightradius", &lightRadius_);
-    pElem->QueryIntAttribute("samples", &samples_);
-
-    return true;
-}
 
 TiXmlElement* AreaLight::getXml() {
     TiXmlElement* root = SpotLight::getXml();
-    
+
     root->SetAttribute("lightradius", ftos(lightRadius_));
     root->SetAttribute("samples", samples_);
 
     return root;
 }
 
+
+bool AreaLight::loadXml(TiXmlElement* pElem, std::string path) {
+    init();
+
+    SpotLight::loadXml(pElem, path);
+
+    pElem->QueryFloatAttribute("lightradius", &lightRadius_);
+    pElem->QueryIntAttribute("samples", &samples_);
+
+    return true;
+}

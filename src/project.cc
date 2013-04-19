@@ -52,11 +52,13 @@ bool Project::load(string filename)
     final = new CimgImage(width, height);
 
     //Scene
-    scene.loadXml(hRoot);
+    pElem = hRoot.FirstChild("scene").Element();
+    scene.loadXml(pElem, "some/path");
 
     cout << "Done" << endl;
     return true;
 }
+
 
 bool Project::save(string filename)
 {

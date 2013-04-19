@@ -1,25 +1,54 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
+
 #include "light.h"
 
 
-Vector Light::getIntensityByDistance(Vector &intensity, float &distance) {
-    return intensity / (distance * distance);
+void Light::init() { 
+    XmlObjectNamed::init(); 
+
+    position_ = Vector(0, 0, 0); 
+    intensity_ = Color(100, 100, 100);
+    shadowsOn_ = true;
 }
 
-Object* Light::getFirstIntersection(std::vector<Object*>* objects, 
-                                            Ray &ray,
-                                            float rayLimit,
-                                            Object *ignore=NULL) 
+
+Color Light::getIntensity(std::vector<Object*>* objects, Vector &point)
+{
+    Ray lightRay(point, position_, true);
+    float distance = point.distanceTo(position_);
+
+    Vector intensity = getIntensityByDistance(intensity_ , distance) ;
+
+    if (intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1) {
+        return intensity;
+    }
+
+    BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
+
+    if (intObject != NULL) {
+        return Color(0, 0, 0);
+    }
+
+    return intensity;
+}
+
+
+Color Light::getIntensityByDistance(Color intensity, float &distance) {
+    return (intensity / (distance * distance)) * 5.0f;
+}
+
+
+BaseObject* Light::getFirstIntersection(std::vector<Object*>* objects, Ray &ray, float rayLimit) 
 {
     if (!shadowsOn_) {
         return NULL;
     }
-    Object *currentObject = NULL;
-    Vector intersectionPoint,intersectionNormal;
+
+    BaseObject *currentObject = NULL;
 	float distance;
 
     for (int i=0; i < (*objects).size(); i++) {
-        if ((*objects)[i] != ignore) {
-            currentObject = ((*objects)[i])->intersection(ray, NULL, NULL, NULL, &distance);
+            currentObject = ((*objects)[i])->intersection(ray, &distance, rayLimit);
             if (currentObject != NULL) {
                 if (distance < rayLimit) {
                     if (distance > 0.0001) {
@@ -27,18 +56,27 @@ Object* Light::getFirstIntersection(std::vector<Object*>* objects,
                     }
                 }
             }
-        }
     }
     return NULL;
 }
 
-bool Light::loadXml(TiXmlElement* pElem) {
-    name_ = "light"; 
-    position_ = Vector(0, 0, 0); 
-    intensity_ = Vector(1, 1, 1);
-    shadowsOn_ = true;
 
-    pElem->QueryStringAttribute ("name", &name_);
+TiXmlElement* Light::getXml() {
+    TiXmlElement* root = XmlObjectNamed::getXml();
+
+    root->SetAttribute("position", position_.str());
+    root->SetAttribute("intensity", intensity_.str());
+    root->SetAttribute("shadow", shadowsOn_);
+
+    return root;
+}
+
+
+bool Light::loadXml(TiXmlElement* pElem, std::string path) {
+    init();
+
+    XmlObjectNamed::loadXml(pElem, path);
+
     pElem->QueryValueAttribute <Vector> ("position", &position_);
     pElem->QueryValueAttribute <Vector> ("intensity", &intensity_);
     pElem->QueryBoolAttribute ("shadow", &shadowsOn_);
@@ -46,13 +84,4 @@ bool Light::loadXml(TiXmlElement* pElem) {
     return true;
 }
 
-TiXmlElement* Light::getXml() {
-    TiXmlElement* root = new TiXmlElement(xmlName.c_str());
 
-    root->SetAttribute("name", name_);
-    root->SetAttribute("position", position_.str());
-    root->SetAttribute("intensity", intensity_.str());
-    root->SetAttribute("shadow", shadowsOn_);
-
-    return root;
-}

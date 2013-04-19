@@ -3,6 +3,67 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
+#include "vector.h"
+#include "xmlobject.h"
+#include "map.h"
+#include "linklist.h"
+
+
+class Material : public XmlObjectNamed
+{
+    public:
+        virtual void init();
+        
+        Material( std::string name ) 
+            :XmlObjectNamed("material", name)
+            { init(); }
+
+        ~Material() { } ;
+
+        virtual void transform();
+
+        virtual void addReflection(Vector &reflection_);
+        virtual void addLight(Vector &lightIntensity, Vector &lightPosition, Vector &rayDirection, Vector &point, Vector &normal);
+
+        virtual Color color();
+        virtual Color color(Vector&  point, Vector2& point2);
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Material> *linkMaterials);
+
+        virtual float reflectivity() { return reflectivity_; }
+        virtual bool flatShading() { return flatShading_; }
+
+    //protected:
+        Color diffuseColor_;
+        Color highlightColor_;
+        Color reflection_;
+
+        float reflectivity_;
+        float opticDensity_;
+
+        bool dielectric_;
+
+        float scatterFactor_;
+        int scatterSamples_;
+
+        float ka_; //ambient reflection coefficient
+        float kd_; //diffuse reflection coefficient
+        float ks_; //specular reflection coefficient
+        float alpha_; //specular highlight amount
+
+        bool flatShading_;
+
+        Map *diffuseMap_;
+        Map *normalMap_;
+
+    private:
+        Color diffuseIntensity_;
+        Color highlightIntensity_;
+};
+
+
+/*
 #include <tinyxml.h>
 #include <string>
 
@@ -78,5 +139,5 @@ private:
     Vector diffuseIntensity_;
     Vector highlightIntensity_;
 };
-
+*/
 #endif // _MATERIAL_H_

@@ -10,15 +10,9 @@ using namespace std;
 #include "scene.h"
 #include "raytracer.h"
 
-#include "camera.h"
-
 #include "gl-image.h"
 #include "cimg-image.h"
 #include "float-image.h"
-
-#include "map.h"
-
-#include "object.h"
 
 class Project {
     public:

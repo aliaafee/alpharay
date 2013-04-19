@@ -5,6 +5,30 @@
 
 #include "spot-light.h"
 
+
+class AreaLight : public SpotLight, virtual public XmlObjectNamed
+{
+    public:
+        virtual void init();
+
+        AreaLight( std::string name ) 
+            : SpotLight(name), XmlObjectNamed("spotlight", name)
+            { init(); }
+
+        ~AreaLight() { } ;
+
+        virtual Color getIntensity(std::vector<Object*>* objects, Vector &point);
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+
+    //protected:
+        float lightRadius_;
+        int samples_;
+};
+
+
+/*
 class AreaLight: public SpotLight 
 {
 public:
@@ -23,6 +47,7 @@ public:
     virtual bool loadXml(TiXmlElement* pElem);
     TiXmlElement* getXml();
 };
+*/
 
 #endif // _AREA_LIGHT_H_
 

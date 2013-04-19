@@ -2,16 +2,19 @@
 
 #include "camera.h"
 
-Camera::Camera (Vector position, Vector target, double fOV, double tilt) {
-    xmlName = "camera";
+void Camera::init() 
+{
+    XmlObjectNamed::init();
 
-	position_ = position;
-	target_ = target;
-	fOV_ = fOV;
-	tilt_ = tilt;
+    position_ = Vector(0, 0, 0);
+	target_ = Vector(0, 1, 0);
+	fOV_ = M_PI/4.0f;
+	tilt_ = 0.0f; 
 }
 
-void Camera::setScreenDimensions(double screenWidth, double screenHeight) {
+
+void Camera::setScreenDimensions(double screenWidth, double screenHeight) 
+{
 	//See the attached document for details
 	realScreenHeight_ = screenHeight;
 	realScreenWidth_ = screenWidth;
@@ -43,7 +46,9 @@ void Camera::setScreenDimensions(double screenWidth, double screenHeight) {
 	screen_w = G - F;
 }
 
-Vector Camera::getScreenPosition(double x, double y) {
+
+Vector Camera::getScreenPosition(double x, double y) 
+{
 	return 	screen_1 + (
 			(screen_w * (x/realScreenWidth_)) //Left Position
 			+ 
@@ -51,39 +56,49 @@ Vector Camera::getScreenPosition(double x, double y) {
 		);
 }
 
-void Camera::orbitX(float angle) {
+
+void Camera::orbitX(float angle) 
+{
 	Vector v = position_ - target_;
 	v = v.rotateX(angle);
 	position_ = v + target_;
 }
 
-void Camera::orbitY(float angle) {
+
+void Camera::orbitY(float angle) 
+{
 	Vector v = position_ - target_;
 	v = v.rotateY(angle);
 	position_ = v + target_;
 }
 
 
-void Camera::orbitZ(float angle) {
+void Camera::orbitZ(float angle) 
+{
 	Vector v = position_ - target_;
 	v = v.rotateZ(angle);
 	position_ = v + target_;
 }
 
-bool Camera::loadXml(TiXmlHandle &hTopRoot) {
-    TiXmlElement* root = hTopRoot.FirstChild( xmlName.c_str() ).Element();
-    if (!root) return false;
 
-    root->QueryValueAttribute <Vector> ("position", &position_);
-    root->QueryValueAttribute <Vector> ("target", &target_);
-    root->QueryFloatAttribute("fov", &fOV_);
-    root->QueryFloatAttribute("tilt", &tilt_);
+bool Camera::loadXml(TiXmlElement* pElem, std::string path) 
+{
+    init();
+
+    XmlObjectNamed::loadXml(pElem, path);
+
+    pElem->QueryValueAttribute <Vector> ("position", &position_);
+    pElem->QueryValueAttribute <Vector> ("target", &target_);
+    pElem->QueryFloatAttribute("fov", &fOV_);
+    pElem->QueryFloatAttribute("tilt", &tilt_);
 
     return true;
 }
 
-TiXmlElement* Camera::getXml() {
-    TiXmlElement* root = new TiXmlElement(xmlName.c_str());
+
+TiXmlElement* Camera::getXml() 
+{
+    TiXmlElement* root = XmlObjectNamed::getXml();
 
     root->SetAttribute("position", position_.str());
     root->SetAttribute("target", target_.str());

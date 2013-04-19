@@ -1,7 +1,44 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
+
 #include "map.h"
 
 
-void Map::transform() {
+TiXmlElement* Map::getXml()
+{
+    TiXmlElement* root = XmlObjectNamed::getXml();
+
+    return root;
+}
+
+
+bool Map::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages) 
+{
+    XmlObjectNamed::loadXml(pElem, path);
+}
+
+void Map2d::init()
+{
+    Map::init();
+
+    image_ = NULL;
+    imageScale_ = Vector2(1, 1);
+}
+
+void Map2dPlane::init()
+{
+    Map2d::init();
+
+    position_ = Vector(0, 0, 0);
+    rotation_ = Vector(0, 0, 0);
+    scale_ = Vector(1, 1, 1);
+
+    image_ = NULL;
+    imageScale_ = Vector2(1, 1);
+}
+
+
+void Map2dPlane::transform() 
+{
 	Matrix4 scale(
 		scale_.x , 0, 0, 0,
 	    0, scale_.y, 0, 0,
@@ -46,17 +83,134 @@ void Map::transform() {
 	transMatrixInv = iscale * izrot * iyrot * ixrot * itranslation;
 }
 
-Vector Map::transformPoint(Vector vector) {
-	//return vector * transMatrix;
+
+Vector Map2dPlane::transformPoint(Vector vector) 
+{
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrix);
     return result;
 }
 
-Vector Map::transformPointInv(Vector vector) {
-	//return vector * transMatrixInv;
+
+Vector Map2dPlane::transformPointInv(Vector vector) 
+{
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrixInv);
     return result;
 }
+
+
+Color Map2d::color(Vector2 point2)
+{
+    float u = point2.x / imageScale_.x;
+    float v = point2.y / imageScale_.y;
+
+    u = u - float(int(u));
+    v = v - float(int(v));
+
+    if (u < 0) { u = 1.0f + u; }
+    if (v < 0) { v = 1.0f + v; }
+            
+    u = u * float(image_->width());
+    v = v * float(image_->height());
+            
+    return Color(image_->getColor(u, v));
+}
+
+
+Color Map2d::color(Vector  point, Vector2 point2 = Vector2(0,0))
+{
+    return color(point2);
+}
+
+
+Color Map2dPlane::color(Vector  point, Vector2 point2 = Vector2(0,0))
+{
+    point = transformPointInv(point);
+
+    point2.x = -0.5f - (point.x/2.0f);
+    point2.y = -0.5f - (point.y/2.0f);
+
+    return Map2d::color(point2);
+}
+
+
+Color Map2dCylindrical::color(Vector  point, Vector2 point2 = Vector2(0,0))
+{
+    point = transformPointInv(point);
+
+    point2.x = atan2(point.y, point.x) / (M_PI*2) * -1;
+    point2.y = -0.5 - (point.z/2);
+
+    return Map2d::color(point2);
+}
+
+
+Color Map2dSpherical::color(Vector  point, Vector2 point2 = Vector2(0,0))
+{
+    point = transformPointInv(point);
+
+    point.toSpherical();
+    point2.x = point.z / (M_PI*2) * -1;
+    point2.y = point.y / (M_PI);
+
+    return Map2d::color(point2);
+}
+
+
+TiXmlElement* Map2d::getXml()
+{
+    TiXmlElement* root = Map::getXml();
+
+    root->SetAttribute("imagescale", imageScale_.str());
+
+    if (image_ == NULL) {
+        root->SetAttribute("image", "");
+    } else {
+        root->SetAttribute("image", image_->name_);
+    }
+
+    return root;
+}
+
+
+bool Map2d::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages) 
+{
+    init();
+
+    Map::loadXml(pElem, path, linkMaps, linkImages);
+
+    pElem->QueryValueAttribute <Vector2> ("imagescale", &imageScale_);
+
+    std::string imagename = "";
+    pElem->QueryStringAttribute ("image", &imagename);
+    linkImages->add(imagename, &image_);
+}
+
+
+TiXmlElement* Map2dPlane::getXml()
+{
+    TiXmlElement* root = Map2d::getXml();
+
+    root->SetAttribute("name", name_);
+    root->SetAttribute("position", position_.str());
+    root->SetAttribute("rotation", rotation_.str());
+    root->SetAttribute("scale", scale_.str());
+
+    return root;
+}
+
+
+bool Map2dPlane::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages) 
+{
+    init();
+
+    Map2d::loadXml(pElem, path, linkMaps, linkImages);
+
+    pElem->QueryStringAttribute ("name", &name_);
+    pElem->QueryValueAttribute <Vector> ("position", &position_);
+    pElem->QueryValueAttribute <Vector> ("rotation", &rotation_);
+    pElem->QueryValueAttribute <Vector> ("scale", &scale_);
+}
+
 

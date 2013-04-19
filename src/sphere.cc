@@ -2,22 +2,21 @@
 
 #include "sphere.h"
 
-
-Sphere::Sphere (std::string name, Vector position, Material *material)
-    : Object(name, position, material) 
-{	
-	init();
+Bounds Sphere::bounds()
+{
+    return Bounds( Vector(-1, -1, -1), Vector(1, 1, 1) );
 }
 
-	
-Object* Sphere::intersection(
-            Ray &ray,
-            Vector *intersectionPoint=NULL,
-            Vector *intersectionPointLocal=NULL,
-            UVTriangle **intersectionUVTriangle=NULL,
-            float *distance=NULL)  
+        
+Vector Sphere::normal(Vector point)
 {
-	/*
+    return transformNormal(point);
+}
+
+
+BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
+{
+    /*
 	 Ray Sphere Intersection
 	 ----------------------
 	 Equation of a sphere with radius r is:
@@ -31,8 +30,9 @@ Object* Sphere::intersection(
 	*/
 
 	//transform the ray to fit into object space
-	Vector Ro = transformPointInv(ray.position_);
-	Vector Rd = transformDisplacementInv(ray.direction_);
+    Vector Ro = transformPointInv(ray.position_);
+    Vector Rd = transformDisplacementInv(ray.direction_);
+
 		
 	float a = V_DOT(Rd , Rd);
 	float b = 2 * V_DOT(Ro , Rd);
@@ -45,7 +45,8 @@ Object* Sphere::intersection(
 		return NULL;
 	}
 
-	float t;
+	float t = 0;
+
 	if (determinant == 0) {
 		t = (determinant * -1)/(2 * a);
 	} else {
@@ -66,25 +67,11 @@ Object* Sphere::intersection(
 	}
 
 	if (t < 0) { // intersection point behind the ray
+        
 		return NULL;
 	}
 
-    Vector i;
-    V_INT_POINT(i, Ro, Rd, t);
-
-    if (intersectionPointLocal != NULL) {
-        *intersectionPointLocal = i;
-    }
-
-    if (intersectionPoint != NULL) {
-        V_INT_POINT((*intersectionPoint), ray.position_, ray.direction_, t);
-    }
-
-    if (intersectionUVTriangle != NULL)
-        *intersectionUVTriangle = NULL;
-
-    if (distance != NULL)
-	    *distance = t;
+    *distance = t;
 
 	return this;
 }

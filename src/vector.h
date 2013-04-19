@@ -1,27 +1,11 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
-/*
- * raytracer-a
- * Copyright (C) Ali Aafee 2011 <ali.aafee@gmail.com>
- * 
- * raytracer-a is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * raytracer is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along
- * with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
-#define     BIG_NUM 1000000000
-#define   SMALL_NUM 0.0000001
+#define     BIG_NUM 1000000000.0f
+#define   SMALL_NUM 0.0000001f
+#define EPSILON 0.000001f
 
 #include <cfloat>
 #include <iostream>
@@ -71,6 +55,17 @@
 
 #define V_EQUAL(v1, v2) ( (v1.x == v2.x) && (v1.y == v2.y) && (v1.z == v2.z) )
 
+#define V_MIN_MAX(p, min, max) \
+    if (p.x < min.x) min.x = p.x; \
+    if (p.x > max.x) max.x = p.x; \
+    if (p.y < min.y) min.y = p.y; \
+    if (p.y > max.y) max.y = p.y; \
+    if (p.z < min.z) min.z = p.z; \
+    if (p.z > max.z) max.z = p.z; \
+
+#define inRange(v, rmin, rmax) ( (rmin < v) && (v < rmax) )
+
+
 
 inline float divide(float a, float b) {
     if (b > -FLT_EPSILON && b < FLT_EPSILON) {
@@ -108,7 +103,6 @@ inline float randf(float a, float b) {
 
 class Vector2 {
 public:
-    int i;
     float x,y;
 
     friend std::ostream& operator<<(std::ostream& os, Vector2& vector);
@@ -117,7 +111,6 @@ public:
     Vector2 () {x=0; y=0;};
     
     Vector2 (float nx, float ny) {x = nx; y = ny;}
-    Vector2 (int ni, float nx, float ny) {i = ni; x = nx; y = ny;}
     Vector2 (std::string val);
 
     Vector2 operator+(Vector2); //Add
@@ -231,6 +224,28 @@ inline std::stringstream& operator>>(std::stringstream& ss, Vector2& vector) {
     return ss;
 }
 
+class Bounds
+{
+    public:
+        Bounds() {};
+        Bounds(Vector mi, Vector ma) { min = mi; max = ma; }
 
+        Vector min;
+        Vector max;
+};
+
+
+class Color : public Vector
+{
+    public:
+        Color() {};
+        Color(float r, float g, float b)
+            : Vector(r, g, b) {};
+        Color(Vector v) { x = v.x; y = v.y; z = v.z; }
+
+        float r() { return x; }
+        float g() { return y; }
+        float b() { return z; }
+};
 
 #endif // _VECTOR_H_

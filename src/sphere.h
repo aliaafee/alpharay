@@ -3,38 +3,25 @@
 #ifndef _SPHERE_H_
 #define _SPHERE_H_
 
-#include <string>
-#include <tinyxml.h>
-
 #include "object.h"
 
-class Sphere : public Object
+class Sphere : virtual public Object, virtual public XmlObjectNamed
 {
-public:
-    virtual void init() { xmlName = "sphere"; }
+    public:
+        void init() { Object::init(); }
 
-    Sphere () {init();}
-	Sphere (std::string name, Vector position, Material *material);	
+        Sphere(std::string name, BaseObject* parent=NULL) 
+            : XmlObjectNamed ("sphere", name) 
+            { init(); parent_ = parent; }
 
-    Vector normal(Vector localPoint, UVTriangle *uvtriangle, Material *material) {
-        return transformNormal(localPoint);
-    };
+        ~Sphere() {};
 
-    Object* intersection(
-            Ray &ray,
-            Vector *intersectionPoint,
-            Vector *intersectionPointLocal,
-            UVTriangle **intersectionUVTriangle,
-            float *distance);
+        virtual Bounds bounds();
+        
+        virtual Vector normal(Vector point);
 
-    bool loadXml(TiXmlElement* pElem, LinkList <Material> *linkMaterials) {
-        return Object::loadXml(pElem, linkMaterials);
-    }
-
-    TiXmlElement* getXml() {
-        TiXmlElement* root = Object::getXml();
-        return root;
-    }
+        virtual BaseObject* intersection(Ray &ray, float *t, float limit);
 };
+
 
 #endif // _SPHERE_H_
