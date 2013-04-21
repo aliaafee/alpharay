@@ -58,9 +58,10 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth, int *le
 }
 
 
-BaseObject* Octree::intersection(Ray &ray, float *t, float limit) {
+BaseObject* Octree::intersection(Ray &ray, float *t, float limitMax) {
     //Check for intersection with this bounding volume
-    if (!BBox::intersection(ray.position_, ray.direction_)) {
+
+    if (!BBox::intersection(ray, limitMax)) {
         return NULL;
     }
 
@@ -80,7 +81,7 @@ BaseObject* Octree::intersection(Ray &ray, float *t, float limit) {
         clot = BIG_NUM;
 
         for (int i=0; i < triangles->size(); i++) {
-            currentTrig = (*triangles)[i]->intersection(ray, &curt, limit); 
+            currentTrig = (*triangles)[i]->intersection(ray, &curt, limitMax); 
             if (currentTrig != NULL) {
                 if (curt > 0.0001 && curt < clot) {
                     closestTrig = currentTrig;
@@ -102,7 +103,7 @@ BaseObject* Octree::intersection(Ray &ray, float *t, float limit) {
         for (int z = 0; z < 2; z++)
         {
             if (children[x][y][z] != NULL) {
-                curI = (children[x][y][z])->intersection(ray, &curt, limit);
+                curI = (children[x][y][z])->intersection(ray, &curt, limitMax);
                 //Pick the closest  intersection
                 if (curI != NULL) {
                     if (curt < clot) {

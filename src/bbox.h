@@ -17,7 +17,9 @@ class BBox {
             bounds[1] = max;
         }
 
-        bool intersection(const Vector Ro, const Vector Rd);
+        //bool intersection(const Vector Ro, const Vector Rd);
+        //bool intersection(const Ray &ray, const float &max);
+        bool intersection(const Ray &ray, const float &limitMax);
 };
 
 

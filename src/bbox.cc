@@ -2,17 +2,19 @@
 
 #include "bbox.h"
 
-bool BBox::intersection(const Vector Ro, const Vector Rd) {
+//bool BBox::intersection(const Vector Ro, const Vector Rd) 
+bool BBox::intersection(const Ray &ray, const float &limitMax)
+{
     /*
        Ray Box intersection
        --------------------
        Source: http://www.cs.utah.edu/~awilliam/box/box.pdf
     */
 
-    //if ray starts or ends in box then its intersecting
-    if (Ro.x < bounds[1].x && Ro.x > bounds[0].x) {
-        if (Ro.y < bounds[1].y && Ro.y > bounds[0].y) {
-            if (Ro.z < bounds[1].z && Ro.z > bounds[0].z) {
+    //if ray starts in box then its intersecting
+    if (ray.position_.x < bounds[1].x && ray.position_.x > bounds[0].x) {
+        if (ray.position_.y < bounds[1].y && ray.position_.y > bounds[0].y) {
+            if (ray.position_.z < bounds[1].z && ray.position_.z > bounds[0].z) {
                 return true;
             }
         }
@@ -20,19 +22,11 @@ bool BBox::intersection(const Vector Ro, const Vector Rd) {
 
     float tmin, tmax, tymin, tymax, tzmin, tzmax;
 
-    Vector inv_direction = Vector(1/Rd.x, 1/Rd.y, 1/Rd.z);
+    tmin = (bounds[ray.sign[0]].x - ray.position_.x) * ray.inv_direction.x;
+    tmax = (bounds[1-ray.sign[0]].x - ray.position_.x) * ray.inv_direction.x;
 
-    int sign[3];
-
-    sign[0] = inv_direction.x < 0;
-    sign[1] = inv_direction.y < 0;
-    sign[2] = inv_direction.z < 0;
-
-    tmin = (bounds[sign[0]].x - Ro.x) * inv_direction.x;
-    tmax = (bounds[1-sign[0]].x - Ro.x) * inv_direction.x;
-
-    tymin = (bounds[sign[1]].y - Ro.y) * inv_direction.y;
-    tymax = (bounds[1-sign[1]].y - Ro.y) * inv_direction.y;
+    tymin = (bounds[ray.sign[1]].y - ray.position_.y) * ray.inv_direction.y;
+    tymax = (bounds[1-ray.sign[1]].y - ray.position_.y) * ray.inv_direction.y;
 
     if ( (tmin > tymax) || (tymin > tmax) )
         return false;
@@ -43,8 +37,8 @@ bool BBox::intersection(const Vector Ro, const Vector Rd) {
     if (tymax < tmax)
         tmax = tymax;
 
-    tzmin = (bounds[sign[2]].z - Ro.z) * inv_direction.z;
-    tzmax = (bounds[1-sign[2]].z - Ro.z) * inv_direction.z;
+    tzmin = (bounds[ray.sign[2]].z - ray.position_.z) * ray.inv_direction.z;
+    tzmax = (bounds[1-ray.sign[2]].z - ray.position_.z) * ray.inv_direction.z;
 
     if ( (tmin > tzmax) || (tzmin > tmax) )
         return false;
@@ -58,12 +52,10 @@ bool BBox::intersection(const Vector Ro, const Vector Rd) {
     if (tmin < 0)
         return false;
 
-    return true;
-    /*
-    *tminr = tmin;
-    *tmaxr = tmax;
-    *
+    //only objs with in specified range
+    if (tmax > limitMax)
+        return false;
 
-    return true;*/
+    return true;
 }
 

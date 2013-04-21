@@ -58,6 +58,8 @@ BaseObject* Mesh::intersection(Ray &ray, float *distance, float limit)
 {
     Ray rayt = transformRay(ray);
 
+    rayt.calculateInverse();
+
     BaseObject* closest=NULL;
 
     closest = octree_.intersection(rayt, distance, limit);

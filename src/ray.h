@@ -14,6 +14,11 @@ public:
 	Ray(Vector origin, Vector target);
 	Ray getReflectedRay(Vector origin, Vector normal);
 	Ray getRefractedRay(Vector origin, Vector normal, float index);
+
+    void calculateInverse();
+
+    Vector inv_direction;
+    int sign[3];
 	
 	Vector position_;
 	Vector direction_;

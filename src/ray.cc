@@ -54,3 +54,13 @@ Ray Ray::getRefractedRay(Vector origin, Vector normal, float newOpticDensity_) {
 
 	return refractedRay;
 }
+
+
+void Ray::calculateInverse()
+{
+    inv_direction = Vector(1/direction_.x, 1/direction_.y, 1/direction_.z);
+
+    sign[0] = inv_direction.x < 0;
+    sign[1] = inv_direction.y < 0;
+    sign[2] = inv_direction.z < 0;
+}
