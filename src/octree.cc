@@ -84,8 +84,15 @@ BaseObject* Octree::intersection(Ray &ray, float *t, float limitMax) {
             currentTrig = (*triangles)[i]->intersection(ray, &curt, limitMax); 
             if (currentTrig != NULL) {
                 if (curt > 0.0001 && curt < clot) {
-                    closestTrig = currentTrig;
-                    clot = curt;
+                    if (curt < limitMax) {
+                        closestTrig = currentTrig;
+                        clot = curt;
+                        
+                        if (ray.shadowRay_) {
+                            *t = clot;
+                            return closestTrig;
+                        }
+                    }
                 }
             }
         }
@@ -109,6 +116,11 @@ BaseObject* Octree::intersection(Ray &ray, float *t, float limitMax) {
                     if (curt < clot) {
                         cloI = curI;
                         clot = curt;
+                        
+                        if (ray.shadowRay_) {
+                            *t = clot;
+                            return cloI;
+                        }
                     }
                 }
             }

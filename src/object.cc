@@ -126,6 +126,7 @@ Ray Object::transformRay(Ray ray) {
     Ray result;
     result.position_ = transformPointInv(ray.position_);
 	result.direction_ = transformDisplacementInv(ray.direction_);
+    result.shadowRay_ = ray.shadowRay_;
 
     return result;
 }

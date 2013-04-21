@@ -39,30 +39,29 @@ void AreaLight::set(std::vector<Object*>* objects, Material &material, Vector &p
     u.normalize();
     v.normalize();
 
+    Vector quantaOrigin;
     Vector quantaIntensity = intensity / float(samples_);
     intensity.setNull();
 
     for (int i=0; i < samples_; i++) {
-        
-        Ray lightRay(point, 
-                position_ 
-                    + u * randf(lightRadius_*-1, lightRadius_)
-                    + v * randf(lightRadius_*-1, lightRadius_)
-                        , 
-                        true);
+        quantaOrigin = position_ 
+                            + u * randf(lightRadius_*-1, lightRadius_)
+                            + v * randf(lightRadius_*-1, lightRadius_);
+
+        lightRay.direction_ = quantaOrigin - lightRay.position_;
 
         BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
 
         if (intObject == NULL) {
-            intensity += quantaIntensity;
-        }
-    }
-
-    material.addLight(intensity,
-                        position_,
+            material.addLight(quantaIntensity,
+                        quantaOrigin,
                         viewDirection,
                         point,
                         pointNormal );
+        }
+    }
+
+    
 }
 
 
