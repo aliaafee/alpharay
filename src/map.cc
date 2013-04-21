@@ -113,8 +113,11 @@ Color Map2d::color(Vector2 point2)
             
     u = u * float(image_->width());
     v = v * float(image_->height());
+
+    point2.x = u;
+    point2.y = v;
             
-    return Color(image_->getColor(u, v));
+    return Color(image_->getColor(point2));
 }
 
 
@@ -167,7 +170,7 @@ TiXmlElement* Map2d::getXml()
     if (image_ == NULL) {
         root->SetAttribute("image", "");
     } else {
-        root->SetAttribute("image", image_->name_);
+        root->SetAttribute("image", image_->name());
     }
 
     return root;

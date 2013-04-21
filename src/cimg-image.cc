@@ -2,24 +2,32 @@
 
 #include "cimg-image.h"
 
-CimgImage::CimgImage(int width, int height) : Image("") {
+
+bool CimgImage::create(int width, int height)
+{
+    if (image_ != NULL) {
+        delete image_;
+    }
+
     init();
+
     image_ = new cimg_library::CImg<unsigned char>(width, height, 1, 3, 0);
+
+    return true;
 }
 
 
-CimgImage::CimgImage(std::string name, std::string filename) : Image(name) {
-    init();
+bool CimgImage::load(std::string filename)
+{
     image_ = new cimg_library::CImg<unsigned char>();
-    image_->load(filename.c_str());
-    filename_ = filename;
+    image_->load(filename_.c_str());
+
+    return true;
 }
 
-CimgImage::~CimgImage() {
-    delete image_;
-}
-    
-bool CimgImage::save(std::string filename) {
+
+bool CimgImage::save(std::string filename)
+{
     if (image_ != NULL) {
         image_->save(filename.c_str());
         return true;
@@ -28,37 +36,23 @@ bool CimgImage::save(std::string filename) {
 }
 
 
-int CimgImage::height() {
-    if (image_ != NULL) {
-        return image_->height();
-    }
-    return 0;
-}
-
-
-int CimgImage::width() {
-    if (image_ != NULL) {
-        return image_->width();
-    }
-    return 0;
-}
-
-
-Vector CimgImage::getColor(float u, float v) {
+Color CimgImage::getColor(Vector2 point)
+{
     if (!image_) {
-        return Vector(0,0,0);
+        return Color(0,0,0);
     }
     unsigned char col[3];
     
-    col[0] = image_->linear_atXY (u, v, 0);
-	col[1] = image_->linear_atXY (u, v, 1);
-	col[2] = image_->linear_atXY (u, v, 2);
+    col[0] = image_->linear_atXY (point.x, point.y, 0);
+	col[1] = image_->linear_atXY (point.x, point.y, 1);
+	col[2] = image_->linear_atXY (point.x, point.y, 2);
 
-    return Vector(float(col[0])/255.0f ,float(col[1])/255.0f ,float(col[2])/255.0f);
+    return Color(float(col[0])/255.0f ,float(col[1])/255.0f ,float(col[2])/255.0f);
 }
 
 
-bool CimgImage::setColor(float u, float v, Vector color) {
+bool CimgImage::setColor(Vector2 point, Color color)
+{
     if (!image_) {
         return false;
     }
@@ -70,8 +64,50 @@ bool CimgImage::setColor(float u, float v, Vector color) {
     col[1] = unsigned(char(color.y * 255.0f));
     col[2] = unsigned(char(color.z * 255.0f));
 
-    image_->draw_point(int(u) ,int(v) ,col);
+    image_->draw_point(int(point.x) ,int(point.y) ,col);
 
     return true;
 }
 
+
+int CimgImage::width()
+{
+    if (image_ != NULL)
+        return image_->width();
+    return 0;
+}
+
+
+int CimgImage::height()
+{
+    if (image_ != NULL)
+        return image_->height();
+    return 0;
+}
+
+
+inline TiXmlElement* CimgImage::getXml()
+{
+    TiXmlElement* root = Image::getXml();
+
+    root->SetAttribute("filename", filename_);
+
+    return root;
+}
+
+
+bool CimgImage::loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages)
+{
+    init();
+
+    Image::loadXml(pElem, path, linkImages);
+
+    filename_ = "";
+    pElem->QueryStringAttribute("filename", &filename_);
+
+    if (filename_ != "") {
+        return load(filename_);
+    }
+
+    return false;
+}

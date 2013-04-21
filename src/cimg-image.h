@@ -3,55 +3,45 @@
 #ifndef _CIMG_IMAGE_H_
 #define _CIMG_IMAGE_H_
 
-#include "vector.h"
 #include "image.h"
 
 #define cimg_display 0
 #define cimg_OS 0
 #include "CImg.h"
 
-class CimgImage: public Image
+
+class CimgImage : public Image, virtual public XmlObjectNamed
 {
-public:
-    std::string filename_;
-    cimg_library::CImg<unsigned char>* image_;
+    public:
+        virtual void init() { Image::init(); image_ = NULL; }
 
-    virtual void init() { xmlName = "cimgimage";}
-
-    CimgImage() {init(); }
-    CimgImage(int width, int height);
-    CimgImage(std::string name, std::string filename);
-	~CimgImage();
-
-    bool save(std::string filename);
-
-    int height();
-    int width();
-	
-	Vector getColor(float u, float v);
-    bool setColor(float u, float v, Vector color);
-
-    virtual bool loadXml(TiXmlElement* pElem) {
-        Image::loadXml(pElem);
+        CimgImage( int width, int height ) 
+            : Image("unnamed"), XmlObjectNamed("image", "unnamed")
+            { init(); create(width, height); }
         
-        filename_ = "";
-        pElem->QueryStringAttribute("filename", &filename_);
+        CimgImage( std::string name ) 
+            : Image(name), XmlObjectNamed("image", name)
+            { init(); }
 
-        if (filename_ != "") {
-            image_ = new cimg_library::CImg<unsigned char>();
-            image_->load(filename_.c_str());
-            return true;
-        }
-        return false;
-    }
+        ~CimgImage() { delete image_; }
 
-    virtual TiXmlElement* getXml() {
-        TiXmlElement* root = Image::getXml();
+        virtual bool create(int width, int height);
+        virtual bool load(std::string filename);
+        virtual bool save(std::string filename);
 
-        root->SetAttribute("filename", filename_);
+        virtual Color getColor(Vector2 point);
+        virtual bool setColor(Vector2 point, Color color);
 
-        return root;
-    }
+        virtual int width();
+        virtual int height();
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages);
+
+    protected:
+        std::string filename_;
+
+        cimg_library::CImg<unsigned char>* image_;
 };
 
 #endif // _CIMG_IMAGE_H_

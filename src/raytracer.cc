@@ -253,15 +253,17 @@ void Raytracer::renderLetterBox (Scene &scene, Image *image,
 
     float total = (y1-y0) * (x1-x0);
     float width = x1-x0;
+
+    Vector2 point;
 	    
-	for (float y = y0; y <= y1; y++) { cY = y;
-		for (float x = x0; x <= x1; x++) { cX = x;
+	for (point.y = y0; point.y <= y1; point.y++) {
+		for (point.x = x0; point.x <= x1; point.x++) {
             Vector color;
             //std::cout << "(" << x << "," << y << ")" << std::endl;
             for (int ssx=0; ssx < subSamplesX_; ssx++) {
-                float sx = x + (float(ssx)/float(subSamplesX_));
+                float sx = point.x + (float(ssx)/float(subSamplesX_));
                 for (int ssy=0; ssy < subSamplesY_; ssy++) {
-                    float sy = y + (float(ssy)/float(subSamplesY_));
+                    float sy = point.y + (float(ssy)/float(subSamplesY_));
                     int reflectionDepth = 0;
                     
                     color += raytrace(
@@ -277,11 +279,11 @@ void Raytracer::renderLetterBox (Scene &scene, Image *image,
 
             color = correctExposure(color);
 
-            image->setColor(x, y, color);
+            image->setColor(point, color);
 		}
         
         if (done != NULL) {
-            *done = ((y-y0) * width)/total;
+            *done = ((point.y-y0) * width)/total;
         }
 	}
     *done = 1;

@@ -35,13 +35,13 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
     *image = NULL;
 
     if (name == "checker2d") {
-        *image = new Checker2d();
+        *image = new Checker2d("");
     } else if (name == "cimgimage") {
-        *image = new CimgImage();
+        *image = new CimgImage("");
     }
 
     if (*image) {
-        (*image)->loadXml(pElem);
+        (*image)->loadXml(pElem, path, &linkImages);
         return true;
     }
 

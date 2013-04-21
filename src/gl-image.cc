@@ -1,39 +1,38 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 
 #include "gl-image.h"
-#include <iostream>
 
-GLImage::GLImage(int width, int height) : Image("") {
+
+bool GLImage::create(int width, int height)
+{
+    if (image_ != NULL) {
+        delete[] image_;
+    }
+
+    init();
+
     width_ = width;
     height_ = height;
+
     image_ = new GLubyte[width_ * height_ * 3];
-}
 
-GLImage::~GLImage() {
-    delete[] image_;
-}
+    return true;
 
-int GLImage::height() {
-    if (image_ != NULL) {
-        return height_;
-    }
-    return 0;
 }
 
 
-int GLImage::width() {
-    if (image_ != NULL) {
-        return width_;
-    }
-    return 0;
+void GLImage::display()
+{
+    glDrawPixels(width_, height_, GL_RGB, GL_UNSIGNED_BYTE, image_ );
 }
 
 
-Vector GLImage::getColor(float u, float v) {
-    Vector result;
+Color GLImage::getColor(Vector2 point)
+{
+    Color result;
 
-    int ui = int(u)-1;
-    int vi = height_ - int(v);
+    int ui = int(point.x)-1;
+    int vi = height_ - int(point.y);
     int i = vi*width_*3 + ui*3;
     
     result.x = float(image_[i])/255.0f;
@@ -44,9 +43,10 @@ Vector GLImage::getColor(float u, float v) {
 }
 
 
-bool GLImage::setColor(float u, float v, Vector color) {
-    int ui = int(u)-1;
-    int vi = height_ - int(v);
+bool GLImage::setColor(Vector2 point, Color color)
+{
+    int ui = int(point.x)-1;
+    int vi = height_ - int(point.y);
     int i = vi*width_*3 + ui*3;
 
     color.capColor();
@@ -59,6 +59,17 @@ bool GLImage::setColor(float u, float v, Vector color) {
 }
 
 
-void GLImage::display() {
-    glDrawPixels(width_, height_, GL_RGB, GL_UNSIGNED_BYTE, image_ );
+int GLImage::width()
+{
+    if (image_ != NULL)
+        return width_;
+    return 0;
+}
+
+
+int GLImage::height()
+{
+    if (image_ != NULL)
+        return height_;
+    return 0;
 }

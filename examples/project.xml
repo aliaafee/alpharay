@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <project>
     <raytracer reflectiondepth="5" subsamplesx="1" subsamplesy="1" exposure="-1" />
-    <preview width="320"  height="240" />
+    <preview width="800"  height="600" />
     <final   width="1280" height="768" />
     <scene>
         <camera0 position="1,15,8" target="-1,0,2" fov="1" tilt="0" />
@@ -126,8 +126,8 @@
                 highlightcolor="1,1,1" 
                 reflectivity="1.0" 
                 dielectric="false" 
-                scatterfactor="0.0" 
-                scattersamples="1" 
+                scatterfactor="0.1" 
+                scattersamples="10" 
                 ka="0.0" 
                 kd="1.0" 
                 ks="1.0" 
