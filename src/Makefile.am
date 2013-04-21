@@ -29,6 +29,8 @@ raytracera_SOURCES = \
                      spot-light.cc \
                      area-light.h \
                      area-light.cc \
+                     sky-light.h \
+                     sky-light.cc \
                      baseobject.h \
                      triangle.h \
                      triangle.cc \
