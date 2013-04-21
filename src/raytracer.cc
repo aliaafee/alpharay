@@ -31,6 +31,9 @@ void Raytracer::setLighting(Scene &scene, Material &material, Vector &point, Vec
     //material.resetLights();
 
     for (int l=0; l < scene.lights.size(); l++) {
+        scene.lights[l]->set(&(scene.objects), material, point, pointNormal, viewDirection);
+
+        /*
         Vector lightIntensity = scene.lights[l]->getIntensity(&(scene.objects), point);
 
         if (lightIntensity.x > 0.01 && lightIntensity.y > 0.01 && lightIntensity.z > 0.01) {
@@ -40,6 +43,7 @@ void Raytracer::setLighting(Scene &scene, Material &material, Vector &point, Vec
                                         point,
                                         pointNormal );
         }
+        */
     }
 }
 

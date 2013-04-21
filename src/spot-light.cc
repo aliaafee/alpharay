@@ -12,6 +12,37 @@ void SpotLight::init() {
 }
 
 
+void SpotLight::set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection)
+{
+    Ray lightRay(point, position_, true);
+
+    Color intensity = intensity_;
+    
+    intensity = getIntensityByAngle(intensity, lightRay.direction_*-1, target_ - position_);
+
+    if (intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1) {
+        return;
+    }
+
+    float distance = point.distanceTo(position_);
+
+    BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
+
+    if (intObject != NULL) {
+        return;
+    }
+
+    intensity = getIntensityByDistance(intensity , distance) ;
+
+    material.addLight(intensity,
+                        position_,
+                        viewDirection,
+                        point,
+                        pointNormal );
+}
+
+
+
 Color SpotLight::getIntensityByAngle(Color intensity, Vector PO, Vector TO)
 {
     PO.normalize();
@@ -28,35 +59,6 @@ Color SpotLight::getIntensityByAngle(Color intensity, Vector PO, Vector TO)
     }
 
     return intensity;
-}
-
-Color SpotLight::getIntensity(std::vector<Object*>* objects, Vector &point)
-{
-    Ray lightRay(point, position_, true);
-
-    Color intensity = intensity_;
-    
-    intensity = getIntensityByAngle(intensity, lightRay.direction_*-1, target_ - position_);
-
-    if (intensity.isNull()) {
-        return intensity;
-    }
-
-    float distance = point.distanceTo(position_);
-
-    intensity = getIntensityByDistance(intensity , distance) ;
-
-    if (intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1) {
-        return intensity;
-    }
-
-    BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
-
-    if (intObject != NULL) {
-        return Vector(0, 0, 0);
-    }
-
-    return intensity;    
 }
 
 

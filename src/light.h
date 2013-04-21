@@ -10,6 +10,7 @@
 #include "xmlobject.h"
 #include "baseobject.h"
 #include "object.h"
+#include "material.h"
 
 
 class Light : virtual public XmlObjectNamed
@@ -23,12 +24,13 @@ class Light : virtual public XmlObjectNamed
 
         ~Light() { } ;
 
-        virtual Color getIntensity(std::vector<Object*>* objects, Vector &point);
+        //Adds this light to the material
+        virtual void set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
-    //protected:
+    protected:
     	Vector position_;
     	Color intensity_;
 

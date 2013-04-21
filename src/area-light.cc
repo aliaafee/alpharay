@@ -11,7 +11,7 @@ void AreaLight::init() {
 }
 
 
-Color AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point)
+void AreaLight::set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection)
 {
     Ray lightRay(point, position_, true);
 
@@ -19,32 +19,28 @@ Color AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point)
     
     intensity = getIntensityByAngle(intensity, lightRay.direction_*-1, target_ - position_);
 
-    if (intensity.isNull()) {
-        return intensity;
+    if ((intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1)) {
+        return;
     }
 
     float distance = point.distanceTo(position_);
-
     intensity = getIntensityByDistance(intensity , distance) ;
 
-    if (intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1) {
-        return intensity;
-    }
-
-    Color intensityTotal;
-
     Vector ldir = lightRay.direction_ * -1;
-    Vector dist;// = target_ - position;
+    Vector dist;
     V_SUB(dist, target_, position_);
 
-    Vector u;// = (lightRay.direction_*-1) % (target_ - position_);
+    Vector u;
     V_CROSS(u, ldir, dist);
 
-    Vector v;// = u % (target_ - position_);
+    Vector v;
     V_CROSS(v, u, dist);
 
     u.normalize();
     v.normalize();
+
+    Vector quantaIntensity = intensity / float(samples_);
+    intensity.setNull();
 
     for (int i=0; i < samples_; i++) {
         
@@ -54,25 +50,19 @@ Color AreaLight::getIntensity(std::vector<Object*>* objects, Vector &point)
                     + v * randf(lightRadius_*-1, lightRadius_)
                         , 
                         true);
-        /*
-        Ray lightRay(point, 
-                position_ + 
-                Vector( intensity.randf(lightRadius_*-1, lightRadius_),
-                        intensity.randf(lightRadius_*-1, lightRadius_),
-                        intensity.randf(lightRadius_*-1, lightRadius_)
-                        ), 
-                        true);*/
 
         BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
 
         if (intObject == NULL) {
-            intensityTotal += intensity;
+            intensity += quantaIntensity;
         }
     }
-    
-    intensity = intensityTotal / samples_;
 
-    return intensity;    
+    material.addLight(intensity,
+                        position_,
+                        viewDirection,
+                        point,
+                        pointNormal );
 }
 
 

@@ -12,24 +12,24 @@ void Light::init() {
 }
 
 
-Color Light::getIntensity(std::vector<Object*>* objects, Vector &point)
+void Light::set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection)
 {
     Ray lightRay(point, position_, true);
     float distance = point.distanceTo(position_);
 
-    Vector intensity = getIntensityByDistance(intensity_ , distance) ;
-
-    if (intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1) {
-        return intensity;
-    }
-
     BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
 
     if (intObject != NULL) {
-        return Color(0, 0, 0);
+        return;
     }
 
-    return intensity;
+    Color intensity = getIntensityByDistance(intensity_ , distance) ;
+
+    material.addLight(intensity,
+                        position_,
+                        viewDirection,
+                        point,
+                        pointNormal );
 }
 
 
