@@ -172,9 +172,11 @@ int main(int argc, char** argv)
 
     cout << "Opening file: " << filename << endl;
 
-    project.load(filename);
+    if (!project.load(filename)) {
+        cout << "   Failed to load file" << endl;
+        return 0;
+    }
 
-    //return 0;
     //test(project.scene.getObject("cube")); return 0;
 
     if (outfile != "") {

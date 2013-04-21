@@ -7,7 +7,6 @@ bool Project::load(string filename)
     bool result = doc.LoadFile();
     
     if (!result) {
-        cout << "Failed to load file: " << filename << endl;
         return false;
     }
     
@@ -20,9 +19,13 @@ bool Project::load(string filename)
     //Root
     pElem = hDoc.FirstChildElement().Element();
     if (!pElem) {
-        cout << "Failed" << endl;
         return false;
     }
+
+    if (std::string(pElem->Value()) != "project") {
+        return false;
+    }
+
     cout << "Loading Project..." << endl;
     hRoot = TiXmlHandle(pElem);
     

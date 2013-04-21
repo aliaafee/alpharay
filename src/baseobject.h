@@ -26,7 +26,8 @@ class BaseObject
 
         virtual Vector normal(Vector point)  { return Vector(0,0,0); } //Return normal in world space at point (local space)
         virtual Color color(Vector point, Material* material) { return Color(0,0,0); }  //Return color at point  (local space)
-        virtual Material material() { return Material(*material_); } //Return a copy of the material
+        virtual Material material() //Return a copy of the material
+            { if (material_ != NULL) { return Material(*material_); } else { return Material("default"); } } 
 
         virtual BaseObject* intersection(Ray &ray, float *t, float limit) {return false; };
 

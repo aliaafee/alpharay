@@ -188,7 +188,8 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
     //camera
     std::cout << "  Setting up camera" << std::endl;
     pElem = hRoot.FirstChild( "camera" ).Element();
-    camera_.loadXml(pElem, path);
+    if (pElem)
+        camera_.loadXml(pElem, path);
 
     //lights
     pElem = hRoot.FirstChild( "lights" ).FirstChild().Element();

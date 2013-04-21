@@ -1,0 +1,242 @@
+<?xml version="1.0" ?>
+<project>
+    <raytracer reflectiondepth="10" subsamplesx="1" subsamplesy="1" exposure="-0.5" />
+    <preview width="320"  height="240" />
+    <final   width="1280" height="800" />
+    <scene>
+        <camera position="8,2,2" target="0,0.3,1" fov="0.785398" tilt="0" />
+        
+        <lights>
+            <arealight
+                name="l2" 
+                position="-3,-5,8" 
+                intensity="100,50,50" 
+                target="0,0,0" 
+                angle="0.62832" 
+                anglefalloff="0.62832" 
+                lightradius="1" 
+                samples="10" />  
+            
+            <arealight
+                name="l1" 
+                position="3,5,5" 
+                intensity="100,100,100" 
+                target="0,0,0" 
+                angle="0.44880" 
+                anglefalloff="0.44880" 
+                lightradius="0.6" 
+                samples="10" />
+
+            <arealight
+                name="l3" 
+                position="6,-4,0.7" 
+                intensity="20,20,80" 
+                target="0,2.5,0" 
+                angle="0.44880" 
+                anglefalloff="0.44880" 
+                lightradius="0.6" 
+                samples="10" />
+
+                       
+        </lights>
+
+        <images>
+            <cimgimage 
+                name="earthimg" 
+                filename="/Users/ali/Pictures/Work/earth.jpg" />
+            <cimgimage 
+                name="marsimg" 
+                filename="/Users/ali/Pictures/Work/mars.jpg" />
+            <cimgimage 
+                name="venusimg" 
+                filename="/Users/ali/Pictures/Work/venus.jpg" />
+            <cimgimage 
+                name="mercuryimg" 
+                filename="/Users/ali/Pictures/Work/mercury.jpg" />
+        </images>
+
+        <maps>
+            <map2dspherical 
+                name="earthmap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="earthimg" />
+
+            <map2dspherical
+                name="marsmap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="marsimg" />
+
+            <map2dspherical
+                name="venusmap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="venusimg" />
+
+            <map2dspherical
+                name="mercurymap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="mercuryimg" />
+
+
+        </maps>
+
+        <materials>
+            <material 
+                name="floormat" 
+                diffusecolor="0.0,0.0,0.7" 
+                highlightcolor="1,1,1" 
+                reflectivity="0.5" 
+                dielectric="false" 
+                opticdensity="2.0"
+                scatterfactor="0.03" 
+                scattersamples="3" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.3" 
+                alpha="15" 
+                diffusemap="" 
+                normalmap="" />
+
+            <material 
+                name="earthmat" 
+                diffusecolor="1,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="0.0" 
+                dielectric="false" 
+                opticdensity="2.0"
+                scatterfactor="0.0" 
+                scattersamples="1" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.0" 
+                alpha="1" 
+                diffusemap="earthmap" 
+                normalmap="" />
+
+            <material 
+                name="marsmat" 
+                diffusecolor="1,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="0.0" 
+                dielectric="false" 
+                opticdensity="2.0"
+                scatterfactor="0.0" 
+                scattersamples="1" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.0" 
+                alpha="1" 
+                diffusemap="marsmap" 
+                normalmap="" />
+
+            <material 
+                name="venusmat" 
+                diffusecolor="1,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="0.0" 
+                dielectric="false" 
+                opticdensity="2.0"
+                scatterfactor="0.0" 
+                scattersamples="1" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.0" 
+                alpha="1" 
+                diffusemap="venusmap" 
+                normalmap="" />
+
+            <material 
+                name="mercurymat" 
+                diffusecolor="1,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="0.0" 
+                dielectric="false" 
+                opticdensity="2.0"
+                scatterfactor="0.0" 
+                scattersamples="1" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.0" 
+                alpha="1" 
+                diffusemap="mercurymap" 
+                normalmap="" />
+
+            <material 
+                name="glass" 
+                diffusecolor="1,1,0" 
+                highlightcolor="1,1,1" 
+                reflectivity="1.0" 
+                dielectric="true" 
+                opticdensity="1.66"
+                scatterfactor="0.01" 
+                scattersamples="3" 
+                ka="0.0" 
+                kd="0.8" 
+                ks="0.8" 
+                alpha="30" 
+                diffusemap="" 
+                normalmap="" />
+
+
+        </materials>
+
+        <objects>
+            
+            <plane 
+                name="floor" 
+                position="0,0,0" 
+                rotation="0,0,-1.5708" 
+                scale="1,1,1" 
+                material="floormat" />
+
+            <sphere 
+                name="earth" 
+                position="0,0.8,1" 
+                rotation="0,0,-1.5708" 
+                scale="1,1,1" 
+                material="earthmat" /> 
+
+            <sphere 
+                name="mars" 
+                position="1,2.5,0.53246" 
+                rotation="0,0,-1.5708" 
+                scale="0.53246,0.53246,0.53246" 
+                material="marsmat" /> 
+
+            <sphere
+                name="venus" 
+                position="0.5,-1.6,0.94873" 
+                rotation="0,0,-1.5708" 
+                scale="0.94873,0.94873,0.94873" 
+                material="venusmat" /> 
+
+            <sphere
+                name="mercury" 
+                position="2,0.3,0.38241" 
+                rotation="0,0,-1.5708" 
+                scale="0.38241,0.38241,0.38241" 
+                material="mercurymat" /> 
+
+            <sphere
+                name="crystalball" 
+                position="2,1.5,0.4" 
+                rotation="0,0,-1.5708" 
+                scale="0.4,0.4,0.4" 
+                material="glass" /> 
+
+
+        </objects>
+
+    </scene>
+</project>

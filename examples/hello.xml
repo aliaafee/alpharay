@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<project>
+    <!-- This is a minimal scene -->
+    <scene>
+        <camera position="-4,4,4" target="0,0,0"/>
+        
+        <lights>
+            <pointlight name="light" 
+                position="2,2,2" 
+                intensity="5,5,5"  />  
+        </lights>
+
+        <materials>
+            <material name="material1" 
+                diffusecolor="1,0,0" />
+        </materials>
+
+        <objects>
+            <sphere name="object1" 
+                position="0,0,0" 
+                material="material1" /> 
+
+            <plane name="object2" 
+                position="0,0,-1"  /> 
+
+        </objects>
+
+    </scene>
+</project>
