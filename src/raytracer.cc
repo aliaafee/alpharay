@@ -28,22 +28,8 @@ BaseObject* Raytracer::getClosestIntersection(Scene &scene, Ray &ray, float *clo
 
 void Raytracer::setLighting(Scene &scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection) 
 {
-    //material.resetLights();
-
     for (int l=0; l < scene.lights.size(); l++) {
         scene.lights[l]->set(&(scene.objects), material, point, pointNormal, viewDirection);
-
-        /*
-        Vector lightIntensity = scene.lights[l]->getIntensity(&(scene.objects), point);
-
-        if (lightIntensity.x > 0.01 && lightIntensity.y > 0.01 && lightIntensity.z > 0.01) {
-            material.addLight(lightIntensity,
-                                        scene.lights[l]->position_,
-                                        viewDirection,
-                                        point,
-                                        pointNormal );
-        }
-        */
     }
 }
 
@@ -212,7 +198,8 @@ Vector Raytracer::raytrace(Scene &scene ,Ray ray, int *reflectionDepth) {
         Material material = closestObject->material();
 
         Vector intPoint = closestObject->point(ray, t);
-        Vector intPointLocal = closestObject->pointLocal(ray, t);
+
+        Vector intPointLocal = closestObject->transformPointInv(intPoint);
 
         Vector intNormal = closestObject->normal(intPointLocal);
 
