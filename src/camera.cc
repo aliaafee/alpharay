@@ -13,7 +13,7 @@ void Camera::init()
 }
 
 
-void Camera::setScreenDimensions(double screenWidth, double screenHeight) 
+void Camera::setScreen(float screenWidth, float screenHeight) 
 {
 	//See the attached document for details
 	realScreenHeight_ = screenHeight;
@@ -47,13 +47,24 @@ void Camera::setScreenDimensions(double screenWidth, double screenHeight)
 }
 
 
-Vector Camera::getScreenPosition(double x, double y) 
+Ray Camera::ray(float x, float y) 
 {
-	return 	screen_1 + (
+    Ray ray;
+    
+    //Plane Camera
+	Vector target = 	screen_1 + (
 			(screen_w * (x/realScreenWidth_)) //Left Position
 			+ 
 			(screen_h * (y/realScreenHeight_)) //TopPosition
 		);
+
+    ray.direction_ = target - position_;
+
+    ray.position_ = position_;
+    ray.direction_.normalize();
+    
+
+    return ray;
 }
 
 
@@ -107,3 +118,43 @@ TiXmlElement* Camera::getXml()
 
     return root;
 }
+
+
+void CameraPano::setScreen(float screenWidth, float screenHeight) 
+{
+	//See the attached document for details
+	realScreenHeight_ = screenHeight;
+	realScreenWidth_ = screenWidth;
+}
+
+
+Ray CameraPano::ray(float x, float y) 
+{
+    Ray ray;
+    
+    //Panoramic camera
+    float r = 1;
+    float p = x/realScreenWidth_  * 2 * M_PI;
+    float t = y/realScreenHeight_ * M_PI;
+
+    ray.direction_ =  Vector( r * sin(t) * cos(p),
+                               r * sin(t) * sin(p),
+                               r * cos(t) );
+
+    ray.position_ = position_;
+    ray.direction_.normalize();
+
+    return ray;
+}
+
+
+TiXmlElement* CameraPano::getXml() 
+{
+    TiXmlElement* root = Camera::getXml();
+
+    root->SetAttribute("type", "pano");
+
+    return root;
+}
+
+

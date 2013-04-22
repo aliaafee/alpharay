@@ -33,18 +33,17 @@
 
 class Scene : public XmlObject 
 {
+    friend class Raytracer;
 public:
-    Camera camera_;
-
-    std::vector<Light*> lights;
-    std::vector<Image*> images;
-    std::vector<Map*> maps;
-    std::vector<Material*> materials;
-    std::vector<Object*> objects;
-
+    
 	Scene () : XmlObject("scene") {};
 	
-    void transformVertices();
+    void transform();
+
+    void setScreen(float width, float height);
+    Ray ray(float x, float y);
+
+    Camera* camera() { return camera_; }
 
     Light* add(Light *light) 
 		{lights.push_back(light); return light;}
@@ -73,6 +72,15 @@ public:
 
     virtual TiXmlElement* getXml();
     virtual bool loadXml(TiXmlElement* pElem, std::string path);
+
+protected:
+    Camera* camera_;
+
+    std::vector<Light*> lights;
+    std::vector<Image*> images;
+    std::vector<Map*> maps;
+    std::vector<Material*> materials;
+    std::vector<Object*> objects;
 
 private:
     LinkList <Image> linkImages;

@@ -4,6 +4,7 @@
 #define _CAMERA_H_
 
 #include "vector.h"
+#include "ray.h"
 #include "xmlobject.h"
 
 
@@ -22,8 +23,9 @@ class Camera : virtual public XmlObjectNamed
 
         ~Camera() {};
 
-        virtual void setScreenDimensions(double screenWidth, double screenHeight);
-        virtual Vector getScreenPosition(double x, double y);
+        virtual void setScreen(float screenWidth, float screenHeight);
+        virtual Ray ray(float x, float y);
+
         virtual void orbitX(float angle);
         virtual void orbitY(float angle);
         virtual void orbitZ(float angle);
@@ -31,44 +33,37 @@ class Camera : virtual public XmlObjectNamed
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
-    //protected:
+    protected:
         Vector position_;
         Vector target_;
         float tilt_;
         float fOV_;
 
-    private:
+    protected:
         float realScreenWidth_,realScreenHeight_;
 	    Vector screen_0,screen_1,screen_2,screen_w,screen_h;
 };
 
-/*
-#include <tinyxml.h>
 
-#include "vector.h"
-
-class Camera
+class CameraPano : public Camera, virtual public XmlObjectNamed
 {
-public:
-    std::string xmlName;
-	Vector position_;
-	Vector target_;
-	float tilt_;
-	float fOV_;
-	
-	Camera () {fOV_ = M_PI/4; tilt_ = 0; xmlName = "camera";}
-	Camera (Vector position, Vector target, double fOV, double tilt);
-	void setScreenDimensions(double screenWidth, double screenHeight);
-	Vector getScreenPosition(double x, double y);
-	void orbitX(float angle);
-	void orbitY(float angle);
-	void orbitZ(float angle);
+    public:
+        void init() { Camera::init(); }
 
-    TiXmlElement* getXml();
-    bool loadXml(TiXmlHandle &hTopRoot);
-private:
-	double realScreenWidth_,realScreenHeight_;
-	Vector screen_0,screen_1,screen_2,screen_w,screen_h;
+        CameraPano() 
+            : XmlObjectNamed ("camera", "unnamed") 
+            { init(); }
+
+        CameraPano(std::string name) 
+            : XmlObjectNamed ("camera", name) 
+            { init(); }
+
+        ~CameraPano() {};
+
+        virtual void setScreen(float screenWidth, float screenHeight);
+        virtual Ray ray(float x, float y);
+
+        virtual TiXmlElement* getXml();
 };
-*/
+
 #endif // _CAMERA_H_

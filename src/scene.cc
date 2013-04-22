@@ -2,11 +2,28 @@
 
 #include "scene.h"
 
-void Scene::transformVertices() {
+void Scene::transform() {
+    for (int i = 0; i < maps.size(); i++) {
+		(maps[i])->transform();
+	}
+    for (int i = 0; i < materials.size(); i++) {
+		(materials[i])->transform();
+	}
     for (int i = 0; i < objects.size(); i++) {
 		(objects[i])->transform();
 	}
 }
+
+void Scene::setScreen(float width, float height)
+{
+    camera_->setScreen(width, height);
+}
+
+Ray Scene::ray(float x, float y)
+{
+    return camera_->ray(x, y);
+}
+
 
 bool Scene::fromXml(TiXmlElement* pElem, Light** light, std::string path){
     //std::cout << "light " << pElem->Value() << std::endl;
@@ -132,7 +149,7 @@ TiXmlElement* Scene::getXml() {
     TiXmlElement* root = XmlObject::getXml();
 
     //camera
-    root->LinkEndChild(camera_.getXml());
+    root->LinkEndChild(camera_->getXml());
 
     //lights
     TiXmlElement* lights_e = new TiXmlElement("lights");
@@ -188,8 +205,18 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
     //camera
     std::cout << "  Setting up camera" << std::endl;
     pElem = hRoot.FirstChild( "camera" ).Element();
-    if (pElem)
-        camera_.loadXml(pElem, path);
+    if (pElem) {
+        std::string type = "";
+        pElem->QueryStringAttribute("type", &type);
+        if (type == "pano") {
+            camera_ = new CameraPano();   
+        } else {
+            camera_ = new Camera();
+        }
+        camera_->loadXml(pElem, path);
+    } else {
+        camera_ = new Camera();
+    }
 
     //lights
     pElem = hRoot.FirstChild( "lights" ).FirstChild().Element();

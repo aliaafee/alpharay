@@ -268,9 +268,7 @@ void Raytracer::renderLetterBox (Scene &scene, Image *image,
                     
                     color += raytrace(
                                     scene,
-                                    Ray(
-                                        scene.camera_.position_,
-                                        scene.camera_.getScreenPosition(sx,sy)),
+                                    scene.ray(sx,sy),
                                     &reflectionDepth);
                 }
             }
@@ -301,8 +299,8 @@ void Raytracer::renderLetterBoxThread (Scene &scene,
 void Raytracer::render (Scene& scene, Image& image)
 {
     rayCount_ = 0;
-    scene.transformVertices();
-    scene.camera_.setScreenDimensions(image.width(), image.height());
+    scene.transform();
+    scene.setScreen(image.width(), image.height());
 
     renderLetterBox(scene, &image, 1, 1, image.width(), image.height());
 }
@@ -345,8 +343,8 @@ void Raytracer::renderThreaded (Scene& scene, Image& image)
 {
     rayCount_ = 0;
 
-    scene.transformVertices();
-    scene.camera_.setScreenDimensions(image.width(), image.height());
+    scene.transform();
+    scene.setScreen(image.width(), image.height());
 
     int height = 4;
     int width = 4;

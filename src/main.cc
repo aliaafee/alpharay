@@ -52,7 +52,7 @@ void idle(void)
 
 void animate(int etc) {
     glutPostRedisplay();
-    project.scene.camera_.orbitZ(-1 * M_PI/180);
+    project.scene.camera()->orbitZ(-1 * M_PI/180);
     if (actor != NULL) {
         actor->rotation_.x += 0.05;
         actor->rotation_.z += 0.05;
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
     initGlut(argc, argv);
 
     //actor = project.scene.getObject("cube");
-    //animate(0);
+    animate(0);
     
     glutMainLoop();
 

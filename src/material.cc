@@ -28,13 +28,7 @@ void Material::init() {
 
 void Material::transform() 
 {
-    if (diffuseMap_ != NULL) {
-        diffuseMap_->transform();
-    }
-    if (normalMap_ != NULL) {
-        normalMap_->transform();
-    }
-
+    ;
 }
 
 

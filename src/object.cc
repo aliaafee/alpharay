@@ -14,10 +14,6 @@ void Object::init()
 }
 
 void Object::transform() {
-    if (material_ != NULL) {
-        material_->transform();
-    }
-
 	Matrix4 scale(
 		scale_.x , 0, 0, 0,
 	    0, scale_.y, 0, 0,
