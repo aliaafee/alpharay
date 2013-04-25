@@ -14,6 +14,7 @@ public:
 	Ray(Vector origin, Vector target);
 	Ray getReflectedRay(Vector origin, Vector normal);
 	Ray getRefractedRay(Vector origin, Vector normal, float index);
+    Ray getRamdomRayInHemisphere(Vector origin, Vector normal, float scatter);
 
     void calculateInverse();
 

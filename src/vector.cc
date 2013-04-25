@@ -143,6 +143,13 @@ Vector& Vector::operator/=(const float f) {
     return *this;
 }
 
+Vector& Vector::operator*=(const float f) {
+    x *= f;
+    y *= f;
+    z *= f;
+    return *this;
+}
+
 bool Vector::operator<(Vector& rhs) {
     if (magnitude2() < rhs.magnitude2()) {
         return true;

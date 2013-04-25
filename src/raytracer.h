@@ -3,6 +3,42 @@
 #ifndef _RAYTRACER_H_
 #define _RAYTRACER_H_
 
+#include "renderer.h"
+
+
+class Raytracer : public Renderer 
+{
+    public:
+        virtual void init();
+        
+        Raytracer () 
+            : Renderer() 
+            { init(); }
+
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+
+    protected:
+        virtual Color trace(Scene &scene ,Ray ray, int depth);
+
+    private:
+        void setLighting(Scene &scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
+        void traceFresnel(Scene &scene, Ray ray, 
+                            Vector intersectionPoint, Vector intersectionNormal,
+                            Material &material,
+                            int depth);
+        void traceReflection(Scene &scene, Ray ray, 
+                            Vector intersectionPoint, Vector intersectionNormal,
+                            Material &material,
+                            int depth);
+        Vector raytraceDistributed(Scene &scene, Ray ray, int depth, 
+                                        float scatterFactor, int scatterSamples);
+
+
+};
+
+/*
+
 #include "image.h"
 #include "vector.h"
 #include "scene.h"
@@ -42,6 +78,8 @@ public:
 
         exposure_ = -1.0f;
 
+        pathTraceDepth_ = 10;
+
         statusOn = false;
     }
 
@@ -53,7 +91,7 @@ public:
 
 	void render (Scene&, Image&);
 
-    void renderThreaded (Scene&, Image&);
+    void renderThreaded (Scene&, Image&, bool join);
 
     TiXmlElement* getXml();
     bool loadXml(TiXmlHandle &hRoot);
@@ -65,6 +103,8 @@ private:
 	BaseObject* getClosestIntersection(Scene &scene, Ray &ray, float *t);
 
     void setLighting(Scene &scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
+
+    Color pathTrace(Scene &scene ,Ray ray, int depth);
 	
     Vector raytrace(Scene &scene ,Ray ray, int *reflectionDepth);
 
@@ -81,12 +121,12 @@ private:
 
     //Vector getReflection(Vector Vincident, Vector normal, float cosT1);
 
-    Vector traceFresnel(Scene &scene, Ray ray, 
+    void traceFresnel(Scene &scene, Ray ray, 
                         Vector intersectionPoint, Vector intersectionNormal,
                         Material &material,
                         int *reflectionDepth);
 
-    Vector traceReflection(Scene &scene, Ray ray, 
+    void traceReflection(Scene &scene, Ray ray, 
                         Vector intersectionPoint, Vector intersectionNormal,
                         Material &material,
                         int *reflectionDepth);
@@ -97,7 +137,11 @@ private:
 	unsigned int cX,cY;
 
     float completedThreads_[16];
-    int rayCount_;
+    float rayCount_;
+
+
+    int pathTraceDepth_;
 };
+*/
 
 #endif // _RAYTRACER_H_

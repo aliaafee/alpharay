@@ -56,6 +56,26 @@ Ray Ray::getRefractedRay(Vector origin, Vector normal, float newOpticDensity_) {
 }
 
 
+Ray Ray::getRamdomRayInHemisphere(Vector origin, Vector normal, float scatter) {
+    Ray newRay;
+
+    double r1=2*M_PI*float((float)rand()/RAND_MAX);
+    double r2=float((float)rand()/RAND_MAX) * scatter;
+    double r2s=sqrt(r2);
+
+    Vector w= normal;
+    Vector u= ((fabs(w.x)>.1?Vector(0,1,0):Vector(1,0,0))%w);
+    u.normalize();
+    Vector v= w % u;
+
+    newRay.direction_ = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2));
+    newRay.direction_.normalize();
+    newRay.position_ = origin;
+
+    return newRay;
+}
+
+
 void Ray::calculateInverse()
 {
     inv_direction = Vector(1/direction_.x, 1/direction_.y, 1/direction_.z);

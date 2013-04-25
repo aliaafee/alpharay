@@ -3,6 +3,8 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
+#include <limits>
+
 #define     BIG_NUM 1000000000.0f
 #define   SMALL_NUM 0.0000001f
 #define EPSILON 0.000001f
@@ -96,6 +98,15 @@ inline float stof(std::string value) {
     return result;
 }
 
+inline unsigned long stol(std::string value) {
+    std::stringstream ss (std::stringstream::in | std::stringstream::out);
+    if (value == "" ) { value = "0"; }
+    unsigned long result;
+    ss << value;
+    ss >> result;
+    return result;
+}
+
 inline float randf(float a, float b) {
     return ((b-a)*((float)rand()/RAND_MAX))+a;
 }
@@ -149,6 +160,8 @@ public:
     Vector& operator+=(const Vector& rhs);
     Vector& operator-=(const Vector& rhs);
     Vector& operator/=(const float f);
+    Vector& operator*=(const float f);
+
 
     bool operator<(Vector& rhs);
 	
@@ -247,5 +260,38 @@ class Color : public Vector
         float g() { return y; }
         float b() { return z; }
 };
+
+inline Vector randomPointInHemisphere(Vector normal) {
+    short unsigned int* Xi;
+    double r1=2*M_PI*float((float)rand()/RAND_MAX);
+    double r2=float((float)rand()/RAND_MAX);
+    double r2s=sqrt(r2);
+
+    Vector w= normal;
+    Vector u= ((fabs(w.x)>.1?Vector(0,1,0):Vector(1,0,0))%w);
+    u.normalize();
+    Vector v= w % u;
+
+    Vector d = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2));
+
+    d.normalize();
+
+    return d;
+    /*
+    float theta = acos(normal.z);
+    float phi = atan2(normal.y, normal.x);
+
+    float t = theta + randf(-1.0*M_PI/2.0, M_PI/2.0);
+    float p = phi + randf(-1.0*M_PI, M_PI);
+
+    Vector result;
+
+    result.x = sin(t) * cos(p);
+    result.y = sin(t) * sin(p);
+    result.z = cos(t);
+
+    return result;
+    */
+}
 
 #endif // _VECTOR_H_

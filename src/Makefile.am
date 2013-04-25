@@ -44,8 +44,12 @@ raytracera_SOURCES = \
                      plane.cc \
                      mesh.h \
                      mesh.cc \
+                     renderer.h \
+                     renderer.cc \
                      raytracer.h \
                      raytracer.cc \
+                     pathtracer.h \
+                     pathtracer.cc \
                      project.h \
                      project.cc \
                      bbox.h \

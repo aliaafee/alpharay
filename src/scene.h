@@ -33,10 +33,14 @@
 
 class Scene : public XmlObject 
 {
+    friend class Renderer;
     friend class Raytracer;
 public:
+    virtual void init();
     
-	Scene () : XmlObject("scene") {};
+	Scene () 
+        : XmlObject("scene") 
+        { init(); }
 	
     void transform();
 
@@ -89,7 +93,7 @@ private:
     LinkList <Object> linkObjects;
 
     template <typename T> T* getByName(std::string name, std::vector<T*> &list) {
-        for (int i = 0; i < list.size(); i++) {
+        for (unsigned long i = 0; i < list.size(); i++) {
             if (list[i]->name() == name) {
                 return list[i];
             }
@@ -98,7 +102,7 @@ private:
     }
     
     template <typename T> void linkList ( LinkList <T> list, std::vector<T*> &things) {
-        for (int i = 0; i < list.size(); i++) {
+        for (unsigned long i = 0; i < list.size(); i++) {
             std::string source;
             T** target;
             list.get(i , &source, &target);

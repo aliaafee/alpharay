@@ -29,9 +29,20 @@ bool Project::load(string filename)
     cout << "Loading Project..." << endl;
     hRoot = TiXmlHandle(pElem);
     
-    //Raytracer
-    raytracer.loadXml(hRoot);
-    raytracer.statusOn = true;
+    //Renderer
+    pElem = hRoot.FirstChild("renderer").Element();
+    if (pElem) {
+        std::string type = "";
+        pElem->QueryStringAttribute("type", &type);
+        if (type == "pathtracer") {
+            renderer = new Pathtracer();
+        } else {
+            renderer = new Raytracer();
+        }
+        renderer->loadXml(pElem, "");
+    } else {
+        renderer = new Raytracer();
+    }
 
     //Preview and final
     int width, height;
@@ -76,7 +87,7 @@ bool Project::save(string filename)
     doc.LinkEndChild(root);
 
     // Raytracer settings
-    root->LinkEndChild(raytracer.getXml());
+    root->LinkEndChild(renderer->getXml());
 
     // scene
     root->LinkEndChild(scene.getXml());

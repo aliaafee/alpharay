@@ -2,14 +2,27 @@
 
 #include "scene.h"
 
+void Scene::init() {
+    XmlObject::init();
+    /*
+    std::cout << "List Size Max " << lights.max_size() << std::endl;
+    std::cout << "int max, min " << std::numeric_limits<int>::min() << "," << std::numeric_limits<int>::max() << std::endl;
+    std::cout << "unsigned int max, min " << std::numeric_limits<unsigned int>::min() << "," << std::numeric_limits<unsigned int>::max() << std::endl;
+    std::cout << "long max, min " << std::numeric_limits<long>::min() << "," << std::numeric_limits<long>::max() << std::endl;
+    std::cout << "unsigned long max, min " << std::numeric_limits<unsigned long>::min() << "," << std::numeric_limits<unsigned long>::max() << std::endl;
+
+    std::cout << std::numeric_limits<unsigned long>::max() - lights.max_size() << std::endl;
+    */
+}
+
 void Scene::transform() {
-    for (int i = 0; i < maps.size(); i++) {
+    for (unsigned long i = 0; i < maps.size(); i++) {
 		(maps[i])->transform();
 	}
-    for (int i = 0; i < materials.size(); i++) {
+    for (unsigned long i = 0; i < materials.size(); i++) {
 		(materials[i])->transform();
 	}
-    for (int i = 0; i < objects.size(); i++) {
+    for (unsigned long i = 0; i < objects.size(); i++) {
 		(objects[i])->transform();
 	}
 }
@@ -155,7 +168,7 @@ TiXmlElement* Scene::getXml() {
     TiXmlElement* lights_e = new TiXmlElement("lights");
     root->LinkEndChild(lights_e);
 
-    for (int i = 0; i < lights.size(); i++) {
+    for (unsigned long i = 0; i < lights.size(); i++) {
         lights_e->LinkEndChild( lights[i]->getXml() );
     }
 
@@ -163,7 +176,7 @@ TiXmlElement* Scene::getXml() {
     TiXmlElement* images_e = new TiXmlElement("images");
     root->LinkEndChild(images_e);
 
-    for (int i = 0; i < images.size(); i++) {
+    for (unsigned long i = 0; i < images.size(); i++) {
         images_e->LinkEndChild( images[i]->getXml() );
     }
 
@@ -171,7 +184,7 @@ TiXmlElement* Scene::getXml() {
     TiXmlElement* maps_e = new TiXmlElement("maps");
     root->LinkEndChild(maps_e);
 
-    for (int i = 0; i < maps.size(); i++) {
+    for (unsigned long i = 0; i < maps.size(); i++) {
         maps_e->LinkEndChild( maps[i]->getXml() );
     }
 
@@ -179,7 +192,7 @@ TiXmlElement* Scene::getXml() {
     TiXmlElement* materials_e = new TiXmlElement("materials");
     root->LinkEndChild(materials_e);
 
-    for (int i = 0; i < materials.size(); i++) {
+    for (unsigned long i = 0; i < materials.size(); i++) {
         materials_e->LinkEndChild( materials[i]->getXml() );
     }
 
@@ -187,7 +200,7 @@ TiXmlElement* Scene::getXml() {
     TiXmlElement* objects_e = new TiXmlElement("objects");
     root->LinkEndChild(objects_e);
 
-    for (int i = 0; i < objects.size(); i++) {
+    for (unsigned long i = 0; i < objects.size(); i++) {
         objects_e->LinkEndChild( objects[i]->getXml() );
     }
 

@@ -9,7 +9,10 @@ void Material::init() {
     //Generates a default material
 	diffuseColor_ = Color(1,1,1);
 	highlightColor_ = Color(1,1,1);
-	reflectivity_ = 0;
+
+    reflectionType_ = DIFF;
+
+	reflectivity_ = 1.0;
     opticDensity_ = 1.66f;
     dielectric_ = false;
     scatterFactor_ = 0;
@@ -20,6 +23,9 @@ void Material::init() {
 	alpha_ = 15; 
 
     flatShading_ = false;
+
+    emission_ = Color(0, 0, 0);
+    reflectance_ = Color(0.5, 0.5, 0.5);
 
 	diffuseMap_ = NULL;
     normalMap_ = NULL;
@@ -35,6 +41,18 @@ void Material::transform()
 void Material::addReflection(Vector &reflection)
 {
     reflection_ += reflection;
+}
+
+
+void Material::addTransmission(Vector &transmission)
+{
+    transmission_ += transmission;
+}
+
+void Material::setFresnelCoeff(float rcoeff, float tcoeff)
+{
+    reflectionCoeff_ = rcoeff;
+    transmissionCoeff_ = tcoeff;
 }
 
 
@@ -68,21 +86,23 @@ void Material::addLight(Vector &lightIntensity,
 
 Color Material::color()
 {
-    Color col;
-
-    col = diffuseColor_;
-    
+    Color col = diffuseColor_;
     col.x = (col.x * ka_) + (col.x * diffuseIntensity_.x) ;
     col.y = (col.y * ka_) + (col.y * diffuseIntensity_.y) ;
-    col.z = (col.z * ka_) + (col.z * diffuseIntensity_.z) ;  
+    col.z = (col.z * ka_) + (col.z * diffuseIntensity_.z) ; 
 
-    col = col * ( 1.0f - reflectivity_ ) + reflection_ * reflectivity_; 
+    Color highlight;
+    highlight.x = (highlightColor_.x * highlightIntensity_.x);
+    highlight.y = (highlightColor_.y * highlightIntensity_.y);
+    highlight.z = (highlightColor_.z * highlightIntensity_.z); 
 
-    col.x += (highlightColor_.x * highlightIntensity_.x);
-    col.y += (highlightColor_.y * highlightIntensity_.y);
-    col.z += (highlightColor_.z * highlightIntensity_.z);
-
-    return col;
+    if ( reflectionType_ == FRES) {
+        Color reflection = (reflection_ + highlight) * reflectionCoeff_ + transmission_ * transmissionCoeff_;
+        return col * ( 1.0f - reflectivity_ ) + reflection * reflectivity_;
+    } else if ( reflectionType_ == SPEC ) {
+        return col * ( 1.0f - reflectivity_ ) + reflection_ * reflectivity_ + highlight;
+    }
+    return col + highlight;
 }
 
 
@@ -111,6 +131,9 @@ TiXmlElement* Material::getXml()
     root->SetAttribute("ks", ftos(ks_));
     root->SetAttribute("alpha", ftos(alpha_));
     root->SetAttribute("flatshading", flatShading_);
+
+    root->SetAttribute("emission", emission_.str());
+    root->SetAttribute("reflectance", reflectance_.str());
     
     if (diffuseMap_ == NULL) {
         root->SetAttribute("diffusemap", "");
@@ -123,6 +146,16 @@ TiXmlElement* Material::getXml()
     } else {
         root->SetAttribute("normalmap", normalMap_->name());
     }
+
+    std::string rt="";
+    if (reflectionType_ == FRES) {
+        rt = "fresnel";
+    } else if (reflectionType_ == SPEC) {
+        rt = "specular";
+    } else {
+        rt = "diffuse";
+    }
+    root->SetAttribute("reflection", rt);
 
     return root;
 }
@@ -147,6 +180,9 @@ bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *li
     pElem->QueryFloatAttribute ("alpha", &alpha_);
     pElem->QueryBoolAttribute ("flatshading", &flatShading_);
 
+    pElem->QueryValueAttribute <Vector> ("emission", &emission_);
+    pElem->QueryValueAttribute <Vector> ("reflectance", &reflectance_);
+
     std::string mapname; 
 
     mapname = "";
@@ -156,6 +192,16 @@ bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *li
     mapname = "";
     pElem->QueryStringAttribute ("normalmap", &mapname);
     linkMaps->add(mapname, &normalMap_);
+
+    std::string rt="";
+    pElem->QueryStringAttribute ("reflection", &rt);
+    if (rt == "fresnel") {
+        reflectionType_ = FRES;
+    } else if (rt == "specular") {
+        reflectionType_ = SPEC;
+    } else {
+        reflectionType_ = DIFF;
+    }
 
     return true;
 }

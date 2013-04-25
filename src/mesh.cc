@@ -7,7 +7,7 @@ void Mesh::transform()
 {
     Object::transform();
 
-    for (int i=0; i < triangles.size(); i++) {
+    for (unsigned long i=0; i < triangles.size(); i++) {
         triangles[i]->transform();
     }
 
@@ -20,7 +20,7 @@ void Mesh::genBounds()
 
     std::cout << "   gen octree " << b.min << b.max << std::endl;
 
-    int leafCount = 0;
+    unsigned long leafCount = 0;
 
     octree_ = Octree(b.min, b.max, 10, 25);
 
@@ -35,7 +35,7 @@ Bounds Mesh::bounds()
     Vector max(-BIG_NUM, -BIG_NUM, -BIG_NUM);
     Vector min( BIG_NUM,  BIG_NUM,  BIG_NUM);
 
-    for (int i=0; i < vertexs.size(); i++) {
+    for (unsigned long i=0; i < vertexs.size(); i++) {
         if (vertexs[i]->x < min.x) min.x = vertexs[i]->x;
         if (vertexs[i]->x > max.x) max.x = vertexs[i]->x;
 
@@ -139,11 +139,11 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
     uvpoints.push_back( new MapPoint2(0, 0, 0) );
 
     if (objfile.is_open()) {
-        int v = 0;
-        int m = 0;
-        int n = 0;
-        int t = 0;
-        int pcount = 0;
+        unsigned long v = 0;
+        unsigned long m = 0;
+        unsigned long n = 0;
+        unsigned long t = 0;
+        unsigned long pcount = 0;
 		while (objfile.good()) {
 			getline(objfile,line);
             
@@ -198,36 +198,36 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
             } else if (token == "f") {
                 //Triangles
                 std::string vert,map,norm;
-                int v0, v1, v2;
-                int m0, m1, m2;
-                int n0, n1, n2;
+                unsigned long v0, v1, v2;
+                unsigned long m0, m1, m2;
+                unsigned long n0, n1, n2;
 
                 token = ""; getline(ss, token, ' '); 
                 std::stringstream s0(token);
                 vert = "0"; getline(s0, vert, '/'); 
-                v0 = int(stof(vert)) -1;
+                v0 = (stol(vert)) -1;
                 map = "0"; getline(s0, map, '/'); 
-                m0 = int(stof(map));
+                m0 = (stol(map));
                 norm = "0"; getline(s0, norm, '/');
-                n0 = int(stof(norm)) -1;
+                n0 = (stol(norm)) -1;
 
                 token = ""; getline(ss, token, ' '); 
                 std::stringstream s1(token);
                 vert = "0"; getline(s1, vert, '/'); 
-                v1 = int(stof(vert)) -1;
+                v1 = (stol(vert)) -1;
                 map = "0"; getline(s1, map, '/'); 
-                m1 = int(stof(map));
+                m1 = (stol(map));
                 norm = "0"; getline(s1, norm, '/');
-                n1 = int(stof(norm)) -1;
+                n1 = (stol(norm)) -1;
 
                 token = ""; getline(ss, token, ' '); 
                 std::stringstream s2(token);
                 vert = "0"; getline(s2, vert, '/'); 
-                v2 = int(stof(vert)) -1;
+                v2 = (stol(vert)) -1;
                 map = "0"; getline(s2, map, '/'); 
-                m2 = int(stof(map));
+                m2 = (stol(map));
                 norm = "0"; getline(s2, norm, '/');
-                n2 = int(stof(norm)) -1;
+                n2 = (stol(norm)) -1;
 
                 Vector n = ((*normals[n0]) + (*normals[n1]) + (*normals[n2])) / 3.0;
 

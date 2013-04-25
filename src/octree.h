@@ -12,21 +12,21 @@ class Octree : BBox {
     public:
         std::vector<Triangle*> *triangles;
 
-        int maxDepth_;
-        int threshold_;
+        unsigned long maxDepth_;
+        unsigned long threshold_;
 
         Octree *children[2][2][2];
 
         Octree() { triangles=NULL;};
 
-        Octree(const Vector &min, const Vector &max, int maxDepth, int threshold) 
+        Octree(const Vector &min, const Vector &max, unsigned long maxDepth, unsigned long threshold) 
             : BBox(min, max) {
             maxDepth_ = maxDepth;
             threshold_ = threshold;
             triangles = NULL;
         }
 
-        virtual bool add(std::vector<Triangle*> *newtriangles, int currentDepth, int *leaves);
+        virtual bool add(std::vector<Triangle*> *newtriangles, unsigned long currentDepth, unsigned long *leaves);
         virtual BaseObject* intersection(Ray &ray, float *t, float limitMax);
 };
 

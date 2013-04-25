@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<project>
+    <preview width="320"  height="320" />
+    <final   width="320" height="320" />
+
+    <renderer type="pathtracer" samples="500" subsamplesx="3" subsamplesy="3" exposure="-1" />
+    <renderer0 type="raytracer" subsamplesx="3" subsamplesy="3" exposure="-1" />
+
+    <scene>
+        <camera0 position="0,-10,5" target="0,0,5" fov="1.0472"/>
+        <camera position="-3,-5,1.5" target="-3,0,1.5" fov="1.0472"/>
+        
+        <lights>
+            <spotlight name="bulb" 
+                position="0,0,9.7"
+                target="0,0,0"
+                intensity="5,5,5" 
+                angle="1.5" 
+                anglefalloff="0.5" 
+                lightradius="1"
+                samples="40" />
+        </lights>
+
+        <materials>
+            <material name="lightmat" 
+                diffusecolor="1,1,1"
+                emission="30,30,30" />
+
+            <material name="ballmat" 
+                reflection="fresnel"
+                xreflection="specular"
+                diffusecolor="1.0,0.0,0.0" />
+
+            <material name="ballmatred" 
+                reflection="specular"
+                diffusecolor="1.0,0.0,0.0" />
+
+            <material name="greenmat" 
+                diffusecolor="0,1,0"
+                ks="0"/>
+
+            <material name="redmat" 
+                diffusecolor="1,0,0"
+                ks="0"/>
+
+            <material name="whitemat" 
+                diffusecolor="1.0,1.0,1.0" 
+                ks="0"/>
+        </materials>
+
+        <objects>
+            <sphere name="light" 
+                position="0,0,10"
+                scale="1,1,0.1"
+                material="lightmat" /> 
+
+            <plane name="floor" 
+                position="0,0,0" 
+                material="whitemat"/>
+
+            <plane name="roof" 
+                position="0,0,10"
+                rotation="0,3.1416,0" 
+                material="whitemat"/> 
+
+            <plane name="rightwall" 
+                position="-5,0,0"
+                rotation="0,1.5708,0" 
+                material="redmat"/> 
+
+            <plane name="lefttwall" 
+                position="5,0,0"
+                rotation="0,-1.5708,0" 
+                material="greenmat"/> 
+
+            <plane name="backwall" 
+                position="0,5,0"
+                rotation="1.5708,0,0"
+                material="whitemat"/>
+
+            <plane name="frontwall" 
+                position="0,-10,0"
+                rotation="-1.5708,0,0"
+                material="whitemat"/>
+
+            <sphere name="ball" 
+                position="-3,0,1.5"
+                scale="1.5,1.5,1.5"
+                material="ballmat" /> 
+
+            <sphere0 name="ball" 
+                position="-3.5,-1.5,0.2"
+                scale="0.2,0.2,0.2"
+                material="ballmatred" /> 
+
+        </objects>
+
+    </scene>
+</project>

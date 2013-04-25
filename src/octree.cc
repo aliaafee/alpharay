@@ -1,6 +1,6 @@
 #include "octree.h"
 
-bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth, int *leaves) {
+bool Octree::add(std::vector<Triangle*> *newtriangles, unsigned long currentDepth, unsigned long *leaves) {
     if (!newtriangles) {
         return false;
     }
@@ -30,7 +30,7 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, int currentDepth, int *le
                 submax = submin + size;
 
                 subtrig = new std::vector<Triangle*>;
-                for (int i=0; i < newtriangles->size(); i++) {
+                for (unsigned long i=0; i < newtriangles->size(); i++) {
                     if ( (*newtriangles)[i]->inBounds(Bounds(submin, submax)) ) {
                         subtrig->push_back( (*newtriangles)[i] );
                     }
@@ -80,7 +80,7 @@ BaseObject* Octree::intersection(Ray &ray, float *t, float limitMax) {
 
         clot = BIG_NUM;
 
-        for (int i=0; i < triangles->size(); i++) {
+        for (unsigned long i=0; i < triangles->size(); i++) {
             currentTrig = (*triangles)[i]->intersection(ray, &curt, limitMax); 
             if (currentTrig != NULL) {
                 if (curt > 0.0001 && curt < clot) {

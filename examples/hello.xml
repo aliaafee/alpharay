@@ -12,7 +12,9 @@
 
         <materials>
             <material name="material1" 
-                diffusecolor="1,0,0" />
+                diffusecolor="1,0,0"
+                reflection="specular"
+                reflectivity="0.2" />
         </materials>
 
         <objects>

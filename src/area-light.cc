@@ -19,9 +19,11 @@ void AreaLight::set(std::vector<Object*>* objects, Material &material, Vector &p
     
     intensity = getIntensityByAngle(intensity, lightRay.direction_*-1, target_ - position_);
 
+    /*
     if ((intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1)) {
         return;
     }
+    */
 
     float distance = point.distanceTo(position_);
     intensity = getIntensityByDistance(intensity , distance) ;
@@ -49,6 +51,7 @@ void AreaLight::set(std::vector<Object*>* objects, Material &material, Vector &p
                             + v * randf(lightRadius_*-1, lightRadius_);
 
         lightRay.direction_ = quantaOrigin - lightRay.position_;
+        lightRay.direction_.normalize();
 
         BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
 

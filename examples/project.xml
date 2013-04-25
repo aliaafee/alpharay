@@ -1,11 +1,18 @@
 <?xml version="1.0" ?>
 <project>
-    <raytracer reflectiondepth="5" subsamplesx="4" subsamplesy="4" exposure="-1" />
+    <renderer type="raytracer" xtype="pathtracer"
+        reflectiondepth="5" 
+        samples="100"
+        subsamplesx="2" subsamplesy="2" 
+        subcellsx="8" subcellsy="8" 
+        exposure="-1" />
+
     <preview width="800"  height="600" />
     <final   width="1280" height="768" />
     <scene>
         <camera0 position="1,15,8" target="-1,0,2" fov="1" tilt="0" />
         <camera position="1,15,8" target="1.5,1,4" fov="1" tilt="0" />
+        <camera0 type="pano" position="1,15,8" target="1.5,1,4" fov="1" tilt="0" />
         <camera0 position="1,1,50" target="1.5,1,4" fov="1" tilt="0" />
         
         <lights>
@@ -19,7 +26,7 @@
                 anglefalloff="0.628319" 
                 lightradius="3" 
                 samples="30" />
-            <skylight
+            <arealight
                 name="arey3" 
                 position="-10,10,20" 
                 intensity="80,80,80"
@@ -29,7 +36,7 @@
                 anglefalloff="0.628319" 
                 lightradius="2" 
                 samples="10" />
-            <pointlight0
+            <pointlight
                 name="arey3" 
                 position="20,20,5" 
                 intensity="60,60,60"
@@ -122,6 +129,7 @@
 
             <material 
                 name="meshmat" 
+                emission="10,10,10"
                 diffusecolor="0.921,0.528,0.227" 
                 highlightcolor="1,1,1" 
                 reflectivity="0.6" 
@@ -146,7 +154,7 @@
                 material="floormat" />
 
             
-            <sphere
+            <sphere0
                 name="cube" 
                 position="1.5,1,5" 
                 rotation="0,0,3" 
@@ -161,9 +169,9 @@
                 material="earthmat" />
 
 
-            <mesh0 name="cube3" position="1.5,1,0" rotation="0,0,0" scale="0.7,0.7,0.7" material="meshmat">
+            <mesh name="cube3" position="1.5,1,0" rotation="0,0,0" scale="0.7,0.7,0.7" material="meshmat">
                 <file type="obj" scale="1.0" position="0,0,0" filename="/Users/ali/Projects/raytracera/examples/obj/bunny-big.obj" />
-            </mesh0>
+            </mesh>
 
             
             <mesh0 name="cube1" position="1.5,1,0" rotation="0,0,0" scale="1,1,1" material="meshmat">

@@ -71,8 +71,6 @@ void animate(int etc) {
 
     project.renderPreview();
 
-    project.raytracer.statusOn = false;
-
     glutTimerFunc(10, animate, 0);
 }
 
@@ -96,7 +94,7 @@ void initGlut(int argc, char** argv)
     glutIdleFunc(idle);
 }
 
-//int test() {
+int test() {
     /*
     UVTriangle *intersectionUVTriangle;
 	Vector intersectionPoint, intersectionPointLocal;
@@ -151,11 +149,32 @@ void initGlut(int argc, char** argv)
     /*
     cout << "test -1/0 " << divide(-1, 0) << endl;
     */
-//}
+    /*
+    for (int i=0; i < 10; i++) {
+        Vector result = randomPointInHemisphere(Vector(0, 0, 1));
+        cout << result << endl;
+
+    }
+    */
+
+    BaseObject* s = new Sphere("ball");
+
+    Ray ray( Vector(0, 10, 0), Vector(0, 0, 0) );
+    float t = 0;
+
+    BaseObject* result = s->intersection(ray, &t, BIG_NUM);
+
+    if (result != NULL) {
+        cout << "intersection" << endl;
+    }
+
+}
 
 
 int main(int argc, char** argv)
 {
+    //test(); return 0;
+
     string filename = "";
     string outfile = "";
 
@@ -203,7 +222,7 @@ int main(int argc, char** argv)
     initGlut(argc, argv);
 
     //actor = project.scene.getObject("cube");
-    animate(0);
+    //animate(0);
     
     glutMainLoop();
 

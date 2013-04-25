@@ -8,7 +8,11 @@
 using namespace std;
 
 #include "scene.h"
+
+#include "renderer.h"
+
 #include "raytracer.h"
+#include "pathtracer.h"
 
 #include "gl-image.h"
 #include "cimg-image.h"
@@ -16,29 +20,31 @@ using namespace std;
 
 class Project {
     public:
-        Raytracer raytracer;
+        Renderer* renderer;
         Scene scene;
         GLImage* preview;
         CimgImage* final;
 
-        Project () {};
+        Project () { renderer = NULL; }
         
         bool load(string filename);
         bool save(string filename);
 
         void renderPreview() {
+            if (renderer == NULL) return;
             /*
             FloatImage temp(preview->width(), preview->height());
             raytracer.renderThreaded(scene, temp);
             temp.glow(10);
             temp.copyTo(preview);
             */
-            raytracer.renderThreaded(scene, *preview);
+            renderer->render(scene, preview, false);
             //raytracer.render(scene, *preview);
         }
 
         void renderFinal(string filename) {
-            raytracer.renderThreaded(scene, *final);
+            if (renderer == NULL) return;
+            renderer->render(scene, final, true);
             cout << endl;
             cout << "Saving to " << filename << " ..." << endl;
             final->save(filename);

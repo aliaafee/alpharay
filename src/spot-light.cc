@@ -45,6 +45,8 @@ void SpotLight::set(std::vector<Object*>* objects, Material &material, Vector &p
 
 Color SpotLight::getIntensityByAngle(Color intensity, Vector PO, Vector TO)
 {
+    //return intensity;
+
     PO.normalize();
     TO.normalize();
     

@@ -8,6 +8,11 @@
 #include "map.h"
 #include "linklist.h"
 
+enum ReflectionType { 
+    DIFF, 
+    SPEC, 
+    FRES 
+};
 
 class Material : public XmlObjectNamed
 {
@@ -22,7 +27,12 @@ class Material : public XmlObjectNamed
 
         virtual void transform();
 
-        virtual void addReflection(Vector &reflection_);
+        virtual ReflectionType reflectionType() { return reflectionType_; }
+        virtual void addReflection(Vector &reflection);
+        virtual void addTransmission(Vector &transmission);
+
+        virtual void setFresnelCoeff(float rcoeff, float tcoeff);
+
         virtual void addLight(Vector &lightIntensity, Vector &lightPosition, Vector &rayDirection, Vector &point, Vector &normal);
 
         virtual Color color();
@@ -38,6 +48,12 @@ class Material : public XmlObjectNamed
         Color diffuseColor_;
         Color highlightColor_;
         Color reflection_;
+        Color transmission_;
+
+        float reflectionCoeff_;
+        float transmissionCoeff_;
+
+        ReflectionType reflectionType_;
 
         float reflectivity_;
         float opticDensity_;
@@ -53,6 +69,10 @@ class Material : public XmlObjectNamed
         float alpha_; //specular highlight amount
 
         bool flatShading_;
+
+        //For path tracing
+        Color emission_;
+        Color reflectance_;
 
         Map *diffuseMap_;
         Map *normalMap_;
