@@ -152,7 +152,7 @@ bool Renderer::getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int he
 {
     if (curCell >= maxCell) return false;
 
-    int cell = maxCell - curCell;
+    int cell = curCell;
 
     x0 = cell % cellCx;
     y0 = (cell - x0) / cellCx;
