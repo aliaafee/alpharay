@@ -1,7 +1,7 @@
 
-bin_PROGRAMS = raytracera
+bin_PROGRAMS = alpharay
 
-raytracera_SOURCES = \
+alpharay_SOURCES = \
                      main.cc \
                      vector.h \
                      vector.cc \
@@ -57,8 +57,8 @@ raytracera_SOURCES = \
                      octree.h \
                      octree.cc
 
-raytracera_LDFLAGS = -lgl -lglut -lX11 -lglu \
-                     -lboost_thread-mt -lboost_system-mt \
-                     -ltinyxml
-raytracera_LDADD = 
+alpharay_LDFLAGS = -lgl -lglut -lX11 -lglu \
+                   -lboost_thread-mt -lboost_system-mt \
+                   -ltinyxml
+alpharay_LDADD = 
 
