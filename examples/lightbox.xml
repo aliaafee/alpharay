@@ -7,11 +7,11 @@
     <renderer0 type="raytracer" subsamplesx="3" subsamplesy="3" exposure="-1" />
 
     <scene>
-        <camera0 position="0,-10,5" target="0,0,5" fov="1.0472"/>
-        <camera position="-3,-5,1.5" target="-3,0,1.5" fov="1.0472"/>
+        <camera position="0,-10,5" target="0,0,5" fov="1.0472"/>
+        <camera0 position="-3,-5,1.5" target="-3,0,1.5" fov="1.0472"/>
         
         <lights>
-            <spotlight name="bulb" 
+            <arealight name="bulb" 
                 position="0,0,9.7"
                 target="0,0,0"
                 intensity="5,5,5" 
@@ -26,14 +26,11 @@
                 diffusecolor="1,1,1"
                 emission="30,30,30" />
 
-            <material name="ballmat" 
-                reflection="fresnel"
-                xreflection="specular"
-                diffusecolor="1.0,0.0,0.0" />
+            <material name="glass" 
+                reflection="fresnel" />
 
-            <material name="ballmatred" 
-                reflection="specular"
-                diffusecolor="1.0,0.0,0.0" />
+            <material name="mirror" 
+                reflection="specular" />
 
             <material name="greenmat" 
                 diffusecolor="0,1,0"
@@ -66,12 +63,12 @@
             <plane name="rightwall" 
                 position="-5,0,0"
                 rotation="0,1.5708,0" 
-                material="redmat"/> 
+                material="greenmat"/> 
 
             <plane name="lefttwall" 
                 position="5,0,0"
                 rotation="0,-1.5708,0" 
-                material="greenmat"/> 
+                material="redmat"/> 
 
             <plane name="backwall" 
                 position="0,5,0"
@@ -83,15 +80,15 @@
                 rotation="-1.5708,0,0"
                 material="whitemat"/>
 
-            <sphere name="ball" 
+            <sphere name="ball1" 
                 position="-3,0,1.5"
                 scale="1.5,1.5,1.5"
-                material="ballmat" /> 
+                material="glass" /> 
 
-            <sphere0 name="ball" 
-                position="-3.5,-1.5,0.2"
-                scale="0.2,0.2,0.2"
-                material="ballmatred" /> 
+            <sphere name="ball2" 
+                position="3,2,1.5"
+                scale="1.5,1.5,1.5"
+                material="mirror" /> 
 
         </objects>
 
