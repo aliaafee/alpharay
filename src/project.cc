@@ -1,8 +1,20 @@
 #include "project.h"
 
+
+std::string Project::pathBase(std::string path) {
+    int end = path.rfind("/");
+    if (end == 0)
+        return path;
+    return path.substr(0, end);
+}
+
+
 bool Project::load(string filename)
 {
     TiXmlDocument doc(filename);
+
+    string filedir = pathBase(filename);
+    cout << filedir << endl;
 
     bool result = doc.LoadFile();
     
@@ -39,7 +51,7 @@ bool Project::load(string filename)
         } else {
             renderer = new Raytracer();
         }
-        renderer->loadXml(pElem, "");
+        renderer->loadXml(pElem, filedir);
     } else {
         renderer = new Raytracer();
     }
@@ -67,7 +79,8 @@ bool Project::load(string filename)
 
     //Scene
     pElem = hRoot.FirstChild("scene").Element();
-    scene.loadXml(pElem, "some/path");
+    
+    scene.loadXml(pElem, filedir);
 
     cout << "Done" << endl;
     return true;

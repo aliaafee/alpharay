@@ -50,6 +50,9 @@ class Project {
             final->save(filename);
             cout << "Done" << endl;
         }
+
+    private:
+        std::string pathBase(std::string path);
 };
 
 

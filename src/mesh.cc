@@ -93,6 +93,7 @@ bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> *l
     if (pElem) {
         std::string filename("");
         pElem->QueryStringAttribute ("filename", &filename);
+        filename = pathJoin(path, filename);
         std::string type("");
         pElem->QueryStringAttribute ("type", &type);
         if (type == "" || type == "xml") {
@@ -131,7 +132,7 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
        --------------------
        Needs a bit of work (bit slow)
     */
-    std::cout << "  Loading obj file" << std::flush;
+    std::cout << "  Loading obj file " << std::flush;
 
     std::string line;
     std::ifstream objfile (filename.c_str());
@@ -263,7 +264,7 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
         return true;
 	}
 	
-    std::cout << "Unable to open file " << filename << std::endl;
+    std::cout << "... failed (" << filename << ")" << std::endl;
     return false;
 }
 

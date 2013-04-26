@@ -3,6 +3,18 @@
 #include "xmlobject.h"
 
 
+std::string XmlObject::pathJoin(std::string path, std::string filename) {
+    if (filename == "") 
+        return "";
+
+    //begining with / is an absolute path
+    if (filename[0] == '/')
+        return filename;
+
+    return path + "/" + filename;
+}
+
+
 TiXmlElement* XmlObjectNamed::getXml() {
     TiXmlElement* root = XmlObject::getXml();
 

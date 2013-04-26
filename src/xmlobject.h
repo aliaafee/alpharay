@@ -15,6 +15,8 @@ class XmlObject
 
         virtual TiXmlElement* getXml() { return new TiXmlElement(xmlTag_); }
         virtual bool loadXml(TiXmlElement* pElem, std::string path) { return true; }
+
+        std::string pathJoin(std::string path, std::string filename);
     protected:
         std::string xmlTag_;
 };

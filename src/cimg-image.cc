@@ -20,7 +20,7 @@ bool CimgImage::create(int width, int height)
 bool CimgImage::load(std::string filename)
 {
     image_ = new cimg_library::CImg<unsigned char>();
-    image_->load(filename_.c_str());
+    image_->load(filename.c_str());
 
     return true;
 }
@@ -106,7 +106,8 @@ bool CimgImage::loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> 
     pElem->QueryStringAttribute("filename", &filename_);
 
     if (filename_ != "") {
-        return load(filename_);
+        std::string absfilename = pathJoin(path, filename_);
+        return load(absfilename);
     }
 
     return false;
