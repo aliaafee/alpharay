@@ -22,7 +22,16 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
         float Ctran;
 
         float cosT1 = intersectionNormal * (ray.direction_*-1);
-        if (cosT1 > 0) {
+        if (cosT1 > -EPSILON && cosT1 < EPSILON) {
+            Crefl = 1;
+            Ctran = 0;
+            Ray reflectedRay = ray.getReflectedRay(intersectionPoint, intersectionNormal);
+
+            Color reflection = trace(scene, reflectedRay, depth + 1);
+
+            material.setFresnelCoeff(Crefl, Ctran);
+            material.addReflection(reflection);
+        } else if (cosT1 >= EPSILON) {
             //Entering object
             getFresnelValues(ray.direction_, intersectionNormal,
                                 1.0f, material.opticDensity_,
@@ -37,9 +46,6 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
             if (material.scatterFactor_ == 0) {
                 fRefl = trace(scene, rRefl, depth + 1);
                 fTran = trace(scene, rTran, depth + 1);
-            } else {
-                fRefl = raytraceDistributed(scene, rRefl, depth + 1,material.scatterFactor_,material.scatterSamples_);
-                fTran = raytraceDistributed(scene, rTran, depth + 1,material.scatterFactor_,material.scatterSamples_);
             }
 
             material.setFresnelCoeff(Crefl, Ctran);
@@ -54,16 +60,18 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
                                 &Crefl, &Ctran);
             //std::cout << " 2 to 1 ";
             Vector fRefl, fTran;
-            //Ray rRefl(intersectionPoint, intersectionPoint+Vrefl);
+            Ray rRefl(intersectionPoint, intersectionPoint+Vrefl);
             Ray rTran(intersectionPoint, intersectionPoint+Vtran);
             if (material.scatterFactor_ == 0) {
-                //fRefl = trace(scene, rRefl, depth + 1);
+                fRefl = trace(scene, rRefl, depth + 1);
                 fTran = trace(scene, rTran, depth + 1);
-            } else {
-                fTran = raytraceDistributed(scene, rTran, depth + 1,material.scatterFactor_,material.scatterSamples_);
+            }
+
+            if (Crefl < 0 || Ctran < 0) {
+                std::cout << Crefl << "," << Ctran << std::endl;
             }
             
-            material.setFresnelCoeff(Crefl, Ctran);
+            material.setFresnelCoeff(0, 1);
             //material.addReflection(fRefl);
             material.addTransmission(fTran);
         }
@@ -156,10 +164,10 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
                 break;
         }
 
-        return closestObject->color(intPointLocal, &material);
+        return closestObject->color(intPointLocal, &material);;
 	}
 	
-	return Color(0, 0, 0);
+	return scene.envColor(ray);
 }
 
 

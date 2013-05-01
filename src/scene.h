@@ -49,6 +49,8 @@ public:
 
     Camera* camera() { return camera_; }
 
+    Color envColor(const Ray &ray);
+
     Light* add(Light *light) 
 		{lights.push_back(light); return light;}
     Light* getLight(std::string name)
@@ -79,6 +81,9 @@ public:
 
 protected:
     Camera* camera_;
+
+    Color envColor_;
+    Map* envMap_;
 
     std::vector<Light*> lights;
     std::vector<Image*> images;

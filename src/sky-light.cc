@@ -12,7 +12,26 @@ void SkyLight::init() {
 
 void SkyLight::set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection)
 {
-    ;
+    Ray lightRay;
+
+    Vector quantaOrigin;
+    Vector quantaIntensity = intensity_ / (float(samples_) * kIntensity_);
+
+    for (int i = 0; i < samples_; i++) {
+        lightRay = lightRay.getRamdomRayInHemisphere(point, pointNormal, 1.0);
+
+        BaseObject* intObject = getFirstIntersection(objects, lightRay, BIG_NUM);
+
+        if (intObject == NULL) {
+            quantaOrigin = lightRay.position_ + lightRay.direction_;
+            material.addLight(quantaIntensity,
+                        quantaOrigin,
+                        viewDirection,
+                        point,
+                        pointNormal );
+        }
+
+    }
 }
 
 

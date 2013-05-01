@@ -6,6 +6,8 @@
 void Light::init() { 
     XmlObjectNamed::init(); 
 
+    kIntensity_ = 5.0f;
+
     position_ = Vector(0, 0, 0); 
     intensity_ = Color(100, 100, 100);
     shadowsOn_ = true;
@@ -34,7 +36,7 @@ void Light::set(std::vector<Object*>* objects, Material &material, Vector &point
 
 
 Color Light::getIntensityByDistance(Color intensity, float &distance) {
-    return (intensity / (distance * distance)) * 5.0f;
+    return (intensity / (distance * distance)) * kIntensity_;
 }
 
 

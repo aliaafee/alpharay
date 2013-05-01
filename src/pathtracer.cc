@@ -100,7 +100,7 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
 
 Color Pathtracer::trace(Scene &scene ,Ray ray, int depth)
 {
-    Vector color;
+    Color color;
     
     for (int i = 0 ; i < samples_; i++) {
         color += pathTrace(scene, ray, 1);

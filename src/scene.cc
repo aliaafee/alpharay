@@ -4,6 +4,9 @@
 
 void Scene::init() {
     XmlObject::init();
+
+    envColor_ = Color(0, 0, 0);
+    envMap_ = NULL;
     /*
     std::cout << "List Size Max " << lights.max_size() << std::endl;
     std::cout << "int max, min " << std::numeric_limits<int>::min() << "," << std::numeric_limits<int>::max() << std::endl;
@@ -13,6 +16,15 @@ void Scene::init() {
 
     std::cout << std::numeric_limits<unsigned long>::max() - lights.max_size() << std::endl;
     */
+}
+
+Color Scene::envColor(const Ray &ray) {
+    if (envMap_ == NULL) {
+        return envColor_;
+    }
+
+    //Use ray dir to pick point on envMap;
+    return envColor_;
 }
 
 void Scene::transform() {
@@ -161,6 +173,9 @@ template< typename T > void Scene::addFromXml(TiXmlElement* pElem, std::string p
 TiXmlElement* Scene::getXml() {
     TiXmlElement* root = XmlObject::getXml();
 
+    //environment
+    root->SetAttribute("skycolor", envColor_.str());
+
     //camera
     root->LinkEndChild(camera_->getXml());
 
@@ -213,6 +228,10 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
 
     std::cout << " Loading Scene..." << std::endl;
 
+    //Environment
+    pElem->QueryValueAttribute <Vector> ("skycolor", &envColor_);
+
+    //Get handle to element
     TiXmlHandle hRoot = TiXmlHandle(pElem);
 
     //camera

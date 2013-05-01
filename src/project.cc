@@ -14,7 +14,6 @@ bool Project::load(string filename)
     TiXmlDocument doc(filename);
 
     string filedir = pathBase(filename);
-    cout << filedir << endl;
 
     bool result = doc.LoadFile();
     

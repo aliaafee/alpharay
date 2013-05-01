@@ -31,6 +31,7 @@ class Light : virtual public XmlObjectNamed
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
     protected:
+        float kIntensity_;
     	Vector position_;
     	Color intensity_;
 

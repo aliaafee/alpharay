@@ -1,13 +1,14 @@
 <?xml version="1.0" ?>
 <project>
-    <raytracer reflectiondepth="10" subsamplesx="1" subsamplesy="1" exposure="-0.5" />
+    <renderer reflectiondepth="10" subsamplesx="1" subsamplesy="1" exposure="-0.5" />
     <preview width="320"  height="240" />
     <final   width="1280" height="800" />
-    <scene>
+    <scene skycolor="5.4,5.4,5.4">
         <camera position="8,2,2" target="0,0.3,1" fov="0.785398" tilt="0" />
         
         <lights>
-            <arealight
+            <skylight name="sky" intensity="50,50,50" samples="100" />
+            <arealight0
                 name="l2" 
                 position="-3,-5,8" 
                 intensity="100,50,50" 
@@ -27,7 +28,7 @@
                 lightradius="0.6" 
                 samples="10" />
 
-            <arealight
+            <arealight0
                 name="l3" 
                 position="6,-4,0.7" 
                 intensity="20,20,80" 
@@ -94,7 +95,7 @@
         <materials>
             <material 
                 name="floormat" 
-                diffusecolor="0.0,0.0,0.7" 
+                xdiffusecolor="0.0,0.0,0.7" 
                 highlightcolor="1,1,1" 
                 reflectivity="0.5" 
                 dielectric="false" 
@@ -176,11 +177,9 @@
                 name="glass" 
                 diffusecolor="1,1,0" 
                 highlightcolor="1,1,1" 
-                reflectivity="1.0" 
+                reflection="fresnel"
                 dielectric="true" 
                 opticdensity="1.66"
-                scatterfactor="0.01" 
-                scattersamples="3" 
                 ka="0.0" 
                 kd="0.8" 
                 ks="0.8" 

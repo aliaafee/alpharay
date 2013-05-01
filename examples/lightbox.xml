@@ -3,7 +3,7 @@
     <preview width="320"  height="320" />
     <final   width="320" height="320" />
 
-    <renderer type="pathtracer" samples="500" subsamplesx="3" subsamplesy="3" exposure="-1" />
+    <renderer type="pathtracer" samples="1000" subsamplesx="3" subsamplesy="3" exposure="-1" />
     <renderer0 type="raytracer" subsamplesx="3" subsamplesy="3" exposure="-1" />
 
     <scene>
@@ -89,6 +89,10 @@
                 position="3,2,1.5"
                 scale="1.5,1.5,1.5"
                 material="mirror" /> 
+
+            <mesh name="chalice" position="0,0,0" rotation="0,0,1.5" scale="1,1,1" material="glass">
+                <file type="obj" scale="1.0" position="0,0,0" filename="obj/glass.obj" />
+            </mesh>
 
         </objects>
 

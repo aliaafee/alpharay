@@ -102,7 +102,7 @@ Color Renderer::trace(Scene &scene ,Ray ray, int depth)
 }
 
 
-void Renderer::correctExposure(Vector &color) {
+void Renderer::correctExposure(Color &color) {
     if (exposure_ != 0) {
         color.x = 1.0f - expf(color.x * exposure_);
         color.y = 1.0f - expf(color.y * exposure_);
@@ -139,6 +139,7 @@ void Renderer::renderCell
             }
             
             color /= ts;
+
             correctExposure(color);
 
             image->setColor(point, color);
@@ -174,9 +175,7 @@ bool Renderer::renderAllCells(Scene& scene, Image* image)
 
     while (getNextCell(x0, y0, x1, y1, image->width(), image->height())) {
         renderCell(scene, image, x0, y0, x1, y1);
-    }
-
-    completed = (cellW * cellH);
+    } 
 
     return true;
 }
@@ -245,11 +244,12 @@ void Renderer::render (Scene& scene, Image* image, bool join)
 
     if (!join) return;
 
-    status.join();
-
     for (int i = 0; i < threadCount_; i++) {
         renderThread[i].join();
     }
+    completed = (cellW * cellH);
+
+    status.join();
 }
 
 

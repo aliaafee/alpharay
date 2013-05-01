@@ -38,11 +38,14 @@ class Renderer : public XmlObject
         virtual Color trace(Scene &scene ,Ray ray, int depth);
 
         BaseObject* closestIntersection(Scene &scene, Ray &ray, float *closest);
+        
         void getFresnelValues(Vector Vincident, Vector normal,
                             float n1, float n2,
                             float cosT1, 
                             Vector *Vreflect, Vector *Vrefract,
                             float *reflectionCoeff, float *transmissionCoeff );
+
+        void correctExposure(Color &color);
     private:
         int threadCount_;
 
@@ -56,8 +59,6 @@ class Renderer : public XmlObject
         bool renderAllCells(Scene& scene, Image* image);
 
         bool statusDisplay();
-
-        void correctExposure(Vector &color);
 
         bool getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int height);
 
