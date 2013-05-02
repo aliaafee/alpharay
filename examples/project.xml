@@ -3,7 +3,7 @@
     <renderer type="raytracer" xtype="pathtracer"
         reflectiondepth="10" 
         samples="100"
-        subsamplesx="4" subsamplesy="4" 
+        subsamplesx="1" subsamplesy="1" 
         subcellsx="8" subcellsy="8" 
         exposure="-1" />
 
@@ -16,7 +16,7 @@
         <camera0 position="1,1,50" target="1.5,1,4" fov="1" tilt="0" />
         
         <lights>
-            <skylight
+            <arealight
                 name="arey2" 
                 position="-10,0,20" 
                 intensity="10,10,10"
@@ -25,8 +25,8 @@
                 angle="0.628319" 
                 anglefalloff="0.628319" 
                 lightradius="3" 
-                samples="20" />
-            <pointlight
+                samples="10" />
+            <arealight
                 name="arey3" 
                 position="-10,10,20" 
                 intensity="80,80,80"
@@ -36,7 +36,7 @@
                 anglefalloff="0.628319" 
                 lightradius="2" 
                 samples="10" />
-            <pointlight0
+            <arealight
                 name="arey3" 
                 position="20,20,5" 
                 intensity="60,60,60"
@@ -55,7 +55,11 @@
 
             <cimgimage 
                 name="cubeimg" 
-                filename="/Users/ali/Pictures/Work/cubeUV.png" />
+                filename="img/cubeUV.png" />
+
+            <cimgimage 
+                name="cuberfl" 
+                filename="img/cubeUVrfl.png" />
 
 
             <cimgimage 
@@ -66,6 +70,11 @@
                 name="check" 
                 color1="1.0,1.0,1.0" 
                 color2="0.411,0.549,0.839" />
+            <checker2d 
+                name="checkmask" 
+                color1="1.0,1.0,1.0" 
+                color2="0.,0.,0." />
+
         </images>
 
         <maps>
@@ -77,6 +86,14 @@
                 imagescale="1,1" 
                 image="check" />
 
+            <map2dplane
+                name="floormask" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1.1,1.1,1.1" 
+                imagescale="1,1" 
+                image="checkmask" />
+
             <map2dspherical
                 name="earthmap" 
                 position="0,0,0" 
@@ -85,13 +102,21 @@
                 imagescale="1,1" 
                 image="earthimg" />
 
-            <map2d
+            <map2dcylindrical
                 name="cubemap" 
                 position="0,0,0" 
                 rotation="0,0,0" 
                 scale="1,1,1" 
                 imagescale="1,1" 
-                image="earthimg2" />
+                image="cubeimg" />
+
+            <map2dcylindrical
+                name="cuberflmap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="cuberfl" />
 
         </maps>
 
@@ -109,7 +134,7 @@
                 kd="0.8" 
                 ks="0.8" 
                 alpha="40" 
-                diffusemap="floormap" 
+                diffusemap="floormap"
                 normalmap="" />
 
             <material 
@@ -117,6 +142,7 @@
                 diffusecolor="0.411,0.549,0.839" 
                 highlightcolor="1,1,1" 
                 reflectivity="0" 
+                reflection="specular"
                 dielectric="0" 
                 scatterfactor="0.0" 
                 scattersamples="5" 
@@ -125,6 +151,7 @@
                 ks="0.5" 
                 alpha="15" 
                 diffusemap="floormap" 
+                reflectivitymap="floormask"
                 normalmap="" />
 
             <material 
@@ -133,14 +160,16 @@
                 ydiffusecolor="0.411,0.549,0.839"
                 highlightcolor="1,1,1" 
                 reflectivity="1.0" 
+                areflection="specular"
                 xreflection="fresnel"
-                opticdensity="1.66" 
+                scattersamples="10" 
                 ka="0.0" 
                 kd="1.0" 
                 ks="1.0" 
                 alpha="30" 
                 flatshading="false"
-                diffusemap="" 
+                xdiffusemap="cubemap"
+                reflectivitymap="cuberflmap"
                 normalmap="" />
 
             <material name="lightmat" 
@@ -164,7 +193,7 @@
                 material="floormat" />
 
             
-            <sphere
+            <sphere0
                 name="light" 
                 position="1.5,1,10" 
                 rotation="0,0,0" 
