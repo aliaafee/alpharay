@@ -128,7 +128,7 @@ Ray Object::transformRay(Ray ray) {
 }
 
 
-bool Object::loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> *linkMaterials) {
+bool Object::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
     init();
 
     XmlObjectNamed::loadXml(pElem, path);
@@ -139,11 +139,7 @@ bool Object::loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> 
 
     std::string matname = "";
     pElem->QueryStringAttribute ("material", &matname);
-    if (matname != "") {
-        linkMaterials->add(matname, &material_);
-    } else {
-        material_ = NULL;
-    }
+    linkList->add(matname, &material_);
 
     return true;
 }

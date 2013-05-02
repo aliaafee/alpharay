@@ -28,7 +28,7 @@ class Map : virtual public XmlObjectNamed
         virtual Color color(Vector  point, Vector2 point2) { return Color(0, 0, 0); }
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
 };
 
@@ -47,7 +47,7 @@ class Map2d : public Map, virtual public XmlObjectNamed
         virtual Color color(Vector  point, Vector2 point2);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         Image* image_;
@@ -73,7 +73,7 @@ class Map2dPlane : public Map2d, virtual public XmlObjectNamed
         virtual Color color(Vector  point, Vector2 point2);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         Vector position_;

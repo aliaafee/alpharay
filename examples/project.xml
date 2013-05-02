@@ -164,14 +164,14 @@
                 material="floormat" />
 
             
-            <sphere0
+            <sphere
                 name="light" 
                 position="1.5,1,10" 
                 rotation="0,0,0" 
                 scale="2,2,2" 
                 material="lightmat" />
 
-            <sphere 
+            <sphere
                 name="cube" 
                 position="1.5,1,2" 
                 rotation="0,0,0" 

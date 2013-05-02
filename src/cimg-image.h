@@ -36,7 +36,7 @@ class CimgImage : public Image, virtual public XmlObjectNamed
         virtual int height();
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         std::string filename_;

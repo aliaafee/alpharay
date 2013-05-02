@@ -92,10 +92,7 @@ protected:
     std::vector<Object*> objects;
 
 private:
-    LinkList <Image> linkImages;
-    LinkList <Map> linkMaps;
-    LinkList <Material> linkMaterials;
-    LinkList <Object> linkObjects;
+    LinkList linkList_;
 
     template <typename T> T* getByName(std::string name, std::vector<T*> &list) {
         for (unsigned long i = 0; i < list.size(); i++) {
@@ -106,20 +103,24 @@ private:
         return NULL;
     }
     
-    template <typename T> void linkList ( LinkList <T> list, std::vector<T*> &things) {
-        for (unsigned long i = 0; i < list.size(); i++) {
+    template <typename T> void linkList ( std::vector<T*> &things) {
+        for (unsigned long i = 0; i < linkList_.size(); i++) {
             std::string source;
             T** target;
-            list.get(i , &source, &target);
-            *target = getByName <T> (source, things);
+            T* thing;
+            linkList_.get <T> (i , &source, &target);
+            thing = getByName <T> (source, things);
+            if (thing != NULL) {
+                *target = thing;
+            }
         }
     }
-
+    
     void linkAll() {
-        linkList <Image> (linkImages, images);
-        linkList <Map> (linkMaps, maps);
-        linkList <Material> (linkMaterials, materials);
-        linkList <Object> (linkObjects, objects);
+        linkList <Image> (images);
+        linkList <Map> (maps);
+        linkList <Material> (materials);
+        linkList <Object> (objects);
     }
 
     bool fromXml(TiXmlElement* pElem, Light** light, std::string path);

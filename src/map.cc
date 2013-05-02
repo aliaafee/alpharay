@@ -11,7 +11,7 @@ TiXmlElement* Map::getXml()
 }
 
 
-bool Map::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages) 
+bool Map::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
 {
     XmlObjectNamed::loadXml(pElem, path);
 }
@@ -177,17 +177,17 @@ TiXmlElement* Map2d::getXml()
 }
 
 
-bool Map2d::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages) 
+bool Map2d::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
 {
     init();
 
-    Map::loadXml(pElem, path, linkMaps, linkImages);
+    Map::loadXml(pElem, path, linkList);
 
     pElem->QueryValueAttribute <Vector2> ("imagescale", &imageScale_);
 
     std::string imagename = "";
     pElem->QueryStringAttribute ("image", &imagename);
-    linkImages->add(imagename, &image_);
+    linkList->add(imagename, &image_);
 }
 
 
@@ -204,11 +204,11 @@ TiXmlElement* Map2dPlane::getXml()
 }
 
 
-bool Map2dPlane::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Image> *linkImages) 
+bool Map2dPlane::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
 {
     init();
 
-    Map2d::loadXml(pElem, path, linkMaps, linkImages);
+    Map2d::loadXml(pElem, path, linkList);
 
     pElem->QueryStringAttribute ("name", &name_);
     pElem->QueryValueAttribute <Vector> ("position", &position_);

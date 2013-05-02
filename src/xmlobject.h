@@ -13,6 +13,8 @@ class XmlObject
         XmlObject( std::string xmlTag ) { init(); xmlTag_ = xmlTag; }
         ~XmlObject() { } ;
 
+        std::string xmlTag() { return xmlTag_; }
+
         virtual TiXmlElement* getXml() { return new TiXmlElement(xmlTag_); }
         virtual bool loadXml(TiXmlElement* pElem, std::string path) { return true; }
 

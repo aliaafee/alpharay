@@ -32,7 +32,7 @@ class Image : virtual public XmlObjectNamed
         virtual int height() { return height_; }
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         int width_;
@@ -65,7 +65,7 @@ inline TiXmlElement* Image::getXml()
 }
 
 
-inline bool Image::loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages)
+inline bool Image::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
     init();
 
@@ -91,7 +91,7 @@ class Checker2d : public Image, virtual public XmlObjectNamed
         virtual Color getColor(Vector2 point);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         Color color1_;
@@ -128,11 +128,11 @@ inline TiXmlElement* Checker2d::getXml()
 }
 
 
-inline bool Checker2d::loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages)
+inline bool Checker2d::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
     init();
 
-    Image::loadXml(pElem, path, linkImages);
+    Image::loadXml(pElem, path, linkList);
 
     pElem->QueryValueAttribute <Vector> ("color1", &color1_);
     pElem->QueryValueAttribute <Vector> ("color2", &color2_);

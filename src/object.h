@@ -39,7 +39,7 @@ class Object : public BaseObject, virtual public XmlObjectNamed
         virtual Ray transformRay(Ray ray);
         
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> *linkMaterials);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     //protected:
         Vector position_;

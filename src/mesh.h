@@ -32,7 +32,7 @@ class Mesh : virtual public Object, virtual public XmlObjectNamed
         virtual BaseObject* intersection(Ray &ray, float *t, float limit);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> *linkMaterials);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         Octree octree_;

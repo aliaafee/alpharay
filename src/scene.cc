@@ -85,7 +85,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
     }
 
     if (*image) {
-        (*image)->loadXml(pElem, path, &linkImages);
+        (*image)->loadXml(pElem, path, &linkList_);
         return true;
     }
 
@@ -109,7 +109,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Map** map, std::string path) {
     }
 
     if (*map) {
-        (*map)->loadXml(pElem, path, &linkMaps, &linkImages);
+        (*map)->loadXml(pElem, path, &linkList_);
         return true;
     }
 
@@ -127,7 +127,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Material** mat, std::string path) {
     }
 
     if (*mat) {
-        (*mat)->loadXml(pElem, path, &linkMaps, &linkMaterials);
+        (*mat)->loadXml(pElem, path, &linkList_);
         return true;
     }
 
@@ -149,7 +149,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
     }
 
     if (*object) {
-        (*object)->loadXml(pElem, path, &linkMaterials);
+        (*object)->loadXml(pElem, path, &linkList_);
 
         return true;
     }

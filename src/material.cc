@@ -161,7 +161,7 @@ TiXmlElement* Material::getXml()
 }
 
 
-bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *linkMaps, LinkList <Material> *linkMaterials)
+bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
     init();
 
@@ -187,11 +187,11 @@ bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList <Map> *li
 
     mapname = "";
     pElem->QueryStringAttribute ("diffusemap", &mapname);
-    linkMaps->add(mapname, &diffuseMap_);
+    linkList->add(mapname, &diffuseMap_);
 
     mapname = "";
     pElem->QueryStringAttribute ("normalmap", &mapname);
-    linkMaps->add(mapname, &normalMap_);
+    linkList->add(mapname, &normalMap_);
 
     std::string rt="";
     pElem->QueryStringAttribute ("reflection", &rt);

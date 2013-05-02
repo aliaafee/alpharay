@@ -96,11 +96,11 @@ inline TiXmlElement* CimgImage::getXml()
 }
 
 
-bool CimgImage::loadXml(TiXmlElement* pElem, std::string path, LinkList <Image> *linkImages)
+bool CimgImage::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
     init();
 
-    Image::loadXml(pElem, path, linkImages);
+    Image::loadXml(pElem, path, linkList);
 
     filename_ = "";
     pElem->QueryStringAttribute("filename", &filename_);

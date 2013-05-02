@@ -79,11 +79,11 @@ TiXmlElement* Mesh::getXml()
 }
 
 
-bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList <Material> *linkMaterials)
+bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
     init();
 
-    Object::loadXml(pElem, path, linkMaterials);
+    Object::loadXml(pElem, path, linkList);
 
     TiXmlHandle hRoot = TiXmlHandle(pElem);
 
