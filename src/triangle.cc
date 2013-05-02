@@ -74,7 +74,7 @@ Vector Triangle::normal(Vector point)
 }
 
 
-Color Triangle::color(Vector point, Material* material)
+void Triangle::setPoint(Vector point, Material* material)
 {
     Vector2 point2d;
 
@@ -90,7 +90,7 @@ Color Triangle::color(Vector point, Material* material)
         //std::cout << point2d << std::endl;
     }
 
-    return material->color(point, point2d);
+    material->setPoint(point, point2d);
 }
 
 

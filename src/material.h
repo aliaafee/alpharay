@@ -35,14 +35,16 @@ class Material : public XmlObjectNamed
 
         virtual void addLight(Vector &lightIntensity, Vector &lightPosition, Vector &rayDirection, Vector &point, Vector &normal);
 
-        virtual Color color();
-        virtual Color color(Vector&  point, Vector2& point2);
+        virtual void setPoint(Vector& point, Vector2& point2);
 
-        virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+        virtual Color color();
+        virtual Color diffuseColor() { return diffuseColor_; }
         virtual float reflectivity() { return reflectivity_; }
         virtual bool flatShading() { return flatShading_; }
 
+        virtual TiXmlElement* getXml();
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+        
     //protected:
         Color diffuseColor_;
         Color highlightColor_;
@@ -74,6 +76,7 @@ class Material : public XmlObjectNamed
         Color reflectance_;
 
         Map *diffuseMap_;
+        Map *reflectivityMap_;
         Map *normalMap_;
 
     private:

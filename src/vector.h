@@ -259,6 +259,8 @@ class Color : public Vector
         float r() { return x; }
         float g() { return y; }
         float b() { return z; }
+
+        float intensity() { return (x + y + z)/3.0f; }
 };
 
 inline Vector randomPointInHemisphere(Vector normal) {

@@ -28,6 +28,7 @@ void Material::init() {
     reflectance_ = Color(0.5, 0.5, 0.5);
 
 	diffuseMap_ = NULL;
+    reflectivityMap_ = NULL;
     normalMap_ = NULL;
 }
 
@@ -106,12 +107,14 @@ Color Material::color()
 }
 
 
-Color Material::color(Vector&  point, Vector2& point2)
+void Material::setPoint(Vector& point, Vector2& point2)
 {
     if (diffuseMap_ != NULL) {
         diffuseColor_ = diffuseMap_->color(point, point2);
     }
-    return color();
+    if (reflectivityMap_ != NULL) {
+        reflectivity_ = reflectivityMap_->color(point, point2).intensity();
+    }
 }
 
 
@@ -139,6 +142,12 @@ TiXmlElement* Material::getXml()
         root->SetAttribute("diffusemap", "");
     } else {
         root->SetAttribute("diffusemap", diffuseMap_->name());
+    }
+
+    if (reflectivityMap_ == NULL) {
+        root->SetAttribute("reflectivitymap", "");
+    } else {
+        root->SetAttribute("reflectivitymap", reflectivityMap_->name());
     }
 
     if (normalMap_ == NULL) {
@@ -188,6 +197,10 @@ bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList
     mapname = "";
     pElem->QueryStringAttribute ("diffusemap", &mapname);
     linkList->add(mapname, &diffuseMap_);
+
+    mapname = "";
+    pElem->QueryStringAttribute ("reflectivitymap", &mapname);
+    linkList->add(mapname, &reflectivityMap_);
 
     mapname = "";
     pElem->QueryStringAttribute ("normalmap", &mapname);

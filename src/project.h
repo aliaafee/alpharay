@@ -30,7 +30,7 @@ class Project {
         bool load(string filename);
         bool save(string filename);
 
-        void renderPreview() {
+        void renderPreview(bool join = false) {
             if (renderer == NULL) return;
             /*
             FloatImage temp(preview->width(), preview->height());
@@ -38,7 +38,7 @@ class Project {
             temp.glow(10);
             temp.copyTo(preview);
             */
-            renderer->render(scene, preview, false);
+            renderer->render(scene, preview, join);
             //raytracer.render(scene, *preview);
         }
 

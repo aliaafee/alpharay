@@ -13,6 +13,8 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
                         Vector intersectionPoint, Vector intersectionNormal,
                         Material &material, int depth)
 {
+    if (material.reflectivity() == 0.0) return;
+
     Vector color;
     if (depth < traceDepth_) {
         Vector Vrefl;
@@ -83,6 +85,8 @@ void Raytracer::traceReflection(Scene &scene, Ray ray,
                         Vector intersectionPoint, Vector intersectionNormal,
                         Material &material, int depth)
 {
+    if (material.reflectivity() == 0.0) return;
+
     Vector reflection;
     
     Ray reflectedRay = ray.getReflectedRay(intersectionPoint, intersectionNormal);
@@ -149,6 +153,8 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
         Vector intPointLocal = closestObject->transformPointInv(intPoint);
         Vector intNormal = closestObject->normal(intPointLocal);
         intNormal.normalize();
+
+        closestObject->setPoint(intPointLocal, &material);
         
         setLighting(scene, material, intPoint, intNormal, ray.direction_);
 
@@ -164,7 +170,7 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
                 break;
         }
 
-        return closestObject->color(intPointLocal, &material);;
+        return material.color();
 	}
 	
 	return scene.envColor(ray);

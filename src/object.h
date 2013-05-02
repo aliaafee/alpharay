@@ -25,8 +25,10 @@ class Object : public BaseObject, virtual public XmlObjectNamed
         virtual Bounds bounds()  { return Bounds(Vector(0,0,0), Vector(0,0,0)); }
         
         virtual Vector normal(Vector point) { return Vector(0, 0, 1); }
-        virtual Color color(Vector point, Material* material) 
-            { Vector2 point2; return material->color(point, point2); }
+        virtual void setPoint(Vector point, Material* material) 
+            { Vector2 point2; return material->setPoint(point, point2); }
+        /*virtual Color color(Vector point, Material* material) 
+            { Vector2 point2; return material->color(point, point2); }*/
 
         virtual BaseObject* intersection(Ray &ray, float *t, float limit) { return NULL; }
 

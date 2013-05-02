@@ -27,7 +27,7 @@ class Triangle : public BaseObject, public XmlObjectIndexed
         Bounds bounds();
         
         Vector normal(Vector point);
-        Color color(Vector point, Material* material);
+        void setPoint(Vector point, Material* material);
 
         Material material() { return parent_->material(); }
 

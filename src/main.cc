@@ -69,7 +69,7 @@ void animate(int etc) {
         vActor2->y += 0.005;
     }
 
-    project.renderPreview();
+    project.renderPreview(true);
 
     glutTimerFunc(10, animate, 0);
 }
