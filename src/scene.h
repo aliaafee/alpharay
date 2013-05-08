@@ -17,6 +17,7 @@
 #include "spot-light.h"
 #include "area-light.h"
 #include "sky-light.h"
+#include "sun-light.h"
 
 #include "image.h"
 #include "cimg-image.h"

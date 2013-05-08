@@ -63,6 +63,8 @@ bool Scene::fromXml(TiXmlElement* pElem, Light** light, std::string path){
         *light = new AreaLight("");
     } else if (name == "skylight") {
         *light = new SkyLight("");
+    } else if (name == "sunlight") {
+        *light = new SunLight("");
     }
 
     if (*light) {

@@ -8,7 +8,7 @@ void Light::init() {
 
     kIntensity_ = 5.0f;
 
-    position_ = Vector(0, 0, 0); 
+    position_ = Vector(0, 0, 1); 
     intensity_ = Color(100, 100, 100);
     shadowsOn_ = true;
 }

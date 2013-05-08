@@ -29,6 +29,8 @@ alpharay_SOURCES = \
                      spot-light.cc \
                      area-light.h \
                      area-light.cc \
+                     sun-light.h \
+                     sun-light.cc \
                      sky-light.h \
                      sky-light.cc \
                      baseobject.h \
