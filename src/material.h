@@ -39,6 +39,7 @@ class Material : public XmlObjectNamed
 
         virtual Color color();
         virtual Color diffuseColor() { return diffuseColor_; }
+        virtual Color emission() { return emission_; }
         virtual float reflectivity() { return reflectivity_; }
         virtual bool flatShading() { return flatShading_; }
 

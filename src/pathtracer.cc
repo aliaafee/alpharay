@@ -22,10 +22,13 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
         return Color(0, 0, 0);
 
     Material material = closestObject->material();
+    Vector intPoint = closestObject->point(ray, t);
+    Vector intPointLocal = closestObject->transformPointInv(intPoint);
 
-    Color color = material.diffuseColor_;
-    Color emission = material.emission_;
-    Color reflectance = material.reflectance_;
+    closestObject->setPoint(intPointLocal, &material);
+
+    Color color = material.diffuseColor();
+    Color emission = material.emission();
 
     if (!emission.isNull())
         return emission;
@@ -33,8 +36,6 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
     if (depth > traceDepth_)
         return color;
 
-    Vector intPoint = closestObject->point(ray, t);
-    Vector intPointLocal = closestObject->transformPointInv(intPoint);
     Vector intNormal = closestObject->normal(intPointLocal);
 
     Ray newRay;

@@ -3,8 +3,15 @@
     <preview width="320"  height="320" />
     <final   width="320" height="320" />
 
-    <renderer type="pathtracer" samples="1000" subsamplesx="3" subsamplesy="3" exposure="-1" />
-    <renderer0 type="raytracer" subsamplesx="3" subsamplesy="3" exposure="-1" />
+    <renderer type="pathtracer" 
+        samples="500" 
+        reflectiondepth="4" 
+        subsamplesx="3" subsamplesy="3" 
+        exposure="-1" />
+
+    <renderer0 type="raytracer" 
+        subsamplesx="3" subsamplesy="3" 
+        exposure="-1" />
 
     <scene>
         <camera position="0,-10,5" target="0,0,5" fov="1.0472"/>
@@ -12,19 +19,34 @@
         
         <lights>
             <arealight name="bulb" 
-                position="0,0,9.7"
+                position="0,0,9.6"
                 target="0,0,0"
                 intensity="5,5,5" 
-                angle="1.5" 
-                anglefalloff="0.5" 
+                angle="3.14" 
+                anglefalloff="3.14" 
                 lightradius="1"
                 samples="40" />
         </lights>
 
+        <images>
+            <checker2d name="check" 
+                color1="1.0,1.0,1.0" 
+                color2="0.411,0.549,0.839" />
+        </images>
+
+        <maps>
+            <map2dplane name="earthmap" 
+                position="0,0,0" 
+                rotation="0,0,0" 
+                scale="1,1,1" 
+                imagescale="1,1" 
+                image="check" />
+        </maps>
+
         <materials>
             <material name="lightmat" 
                 diffusecolor="1,1,1"
-                emission="30,30,30" />
+                emission="50,50,50" />
 
             <material name="glass" 
                 reflection="fresnel" />
@@ -39,6 +61,11 @@
             <material name="redmat" 
                 diffusecolor="1,0,0"
                 ks="0"/>
+
+            <material name="bluemat" 
+                diffusecolor="0,0,1"
+                ks="0"
+                diffusemap="earthmap"/>
 
             <material name="whitemat" 
                 diffusecolor="1.0,1.0,1.0" 
@@ -63,7 +90,7 @@
             <plane name="rightwall" 
                 position="-5,0,0"
                 rotation="0,1.5708,0" 
-                material="greenmat"/> 
+                material="bluemat"/> 
 
             <plane name="lefttwall" 
                 position="5,0,0"
@@ -90,9 +117,14 @@
                 scale="1.5,1.5,1.5"
                 material="mirror" /> 
 
-            <mesh name="chalice" position="0,0,0" rotation="0,0,1.5" scale="1,1,1" material="glass">
+            <sphere name="ball3" 
+                position="0,0,0.75"
+                scale="0.75,0.75,0.75"
+                material="redmat" /> 
+
+            <mesh0 name="chalice" position="0,0,0" rotation="0,0,1.5" scale="1,1,1" material="glass">
                 <file type="obj" scale="1.0" position="0,0,0" filename="obj/glass.obj" />
-            </mesh>
+            </mesh0>
 
         </objects>
 
