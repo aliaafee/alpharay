@@ -1,34 +1,30 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 
 #include <iostream>
 #include <string>
-#include <sstream>
+#include <unistd.h>
 
 #include <GL/freeglut.h>
 #include <GL/glu.h>
 
-//#include <boost/timer.hpp>
+#include "project.h"
+#include "cimg-image.h"
 
 using namespace std;
 
-#include "project.h"
-
-#include "bbox.h"
-
-#include "octree.h"
-
-Object *actor;
-Vector *vActor;
-Vector2 * vActor2;
-
 Project project;
+CimgImage final("");
 
+#ifdef opengl
+
+#include "gl-image.h"
+GLImage preview("");
 
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-    //glWindowPos2i(0, 0);
-    project.preview->display();
+
+    preview.display();
     
     glutSwapBuffers();
     
@@ -50,39 +46,14 @@ void idle(void)
 }
 
 
-void animate(int etc) {
-    glutPostRedisplay();
-    project.scene.camera()->orbitZ(-1 * M_PI/180);
-    if (actor != NULL) {
-        actor->rotation_.x += 0.05;
-        actor->rotation_.z += 0.05;
-        //actor->position_.z -= 0.01;
-        //actor->position_.z += 0.01;
-        //actor->scale_.x = 0.5;
-    }
-
-    if (vActor != NULL) {
-        vActor->y += 0.01;
-    }
-
-    if (vActor2 != NULL) {
-        vActor2->y += 0.005;
-    }
-
-    project.renderPreview(true);
-
-    glutTimerFunc(10, animate, 0);
-}
-
-
 void initGlut(int argc, char** argv)
 {
     glutInit(&argc, argv);
     
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-    glutInitWindowSize(project.preview->width(), project.preview->height());
+    glutInitWindowSize(preview.width(), preview.height());
 
-    glutCreateWindow("Raytracer A");
+    glutCreateWindow("Render Result");
     
     glClearColor (0.0, 0.0, 0.0, 0.0);
 	glMatrixMode(GL_PROJECTION);
@@ -94,138 +65,70 @@ void initGlut(int argc, char** argv)
     glutIdleFunc(idle);
 }
 
-int test() {
-    /*
-    UVTriangle *intersectionUVTriangle;
-	Vector intersectionPoint, intersectionPointLocal;
-    float distance;
+#endif
 
-    Ray ray(Vector(0,0,0) , Vector(1,1,1));
-
-    int count = 10000;
-    boost::timer statusTime;
-    cout << "doing " << count << " ints with " << obj->name_  << endl;
-    for (int i = 0; i < count; i++) {
-        obj->intersection(
-                    ray,
-                    &intersectionPoint,
-                    &intersectionPointLocal, 
-                    &intersectionUVTriangle,
-                    &distance); 
-    }
-    cout << "completed in " << statusTime.elapsed() << " s" << endl;
-    */
-    /*
-    BBox box(Vector(0,0,0), Vector(2,2,2));
-    Ray ray(Vector(10,1,1) , Vector(-1,1,1));
-
-    int count = 1000000000;
-    boost::timer statusTime;
-    bool result;
-    float tmax = 0;
-    float tmin = 0;
-    for (int i = 0; i < count; i++) {
-        result = box.intersection(ray.position_, ray.direction_); 
-    }
-    cout << "result " << result << " int at " << tmin << " & " << tmax << "from ray" << endl;
-    cout << "completed in " << statusTime.elapsed() << " s" << endl;
-    
-    Octree w(Vector(0,0,0), Vector(2,2,2), 10, 10);
-
-    w.add(NULL, 0);
-    */
-    /*
-    Vertex v1( 0, Vector(0,0,10) , Vector(1,1,1) );
-    Vertex v2( 1, Vector(0,1,10) , Vector(1,1,1) );
-    Vertex v3( 2, Vector(1,0,10) , Vector(1,1,1) );
-
-    Triangle trig( 0,&v1,&v2,&v3,NULL,NULL,NULL,1,Vector(0,0,0) );
-
-    Vector min(0.5,0.5,0.5);
-    Vector max(0.75,0.75,0.75);
-
-    trig.inbounds( min, max );
-    */
-    /*
-    cout << "test -1/0 " << divide(-1, 0) << endl;
-    */
-    /*
-    for (int i=0; i < 10; i++) {
-        Vector result = randomPointInHemisphere(Vector(0, 0, 1));
-        cout << result << endl;
-
-    }
-    */
-
-    BaseObject* s = new Sphere("ball");
-
-    Ray ray( Vector(0, 10, 0), Vector(0, 0, 0) );
-    float t = 0;
-
-    BaseObject* result = s->intersection(ray, &t, BIG_NUM);
-
-    if (result != NULL) {
-        cout << "intersection" << endl;
-    }
-
+void usage(string name)
+{
+    cerr << "Usage: " << name << " <options(s)> PROJECT" << endl
+         << "Options: " << endl
+         << "\t-h\tDisplay this help message" << endl
+         << "\t-o\tOutput image filename" << endl
+         << endl;
 }
 
 
-int main(int argc, char** argv)
+int main (int argc, char **argv)
 {
-    //test(); return 0;
+    string projectFile, outFile;
 
-    string filename = "";
-    string outfile = "";
+    int c;
 
-    if (argc > 1) {
-        filename = argv[1];
-    } else {
-        cout << "No project file name given" << endl;
+    while ((c = getopt (argc, argv, "hp:o:")) != -1)
+    switch (c)
+    {
+        case 'o':
+            outFile = optarg;
+            break;
+        case 'h':
+            usage(argv[0]);
+            return 1;
+            break;
+    }
+
+    if ( optind < argc ) {
+        projectFile = argv[optind];
+    }
+
+    if (projectFile == "") {
+        usage(argv[0]);
+        return 1;
+    }
+
+#ifndef opengl
+    if (outFile == "") {
+        usage(argv[0]);
+        cerr << "To see render preview compile --with-opengl" << endl;
+        return 1;
+    }
+#endif
+
+    bool loaded = project.load(projectFile);
+    if (!loaded) {
+        cerr << "Failed to load " << projectFile << endl;
+    }
+
+    if (outFile != "") {
+        project.setFinalImage(&final);
+        project.renderFinal(outFile);
         return 0;
     }
 
-    if (argc > 2) {
-        outfile = argv[2];
-    }
-
-    cout << "Opening file: " << filename << endl;
-
-    if (!project.load(filename)) {
-        cout << "   Failed to load file" << endl;
-        return 0;
-    }
-
-    //test(project.scene.getObject("cube")); return 0;
-
-    if (outfile != "") {
-        //Render to file
-        cout << endl;
-
-        /*
-        std::stringstream ss;
-        actor = project.scene.getObject("cube");
-        for (int i = 0; i < 10 ; i ++) {
-            ss.str("");
-            ss << outfile << i << ".png";
-            project.renderFinal(ss.str());
-            actor->rotation_.z += 0.62832;
-        }*/
-
-        project.renderFinal(outfile);
-        return 0;
-    }
-
+#ifdef opengl
+    project.setPreviewImage(&preview);
     project.renderPreview();
-
-    //Display
     initGlut(argc, argv);
-
-    //actor = project.scene.getObject("cube");
-    //animate(0);
-    
     glutMainLoop();
-
+#endif
+    
     return 0;
 }
-

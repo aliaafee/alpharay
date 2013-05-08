@@ -65,7 +65,8 @@ bool Project::load(string filename)
         pElem->QueryIntAttribute("height", &height);
     }
     if (width == 0 || height == 0) { width = 320; height = 240; }
-    preview = new GLImage(width, height);
+    //preview = new GLImage(width, height);
+    previewSize = Vector2(width, height);
     width = 0;
     height= 0;
     pElem = hRoot.FirstChild("final").Element();
@@ -74,7 +75,8 @@ bool Project::load(string filename)
         pElem->QueryIntAttribute("height", &height);
     }
     if (width == 0 || height == 0) { width = 320; height = 240; }
-    final = new CimgImage(width, height);
+    //final = new CimgImage(width, height);
+    finalSize = Vector2(width, height);
 
     //Scene
     pElem = hRoot.FirstChild("scene").Element();

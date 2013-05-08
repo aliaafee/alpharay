@@ -14,39 +14,40 @@ using namespace std;
 #include "raytracer.h"
 #include "pathtracer.h"
 
-#include "gl-image.h"
-#include "cimg-image.h"
-#include "float-image.h"
+#include "image.h"
 
 class Project {
     public:
-        Renderer* renderer;
         Scene scene;
-        GLImage* preview;
-        CimgImage* final;
+        Renderer* renderer;
+        Image* preview;
+        Image* final;
+        Vector2 previewSize;
+        Vector2 finalSize;
 
-        Project () { renderer = NULL; }
+        Project () { renderer = NULL; preview = NULL; final = NULL; }
         
         bool load(string filename);
         bool save(string filename);
 
+        void setPreviewImage(Image* image) 
+            { preview = image; preview->create(previewSize.x, previewSize.y); }
+        void setFinalImage(Image* image) 
+            { final = image; final->create(finalSize.x, finalSize.y); }
+
         void renderPreview(bool join = false) {
             if (renderer == NULL) return;
-            /*
-            FloatImage temp(preview->width(), preview->height());
-            raytracer.renderThreaded(scene, temp);
-            temp.glow(10);
-            temp.copyTo(preview);
-            */
+            if (preview == NULL) return;
+
             renderer->render(scene, preview, join);
-            //renderer->renderOne(scene, preview);
-            //raytracer.render(scene, *preview);
         }
 
         void renderFinal(string filename) {
             if (renderer == NULL) return;
+            if (final == NULL) return;
+
             renderer->render(scene, final, true);
-            cout << endl;
+
             cout << "Saving to " << filename << " ..." << endl;
             final->save(filename);
             cout << "Done" << endl;
@@ -54,6 +55,7 @@ class Project {
 
     private:
         std::string pathBase(std::string path);
+
 };
 
 

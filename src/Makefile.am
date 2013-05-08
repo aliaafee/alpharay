@@ -8,7 +8,6 @@ alpharay_SOURCES =   main.cc \
                      map.cc \
                      material.cc \
                      cimg-image.cc \
-                     gl-image.cc \
                      ray.cc \
                      camera.cc \
                      light.cc \
@@ -29,11 +28,15 @@ alpharay_SOURCES =   main.cc \
                      bbox.cc \
                      octree.cc
 
-alpharay_LDFLAGS = -lgl -lglut -lX11 -lglu \
-                   -ltinyxml
+alpharay_LDFLAGS =  -ltinyxml
 
 if THREADING
     alpharay_LDFLAGS += -lboost_thread-mt -lboost_system-mt
+endif
+
+if OPENGL
+    alpharay_SOURCES += gl-image.cc
+    alpharay_LDFLAGS += -lgl -lglut -lX11 -lglu
 endif
 
 alpharay_LDADD = 
