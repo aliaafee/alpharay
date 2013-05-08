@@ -19,6 +19,7 @@ class Renderer : public XmlObject
             { init(); }
 
         virtual void render (Scene &scene, Image *image, bool join);
+        virtual void renderST (Scene &scene, Image *image);
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path);

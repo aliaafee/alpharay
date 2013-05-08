@@ -35,7 +35,7 @@ BaseObject* Renderer::closestIntersection(Scene &scene, Ray &ray, float *closest
 			currentObject = scene.objects[i]->intersection(ray, &distance, BIG_NUM);   
 
 			if (currentObject != NULL) {
-                if (distance > 0.0001) {
+                if (distance > 0.01) {
 				    if (distance < *closest) {
                         closestObject = currentObject;
                         *closest = distance;
@@ -250,6 +250,23 @@ void Renderer::render (Scene& scene, Image* image, bool join)
     completed = (cellW * cellH);
 
     status.join();
+}
+
+void Renderer::renderST (Scene &scene, Image *image)
+{
+    //Setup the scene for render
+    scene.transform();
+    scene.setScreen(image->width(), image->height());
+    
+    raysCast_ = 0;
+    
+    resetCells(image);
+
+    std::cout << "Rendering..." << std::flush;
+
+    renderAllCells(scene, image);
+
+    std::cout << "Done" << std::endl;
 }
 
 

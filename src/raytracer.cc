@@ -29,7 +29,7 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
             Ctran = 0;
             Ray reflectedRay = ray.getReflectedRay(intersectionPoint, intersectionNormal);
 
-            Color reflection = trace(scene, reflectedRay, depth + 1);
+            Color reflection = trace(scene, reflectedRay, depth );
 
             material.setFresnelCoeff(Crefl, Ctran);
             material.addReflection(reflection);
@@ -46,8 +46,8 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
             Ray rRefl(intersectionPoint, intersectionPoint+Vrefl);
             Ray rTran(intersectionPoint, intersectionPoint+Vtran);
             if (material.scatterFactor_ == 0) {
-                fRefl = trace(scene, rRefl, depth + 1);
-                fTran = trace(scene, rTran, depth + 1);
+                fRefl = trace(scene, rRefl, depth);
+                fTran = trace(scene, rTran, depth);
             }
 
             material.setFresnelCoeff(Crefl, Ctran);
@@ -65,8 +65,8 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
             Ray rRefl(intersectionPoint, intersectionPoint+Vrefl);
             Ray rTran(intersectionPoint, intersectionPoint+Vtran);
             if (material.scatterFactor_ == 0) {
-                fRefl = trace(scene, rRefl, depth + 1);
-                fTran = trace(scene, rTran, depth + 1);
+                fRefl = trace(scene, rRefl, depth);
+                fTran = trace(scene, rTran, depth);
             }
 
             if (Crefl < 0 || Ctran < 0) {
@@ -91,20 +91,18 @@ void Raytracer::traceReflection(Scene &scene, Ray ray,
     
     Ray reflectedRay = ray.getReflectedRay(intersectionPoint, intersectionNormal);
 
-    if (depth < traceDepth_) {
-        if (material.scatterFactor_ == 0) {
-            //Plane Reflections
-            reflection = trace(scene, 
-                                    reflectedRay, 
-                                    depth + 1);
-        } else {
-            //Scattered Reflections
-            reflection = raytraceDistributed(scene, 
-                                    reflectedRay, 
-                                    depth + 1, 
-                                    material.scatterFactor_,
-                                    material.scatterSamples_);
-        }
+    if (material.scatterFactor_ == 0) {
+        //Plane Reflections
+        reflection = trace(scene, 
+                                reflectedRay, 
+                                depth );
+    } else {
+        //Scattered Reflections
+        reflection = raytraceDistributed(scene, 
+                                reflectedRay, 
+                                depth, 
+                                material.scatterFactor_,
+                                material.scatterSamples_);
     }
     material.addReflection(reflection);
 }
@@ -112,17 +110,11 @@ void Raytracer::traceReflection(Scene &scene, Ray ray,
 Vector Raytracer::raytraceDistributed(Scene &scene, Ray ray, int depth, 
                                         float scatterFactor, int scatterSamples) {
     Vector color;
-    float sf = scatterFactor * M_PI/2;
-    float theta = acos(ray.direction_.z);
-    float phi = atan2(ray.direction_.y, ray.direction_.x);
-    float t,p;
-    for (int s = 0; s < scatterSamples; s ++) {
-        t = theta + randf(sf*-1,sf);
-        p = phi + randf(sf*-1,sf);
-        ray.direction_.x = sin(t) * cos(p);
-        ray.direction_.y = sin(t) * sin(p);
-        ray.direction_.z = cos(t);
-        color += trace(scene, ray, depth + 1);
+    Ray newray;
+    for (int s = 0; s < scatterSamples; s++) {
+        newray = ray.getRamdomRayInHemisphere(ray.position_, ray.direction_, scatterFactor);
+
+        color += trace(scene, newray, depth);
     }
     color /= float(scatterSamples);
     return color;
@@ -140,40 +132,45 @@ void Raytracer::setLighting
 
 Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
 {
+    depth += 1;
+
+    if (depth > traceDepth_)
+        return scene.envColor(ray);
+
     float t;
     raysCast_ += 1;
 
 	BaseObject *closestObject = closestIntersection(scene, ray, &t);
 	
-    if (closestObject != NULL) {
-        //TODO: Optimize
-        Material material = closestObject->material();
+    if (closestObject == NULL)
+        return scene.envColor(ray);
 
-        Vector intPoint = closestObject->point(ray, t);
-        Vector intPointLocal = closestObject->transformPointInv(intPoint);
-        Vector intNormal = closestObject->normal(intPointLocal);
-        intNormal.normalize();
+    //TODO: Optimize
+    Material material = closestObject->material();
 
-        closestObject->setPoint(intPointLocal, &material);
-        
-        setLighting(scene, material, intPoint, intNormal, ray.direction_);
+    Vector intPoint = closestObject->point(ray, t);
+    Vector intPointLocal = closestObject->transformPointInv(intPoint);
+    Vector intNormal = closestObject->normal(intPointLocal);
+    intNormal.normalize();
 
-        Color reflection;
+    closestObject->setPoint(intPointLocal, &material);
+    
+    setLighting(scene, material, intPoint, intNormal, ray.direction_);
 
-        switch (material.reflectionType())
-        {
-            case SPEC:
-                traceReflection(scene, ray, intPoint, intNormal, material, depth + 1);
-                break;
-            case FRES:
-                traceFresnel(scene, ray, intPoint, intNormal, material, depth + 1);
-                break;
-        }
+    Color reflection;
 
-        return material.color();
-	}
+    switch (material.reflectionType())
+    {
+        case SPEC:
+            traceReflection(scene, ray, intPoint, intNormal, material, depth);
+            break;
+        case FRES:
+            traceFresnel(scene, ray, intPoint, intNormal, material, depth);
+            break;
+    }
+
+    return material.color();
 	
-	return scene.envColor(ray);
 }
 
 

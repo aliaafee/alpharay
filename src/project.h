@@ -39,6 +39,7 @@ class Project {
             temp.copyTo(preview);
             */
             renderer->render(scene, preview, join);
+            //renderer->renderOne(scene, preview);
             //raytracer.render(scene, *preview);
         }
 
