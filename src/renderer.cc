@@ -228,11 +228,12 @@ void Renderer::render (Scene& scene, Image* image, bool join)
     //Setup the scene for render
     scene.transform();
     scene.setScreen(image->width(), image->height());
-    
+
     raysCast_ = 0;
     
     resetCells(image);
-    
+
+#ifdef mutlithreading
     boost::thread renderThread[threadCount_];
 
     for (int i = 0; i < threadCount_; i++) {
@@ -250,6 +251,14 @@ void Renderer::render (Scene& scene, Image* image, bool join)
     completed = (cellW * cellH);
 
     status.join();
+#else
+    std::cout << "Rendering..." << std::flush;
+
+    renderAllCells(scene, image);
+
+    std::cout << "Done" << std::endl;
+#endif 
+            
 }
 
 void Renderer::renderST (Scene &scene, Image *image)

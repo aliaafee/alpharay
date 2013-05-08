@@ -3,7 +3,9 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
 
+#ifdef mutlithreading
 #include <boost/thread.hpp>
+#endif
 
 #include "xmlobject.h"
 #include "scene.h"

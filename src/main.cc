@@ -6,7 +6,7 @@
 #include <GL/freeglut.h>
 #include <GL/glu.h>
 
-#include <boost/timer.hpp>
+//#include <boost/timer.hpp>
 
 using namespace std;
 
