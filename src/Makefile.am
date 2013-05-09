@@ -7,7 +7,7 @@ alpharay_SOURCES =   main.cc \
                      xmlobject.cc \
                      map.cc \
                      material.cc \
-                     cimg-image.cc \
+                     bitmap.cc \
                      ray.cc \
                      camera.cc \
                      light.cc \

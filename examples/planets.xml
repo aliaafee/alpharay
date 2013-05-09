@@ -42,16 +42,16 @@
         </lights>
 
         <images>
-            <cimgimage 
+            <bitmap 
                 name="earthimg" 
                 filename="/Users/ali/Pictures/Work/earth.jpg" />
-            <cimgimage 
+            <bitmap 
                 name="marsimg" 
                 filename="/Users/ali/Pictures/Work/mars.jpg" />
-            <cimgimage 
+            <bitmap 
                 name="venusimg" 
                 filename="/Users/ali/Pictures/Work/venus.jpg" />
-            <cimgimage 
+            <bitmap 
                 name="mercuryimg" 
                 filename="/Users/ali/Pictures/Work/mercury.jpg" />
         </images>

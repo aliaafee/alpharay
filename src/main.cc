@@ -8,12 +8,12 @@
 #include <GL/glu.h>
 
 #include "project.h"
-#include "cimg-image.h"
+#include "bitmap.h"
 
 using namespace std;
 
 Project project;
-CimgImage final("");
+Bitmap final("");
 
 #ifdef opengl
 

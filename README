@@ -20,9 +20,13 @@ autoconf and automake.
 Required Dependencies
 =====================
 
-The only required dependency is "tinyxml", install it in the standard 
-manner for your system or get it from 
-    http://sourceforge.net/projects/tinyxml/
+The required dependencies are:
+    * tinyxml
+    * CImg
+
+Install it in the standard manner for your system or get it from:
+    * http://sourceforge.net/projects/tinyxml/
+    * http://sourceforge.net/projects/cimg/
 
 
 Optional Dependencies

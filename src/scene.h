@@ -20,7 +20,7 @@
 #include "sun-light.h"
 
 #include "image.h"
-#include "cimg-image.h"
+#include "bitmap.h"
 
 #include "map.h"
 

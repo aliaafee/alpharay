@@ -82,8 +82,8 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
 
     if (name == "checker2d") {
         *image = new Checker2d("");
-    } else if (name == "cimgimage") {
-        *image = new CimgImage("");
+    } else if (name == "bitmap") {
+        *image = new Bitmap("");
     }
 
     if (*image) {

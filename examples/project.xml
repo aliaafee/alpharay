@@ -57,20 +57,20 @@
 
         </lights>
         <images>
-            <cimgimage 
+            <bitmap 
                 name="earthimg2" 
                 filename="/Users/ali/Pictures/Work/bunny.png" />
 
-            <cimgimage 
+            <bitmap 
                 name="cubeimg" 
                 filename="img/cubeUV.png" />
 
-            <cimgimage 
+            <bitmap 
                 name="cuberfl" 
                 filename="img/cubeUVrfl.png" />
 
 
-            <cimgimage 
+            <bitmap 
                 name="earthimg" 
                 filename="img/earth.jpg" />
 

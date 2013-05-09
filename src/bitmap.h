@@ -1,29 +1,29 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 
-#ifndef _CIMG_IMAGE_H_
-#define _CIMG_IMAGE_H_
+#ifndef _BITMAP_H_
+#define _BITMAP_H_
 
 #include "image.h"
 
 #define cimg_display 0
 #define cimg_OS 0
-#include "CImg.h"
+#include <CImg.h>
 
 
-class CimgImage : public Image, virtual public XmlObjectNamed
+class Bitmap : public Image, virtual public XmlObjectNamed
 {
     public:
         virtual void init() { Image::init(); image_ = NULL; }
 
-        CimgImage( int width, int height ) 
-            : Image("unnamed"), XmlObjectNamed("image", "unnamed")
+        Bitmap( int width, int height ) 
+            : Image("unnamed"), XmlObjectNamed("bitmap", "unnamed")
             { init(); create(width, height); }
         
-        CimgImage( std::string name ) 
-            : Image(name), XmlObjectNamed("image", name)
+        Bitmap( std::string name ) 
+            : Image(name), XmlObjectNamed("bitmap", name)
             { init(); }
 
-        ~CimgImage() { delete image_; }
+        ~Bitmap() { delete image_; }
 
         virtual bool create(int width, int height);
         virtual bool load(std::string filename);
@@ -44,5 +44,5 @@ class CimgImage : public Image, virtual public XmlObjectNamed
         cimg_library::CImg<unsigned char>* image_;
 };
 
-#endif // _CIMG_IMAGE_H_
+#endif // _BITMAP_H_
 

@@ -1,9 +1,9 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 
-#include "cimg-image.h"
+#include "bitmap.h"
 
 
-bool CimgImage::create(int width, int height)
+bool Bitmap::create(int width, int height)
 {
     if (image_ != NULL) {
         delete image_;
@@ -17,7 +17,7 @@ bool CimgImage::create(int width, int height)
 }
 
 
-bool CimgImage::load(std::string filename)
+bool Bitmap::load(std::string filename)
 {
     image_ = new cimg_library::CImg<unsigned char>();
     image_->load(filename.c_str());
@@ -26,7 +26,7 @@ bool CimgImage::load(std::string filename)
 }
 
 
-bool CimgImage::save(std::string filename)
+bool Bitmap::save(std::string filename)
 {
     if (image_ != NULL) {
         image_->save(filename.c_str());
@@ -36,11 +36,12 @@ bool CimgImage::save(std::string filename)
 }
 
 
-Color CimgImage::getColor(Vector2 point)
+Color Bitmap::getColor(Vector2 point)
 {
     if (!image_) {
         return Color(0,0,0);
     }
+
     unsigned char col[3];
     
     col[0] = image_->linear_atXY (point.x, point.y, 0);
@@ -51,14 +52,15 @@ Color CimgImage::getColor(Vector2 point)
 }
 
 
-bool CimgImage::setColor(Vector2 point, Color color)
+bool Bitmap::setColor(Vector2 point, Color color)
 {
     if (!image_) {
         return false;
     }
-    unsigned char col[3];
 
     color.capColor();
+
+    unsigned char col[3];
 
     col[0] = unsigned(char(color.x * 255.0f));
     col[1] = unsigned(char(color.y * 255.0f));
@@ -70,7 +72,7 @@ bool CimgImage::setColor(Vector2 point, Color color)
 }
 
 
-int CimgImage::width()
+int Bitmap::width()
 {
     if (image_ != NULL)
         return image_->width();
@@ -78,7 +80,7 @@ int CimgImage::width()
 }
 
 
-int CimgImage::height()
+int Bitmap::height()
 {
     if (image_ != NULL)
         return image_->height();
@@ -86,7 +88,7 @@ int CimgImage::height()
 }
 
 
-inline TiXmlElement* CimgImage::getXml()
+inline TiXmlElement* Bitmap::getXml()
 {
     TiXmlElement* root = Image::getXml();
 
@@ -96,7 +98,7 @@ inline TiXmlElement* CimgImage::getXml()
 }
 
 
-bool CimgImage::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
+bool Bitmap::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
     init();
 

@@ -102,6 +102,9 @@ Vector Map2dPlane::transformPointInv(Vector vector)
 
 Color Map2d::color(Vector2 point2)
 {
+    if (image_ == NULL)
+        return Color(0,0,0);
+
     float u = point2.x / imageScale_.x;
     float v = point2.y / imageScale_.y;
 
