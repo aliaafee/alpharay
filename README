@@ -9,9 +9,9 @@ Basic Installation
 
 alpharay uses the standard procedure for compilation and installation:
 
-  ./configure
-  make
-  make install
+    ./configure
+    make
+    make install
 
 To generate a "./configure" file run "autoreconf", this requires
 autoconf and automake.
@@ -38,3 +38,21 @@ Example:
     ./configure --with-threading --with-opengl
     make
     make install
+
+
+alpharay natively supports these image formates (via CImg library):
+    RAW, ASC, HDR, INR, PPM/PGM, BMP, PAN, DLM
+
+For additional file formates install ImageMagick.
+
+
+Usage
+=====
+
+To render the project examples/hello.xml and save the render result
+to hello.png:
+
+    alpharay -o hello.bmp examples/hello.xml
+
+  
+
