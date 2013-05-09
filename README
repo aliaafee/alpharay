@@ -1,0 +1,40 @@
+alpharay. Ray tracer
+===================
+
+A raytracer, using an XML scene description language.
+
+
+Basic Installation
+==================
+
+alpharay uses the standard procedure for compilation and installation:
+
+  ./configure
+  make
+  make install
+
+To generate a "./configure" file run "autoreconf", this requires
+autoconf and automake.
+
+
+Required Dependencies
+=====================
+
+The only required dependency is "tinyxml", install it in the standard 
+manner for your system or get it from 
+    http://sourceforge.net/projects/tinyxml/
+
+
+Optional Dependencies
+=====================
+
+The following optional dependencies are supported, and can be enabled
+with the given configure options:
+
+    * boost for multi threading, enable --with-threading
+    * freeglut to display preview of render, enable --with-opengl
+
+Example:
+    ./configure --with-threading --with-opengl
+    make
+    make install
