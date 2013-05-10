@@ -19,6 +19,12 @@ bool Bitmap::create(int width, int height)
 
 bool Bitmap::load(std::string filename)
 {
+    if (image_ != NULL) {
+        delete image_;
+    }
+
+    init();
+
     image_ = new cimg_library::CImg<unsigned char>();
     image_->load(filename.c_str());
 
