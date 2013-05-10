@@ -32,17 +32,10 @@ Install it in the standard manner for your system or get it from:
 Optional Dependencies
 =====================
 
-The following optional dependencies are supported, and can be enabled
-with the given configure options:
+The following optional dependencies are supported:
 
-    * boost for multi threading, enable --with-threading
-    * freeglut to display preview of render, enable --with-opengl
-
-Example:
-    ./configure --with-threading --with-opengl
-    make
-    make install
-
+    * boost for multi threading
+    * freeglut to display preview of render
 
 alpharay natively supports these image formates (via CImg library):
     RAW, ASC, HDR, INR, PPM/PGM, BMP, PAN, DLM

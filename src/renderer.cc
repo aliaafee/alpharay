@@ -233,7 +233,7 @@ void Renderer::render (Scene& scene, Image* image, bool join)
     
     resetCells(image);
 
-#ifdef mutlithreading
+#ifdef THREADING
     boost::thread renderThread[threadCount_];
 
     for (int i = 0; i < threadCount_; i++) {

@@ -8,33 +8,46 @@ AC_CONFIG_SRCDIR([src])
 AC_PROG_CXX
 AC_LANG(C++)
 
-AC_CHECK_HEADERS([ limits cfloat iostream sstream string math.h tinyxml.h CImg.h])
-
 AC_CONFIG_FILES([Makefile src/Makefile])
 
+#AC_CHECK_HEADERS([ limits cfloat iostream sstream string math.h])
 
-AC_ARG_WITH(threading, [  --with-threading      enable multi threading])
-if test "$with_threading" == "yes"
+havexml=1
+AC_CHECK_HEADER(tinyxml.h, [], [havexml=0] )
+if test $havexml == 0
 then
-    AC_CHECK_HEADERS(boost/thread.hpp)
-    AC_DEFINE(mutlithreading, true)
+    AC_MSG_ERROR([TinyXml not available, cannot continue])
+fi
+
+havecimg=1
+AC_CHECK_HEADER(CImg.h, [], [havecimg=0] )
+if test $havecimg == 0
+then
+    AC_MSG_ERROR([CImg not available, cannot continue])
+fi
+
+havethread=1
+AC_CHECK_HEADER(boost/thread.hpp, [], [havethread=0] )
+if test $havethread == 1
+then
+    AC_DEFINE(THREADING, true)
     AM_CONDITIONAL(THREADING, true)
     AC_MSG_NOTICE([Multi threading enabled with boost])
 else
     AM_CONDITIONAL(THREADING, false)
-    AC_MSG_NOTICE([Multi threading disabled])
+    AC_MSG_NOTICE([Boost not available, multi threading disabled])
 fi
 
-AC_ARG_WITH(opengl, [  --with-opengl      enable opengl for render preview])
-if test "$with_opengl" == "yes"
+havegl=1
+AC_CHECK_HEADERS([ GL/freeglut.h GL/glu.h ], [], [havegl=0])
+if test $havegl == 1
 then
-    AC_CHECK_HEADERS([ GL/freeglut.h GL/glu.h ])
-    AC_DEFINE(opengl, true)
+    AC_DEFINE(OPENGL, true)
     AM_CONDITIONAL(OPENGL, true)
-    AC_MSG_NOTICE([Render preview enabled with opengl])
+    AC_MSG_NOTICE([Render preview enabled with OpenGL])
 else
     AM_CONDITIONAL(OPENGL, false)
-    AC_MSG_NOTICE([Render preview disabled])
+    AC_MSG_NOTICE([GLUT not available, Render preview disabled])
 fi
 
 AC_OUTPUT

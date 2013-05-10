@@ -168,7 +168,7 @@
                 ydiffusecolor="0.411,0.549,0.839"
                 highlightcolor="1,1,1" 
                 reflectivity="0.5" 
-                reflection="specular"
+                areflection="specular"
                 xreflection="fresnel"
                 scattersamples="10"
                 scatterfactor = "0.01"
@@ -226,9 +226,9 @@
             </mesh0>
 
             
-            <mesh0 name="cube1" position="1.5,1,0" rotation="0,0,0" scale="1,1,1" material="meshmat">
+            <mesh name="cube1" position="1.5,1,0" rotation="0,0,0" scale="1,1,1" material="meshmat">
                 <file type="obj" scale="50" position="0,0,-2" filename="obj/dragon-big.obj" />
-            </mesh0>
+            </mesh>
 
 
             <mesh0 name="cube" position="1.5,1,2" rotation="0,0,0" scale="1.5,1.5,1.5" material="meshmat">

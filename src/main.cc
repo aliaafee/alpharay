@@ -15,7 +15,7 @@ using namespace std;
 Project project;
 Bitmap final("");
 
-#ifdef opengl
+#ifdef OPENGL
 
 #include "gl-image.h"
 GLImage preview("");
@@ -104,10 +104,10 @@ int main (int argc, char **argv)
         return 1;
     }
 
-#ifndef opengl
+#ifndef OPENGL
     if (outFile == "") {
         usage(argv[0]);
-        cerr << "To see render preview compile --with-opengl" << endl;
+        cerr << "Compile with freeglut to enable render preview" << endl;
         return 1;
     }
 #endif
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
         return 0;
     }
 
-#ifdef opengl
+#ifdef OPENGL
     project.setPreviewImage(&preview);
     project.renderPreview();
     initGlut(argc, argv);
