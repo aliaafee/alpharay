@@ -4,9 +4,6 @@
 #include <string>
 #include <unistd.h>
 
-#include <GL/freeglut.h>
-#include <GL/glu.h>
-
 #include "project.h"
 #include "bitmap.h"
 
@@ -17,8 +14,10 @@ Bitmap final("");
 
 #ifdef OPENGL
 
-#include "gl-image.h"
-GLImage preview("");
+#include <GL/freeglut.h>
+#include <GL/glu.h>
+
+Bitmap preview("");
 
 void display(void)
 {
@@ -51,6 +50,7 @@ void initGlut(int argc, char** argv)
     glutInit(&argc, argv);
     
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+    
     glutInitWindowSize(preview.width(), preview.height());
 
     glutCreateWindow("Render Result");
@@ -119,12 +119,15 @@ int main (int argc, char **argv)
 
     if (outFile != "") {
         project.setFinalImage(&final);
-        project.renderFinal(outFile);
+        project.renderFinal();
+        cout << "Saving render result..." << outFile << endl;
+        final.save(outFile);
         return 0;
     }
 
 #ifdef OPENGL
     project.setPreviewImage(&preview);
+    preview.enableDisplay();
     project.renderPreview();
     initGlut(argc, argv);
     glutMainLoop();

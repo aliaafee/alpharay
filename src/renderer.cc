@@ -94,14 +94,10 @@ void Renderer::getFresnelValues(Vector Vincident, Vector normal,
 
 Color Renderer::trace(Scene &scene ,Ray ray, int depth)
 {
-    raysCast_ ++ ;
-
-    usleep(int(randf(10,100)));
-
     return Color(randf(0,1), randf(0,1), randf(0,1));
 }
 
-
+/*
 void Renderer::correctExposure(Color &color) {
     if (exposure_ != 0) {
         color.x = 1.0f - expf(color.x * exposure_);
@@ -109,7 +105,7 @@ void Renderer::correctExposure(Color &color) {
         color.z = 1.0f - expf(color.z * exposure_);
     }
 }
-
+*/
 
 void Renderer::renderCell
             (Scene &scene, Image *image, int x0, int y0, int x1, int y1)
@@ -139,8 +135,6 @@ void Renderer::renderCell
             }
             
             color /= ts;
-
-            correctExposure(color);
 
             image->setColor(point, color);
 		}

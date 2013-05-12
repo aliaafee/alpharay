@@ -26,10 +26,10 @@ class Renderer : public XmlObject
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
-    protected:
-        int traceDepth_; 
-        
         float exposure_;
+
+    protected:
+        int traceDepth_;  
 
         int subSamplesX_;
         int subSamplesY_;
@@ -48,7 +48,7 @@ class Renderer : public XmlObject
                             Vector *Vreflect, Vector *Vrefract,
                             float *reflectionCoeff, float *transmissionCoeff );
 
-        void correctExposure(Color &color);
+        //void correctExposure(Color &color);
     private:
         int threadCount_;
 

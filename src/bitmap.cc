@@ -3,11 +3,43 @@
 #include "bitmap.h"
 
 
+void Bitmap::init() 
+{ 
+    Image::init(); 
+    
+    image_ = NULL;
+
+#ifdef OPENGL
+    preview_ = NULL;
+#endif
+}
+
+
+Bitmap::~Bitmap()
+{
+    if (image_ != NULL) {
+        delete image_;
+    }
+
+#ifdef OPENGL
+    if (preview_ != NULL) {
+        delete preview_;
+    }
+#endif
+}
+
+
 bool Bitmap::create(int width, int height)
 {
     if (image_ != NULL) {
         delete image_;
     }
+
+#ifdef OPENGL
+    if (preview_ != NULL) {
+        delete preview_;
+    }
+#endif
 
     init();
 
@@ -22,6 +54,12 @@ bool Bitmap::load(std::string filename)
     if (image_ != NULL) {
         delete image_;
     }
+
+#ifdef OPENGL
+    if (preview_ != NULL) {
+        delete preview_;
+    }
+#endif
 
     init();
 
@@ -39,6 +77,28 @@ bool Bitmap::save(std::string filename)
         return true;
     }
     return false;
+}
+
+
+void Bitmap::enableDisplay()
+{
+#ifdef OPENGL
+    if (preview_ == NULL) {
+        preview_ = new GLImage(width(), height());
+    }
+#endif
+}
+
+
+void Bitmap::display()
+{
+#ifdef OPENGL
+    if (image_ != NULL && preview_ != NULL) {
+        preview_->display();
+    }
+#else
+    std::cout << "Compile with OpenGL to display preview"
+#endif
 }
 
 
@@ -60,9 +120,8 @@ Color Bitmap::getColor(Vector2 point)
 
 bool Bitmap::setColor(Vector2 point, Color color)
 {
-    if (!image_) {
+    if (!image_)
         return false;
-    }
 
     //color.capColor();
 
@@ -79,7 +138,63 @@ bool Bitmap::setColor(Vector2 point, Color color)
 
     image_->draw_point(int(point.x)-1 ,int(point.y)-1 ,col);
 
+#ifdef OPENGL
+    if (!preview_)
+        return true;
+
+    preview_->setColor(point, color);
+#endif
+
     return true;
+}
+
+
+void Bitmap::bloom(float size, float highpass) {
+    if (!image_)
+        return;
+
+    CImg<float> blured = *image_;
+
+    //High pass filter
+    cimg_forXYZ(blured,x,y,z) {
+        if ( ( blured(x,y,z,0) + blured(x,y,z,1) + blured(x,y,z,2) ) > highpass) {
+            blured(x,y,z,0) = blured(x,y,z,0);
+            blured(x,y,z,1) = blured(x,y,z,1);
+            blured(x,y,z,2) = blured(x,y,z,2);
+        } else {
+            blured(x,y,z,0) = 0.0;
+            blured(x,y,z,1) = 0.0;
+            blured(x,y,z,2) = 0.0;
+        }
+    }
+
+    //Blur
+    blured.blur(size,size,1);
+
+    //Combine
+    cimg_forXYZC((*image_),x,y,z,k) {
+        (*image_)(x,y,z,k) += blured(x,y,z,k);
+    }
+}
+
+
+void Bitmap::correctExposure(float exposure) {
+    if (!image_)
+        return;
+
+    bloom(40, 60000);
+
+    //Correct Exposure
+    cimg_forXYZC((*image_),x,y,z,k) {
+        (*image_)(x,y,z,k) = (1.0f - expf(((*image_)(x,y,z,k)/255.0f) * exposure)) * 255.0f;
+    }
+
+#ifdef OPENGL
+    if (!preview_)
+        return;
+
+    copyTo(preview_);
+#endif
 }
 
 

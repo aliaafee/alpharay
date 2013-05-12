@@ -14,14 +14,14 @@ using namespace std;
 #include "raytracer.h"
 #include "pathtracer.h"
 
-#include "image.h"
+#include "bitmap.h"
 
 class Project {
     public:
         Scene scene;
         Renderer* renderer;
-        Image* preview;
-        Image* final;
+        Bitmap* preview;
+        Bitmap* final;
         Vector2 previewSize;
         Vector2 finalSize;
 
@@ -30,27 +30,34 @@ class Project {
         bool load(string filename);
         bool save(string filename);
 
-        void setPreviewImage(Image* image) 
+        void setPreviewImage(Bitmap* image) 
             { preview = image; preview->create(previewSize.x, previewSize.y); }
-        void setFinalImage(Image* image) 
+        void setFinalImage(Bitmap* image) 
             { final = image; final->create(finalSize.x, finalSize.y); }
 
         void renderPreview(bool join = false) {
             if (renderer == NULL) return;
             if (preview == NULL) return;
 
-            renderer->render(scene, preview, join);
+            renderer->render(scene, preview, true);
+
+            preview->correctExposure(renderer->exposure_);
         }
 
-        void renderFinal(string filename) {
+        void renderFinal() {
             if (renderer == NULL) return;
             if (final == NULL) return;
 
             renderer->render(scene, final, true);
 
+            final->correctExposure(renderer->exposure_);
+
+
+            /*
             cout << "Saving to " << filename << " ..." << endl;
             final->save(filename);
             cout << "Done" << endl;
+            */
         }
 
     private:

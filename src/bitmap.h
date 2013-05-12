@@ -9,11 +9,17 @@
 #define cimg_OS 0
 #include <CImg.h>
 
+using namespace cimg_library;
+
+#ifdef OPENGL
+#include "gl-image.h"
+#endif
+
 
 class Bitmap : public Image, virtual public XmlObjectNamed
 {
     public:
-        virtual void init() { Image::init(); image_ = NULL; }
+        virtual void init();
 
         Bitmap( int width, int height ) 
             : Image("unnamed"), XmlObjectNamed("bitmap", "unnamed")
@@ -23,14 +29,21 @@ class Bitmap : public Image, virtual public XmlObjectNamed
             : Image(name), XmlObjectNamed("bitmap", name)
             { init(); }
 
-        ~Bitmap() { delete image_; }
+        ~Bitmap();
 
         virtual bool create(int width, int height);
         virtual bool load(std::string filename);
         virtual bool save(std::string filename);
 
+        virtual void enableDisplay();
+        virtual void display();
+
         virtual Color getColor(Vector2 point);
         virtual bool setColor(Vector2 point, Color color);
+
+        void correctExposure(float exposure);
+
+        void bloom(float size, float highpass);
 
         virtual int width();
         virtual int height();
@@ -41,7 +54,11 @@ class Bitmap : public Image, virtual public XmlObjectNamed
     protected:
         std::string filename_;
 
-        cimg_library::CImg<float>* image_;
+        CImg<float>* image_;
+
+#ifdef OPENGL
+        GLImage* preview_;
+#endif
 };
 
 #endif // _BITMAP_H_
