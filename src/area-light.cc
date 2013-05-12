@@ -78,10 +78,10 @@ TiXmlElement* AreaLight::getXml() {
 }
 
 
-bool AreaLight::loadXml(TiXmlElement* pElem, std::string path) {
+bool AreaLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
     init();
 
-    SpotLight::loadXml(pElem, path);
+    SpotLight::loadXml(pElem, path, linkList);
 
     pElem->QueryFloatAttribute("lightradius", &lightRadius_);
     pElem->QueryIntAttribute("samples", &samples_);

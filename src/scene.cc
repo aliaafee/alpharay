@@ -23,8 +23,7 @@ Color Scene::envColor(const Ray &ray) {
         return envColor_;
     }
 
-    //Use ray dir to pick point on envMap;
-    return envColor_;
+    return envMap_->color(ray.direction_, Vector2(0,0));
 }
 
 void Scene::transform() {
@@ -68,7 +67,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Light** light, std::string path){
     }
 
     if (*light) {
-        (*light)->loadXml(pElem, path);
+        (*light)->loadXml(pElem, path, &linkList_);
         return true;
     }
     return false;
@@ -177,6 +176,11 @@ TiXmlElement* Scene::getXml() {
 
     //environment
     root->SetAttribute("skycolor", envColor_.str());
+    if (envMap_ == NULL) {
+        root->SetAttribute("skymap", "");
+    } else {
+        root->SetAttribute("skymap", envMap_->name());
+    }
 
     //camera
     root->LinkEndChild(camera_->getXml());
@@ -232,6 +236,9 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
 
     //Environment
     pElem->QueryValueAttribute <Vector> ("skycolor", &envColor_);
+    std::string mapname = "";
+    pElem->QueryStringAttribute ("skymap", &mapname);
+    linkList_.add(mapname, &envMap_);
 
     //Get handle to element
     TiXmlHandle hRoot = TiXmlHandle(pElem);

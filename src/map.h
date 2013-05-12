@@ -110,7 +110,7 @@ class Map2dSpherical : public Map2dPlane, virtual public XmlObjectNamed
         virtual void init() { Map2dPlane::init(); }
         
         Map2dSpherical( std::string name ) 
-            : Map2dPlane(name), XmlObjectNamed("map2dcylindrical", name)
+            : Map2dPlane(name), XmlObjectNamed("map2dspherical", name)
             { init(); }
 
         ~Map2dSpherical() { } ;

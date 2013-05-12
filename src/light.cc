@@ -74,7 +74,7 @@ TiXmlElement* Light::getXml() {
 }
 
 
-bool Light::loadXml(TiXmlElement* pElem, std::string path) {
+bool Light::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
     init();
 
     XmlObjectNamed::loadXml(pElem, path);

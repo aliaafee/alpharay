@@ -41,7 +41,7 @@ class Bitmap : public Image, virtual public XmlObjectNamed
     protected:
         std::string filename_;
 
-        cimg_library::CImg<unsigned char>* image_;
+        cimg_library::CImg<float>* image_;
 };
 
 #endif // _BITMAP_H_

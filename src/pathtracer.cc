@@ -19,7 +19,7 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
 	BaseObject *closestObject = closestIntersection(scene, ray, &t);
 
     if (closestObject == NULL)
-        return Color(0, 0, 0);
+        return scene.envColor(ray);
 
     Material material = closestObject->material();
     Vector intPoint = closestObject->point(ray, t);

@@ -75,10 +75,10 @@ TiXmlElement* SpotLight::getXml() {
 }
 
 
-bool SpotLight::loadXml(TiXmlElement* pElem, std::string path) {
+bool SpotLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
     init();
 
-    Light::loadXml(pElem, path);
+    Light::loadXml(pElem, path, linkList);
 
     pElem->QueryValueAttribute <Vector> ("target", &target_);
     pElem->QueryFloatAttribute("angle", &angle_);

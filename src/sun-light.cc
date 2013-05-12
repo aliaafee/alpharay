@@ -49,10 +49,10 @@ TiXmlElement* SunLight::getXml() {
 }
 
 
-bool SunLight::loadXml(TiXmlElement* pElem, std::string path) {
+bool SunLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
     init();
 
-    Light::loadXml(pElem, path);
+    Light::loadXml(pElem, path, linkList);
 
     pElem->QueryIntAttribute("samples", &samples_);
     pElem->QueryFloatAttribute("size", &size_);

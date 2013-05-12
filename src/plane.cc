@@ -51,6 +51,27 @@ BaseObject* Plane::intersection(Ray &ray, float *distance, float limit)
 		return NULL;
 	}
     
+    /*
+    Vector intersectionPoint;
+    V_INT_POINT(intersectionPoint, Ro, Rd, t)
+
+    float u = intersectionPoint * Vector(0,1,0);
+    if (u < (-0.5)) {
+        return NULL;
+    }
+    if (u > 0.5) {
+        return NULL;
+    }
+
+    float v = intersectionPoint * Vector(1,0,0);
+
+    if (v < (-0.5)) {
+        return NULL;
+    }
+    if (v > 0.5) {
+        return NULL;
+    }*/
+    
     *distance = t;
 
     return this;
