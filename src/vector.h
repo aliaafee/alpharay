@@ -9,6 +9,7 @@
 #define   SMALL_NUM 0.0000001f
 #define EPSILON 0.000001f
 
+#include <cstdlib>
 #include <cfloat>
 #include <iostream>
 #include <string>
