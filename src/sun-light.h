@@ -4,6 +4,7 @@
 #define _SUN_LIGHT_H_
 
 #include "light.h"
+#include "map.h"
 
 
 class SunLight : public Light, virtual public XmlObjectNamed
@@ -26,6 +27,7 @@ class SunLight : public Light, virtual public XmlObjectNamed
        int samples_;
 
        float size_; //Size in radians
+       Map* lightMap_;
 };
 
 

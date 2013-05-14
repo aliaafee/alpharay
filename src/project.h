@@ -41,7 +41,8 @@ class Project {
 
             renderer->render(scene, preview, true);
 
-            preview->correctExposure(renderer->exposure_);
+            //preview->bloom(10, 200);
+            preview->toneMap_exp(renderer->exposure_);
         }
 
         void renderFinal() {
@@ -50,14 +51,8 @@ class Project {
 
             renderer->render(scene, final, true);
 
-            final->correctExposure(renderer->exposure_);
-
-
-            /*
-            cout << "Saving to " << filename << " ..." << endl;
-            final->save(filename);
-            cout << "Done" << endl;
-            */
+            //final->bloom(30, 150);
+            final->toneMap_exp(renderer->exposure_);
         }
 
     private:

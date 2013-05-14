@@ -8,6 +8,7 @@ void SunLight::init() {
 
     samples_ = 1;
     size_ = 0;
+    lightMap_ = NULL;
 }
 
 
@@ -17,7 +18,7 @@ void SunLight::set(std::vector<Object*>* objects, Material &material, Vector &po
     Ray lightRay(point, point+position_, true);
 
     Vector quantaOrigin, lightDirection;
-    Color quantaIntensity = intensity_ / (float(samples_) * kIntensity_);
+    Color quantaIntensity = intensity_ / (float(samples_));
 
     lightDirection = lightRay.direction_;
 
@@ -27,6 +28,9 @@ void SunLight::set(std::vector<Object*>* objects, Material &material, Vector &po
         BaseObject* intObject = getFirstIntersection(objects, lightRay, BIG_NUM);
 
         if (intObject == NULL) {
+            if (lightMap_ != NULL) {
+                quantaIntensity = lightMap_->color(lightRay.direction_,Vector2(0,0)) / (float(samples_));
+            }
             quantaOrigin = lightRay.position_ + lightRay.direction_;
             material.addLight(quantaIntensity,
                         quantaOrigin,
@@ -45,6 +49,12 @@ TiXmlElement* SunLight::getXml() {
     root->SetAttribute("samples", samples_);
     root->SetAttribute("size", ftos(size_));
 
+    if (lightMap_ == NULL) {
+        root->SetAttribute("lightmap", "");
+    } else {
+        root->SetAttribute("lightmap", lightMap_->name());
+    }
+
     return root;
 }
 
@@ -56,6 +66,12 @@ bool SunLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList
 
     pElem->QueryIntAttribute("samples", &samples_);
     pElem->QueryFloatAttribute("size", &size_);
+
+    std::string mapname; 
+
+    mapname = "";
+    pElem->QueryStringAttribute ("lightmap", &mapname);
+    linkList->add(mapname, &lightMap_);
 
     return true;
 }

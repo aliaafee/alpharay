@@ -13,6 +13,9 @@ using namespace cimg_library;
 
 #ifdef OPENGL
 #include "gl-image.h"
+#define CopyDisplay() if (!preview_) return; copyTo(preview_);
+#else
+#define CopyDisplay() ;
 #endif
 
 
@@ -41,12 +44,13 @@ class Bitmap : public Image, virtual public XmlObjectNamed
         virtual Color getColor(Vector2 point);
         virtual bool setColor(Vector2 point, Color color);
 
-        void correctExposure(float exposure);
-
-        void bloom(float size, float highpass);
-
         virtual int width();
         virtual int height();
+
+        void toneMap_simple();
+        void toneMap_gamma(float a, float gamma);
+        void toneMap_exp(float exposure);
+        void bloom(float size, float highpass);
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);

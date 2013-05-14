@@ -97,7 +97,7 @@ void Bitmap::display()
         preview_->display();
     }
 #else
-    std::cout << "Compile with OpenGL to display preview"
+    std::cout << "Compile with OpenGL to display"
 #endif
 }
 
@@ -120,8 +120,7 @@ Color Bitmap::getColor(Vector2 point)
 
 bool Bitmap::setColor(Vector2 point, Color color)
 {
-    if (!image_)
-        return false;
+    if (!image_) return false;
 
     //color.capColor();
 
@@ -149,55 +148,6 @@ bool Bitmap::setColor(Vector2 point, Color color)
 }
 
 
-void Bitmap::bloom(float size, float highpass) {
-    if (!image_)
-        return;
-
-    CImg<float> blured = *image_;
-
-    //High pass filter
-    cimg_forXYZ(blured,x,y,z) {
-        if ( ( blured(x,y,z,0) + blured(x,y,z,1) + blured(x,y,z,2) ) > highpass) {
-            blured(x,y,z,0) = blured(x,y,z,0);
-            blured(x,y,z,1) = blured(x,y,z,1);
-            blured(x,y,z,2) = blured(x,y,z,2);
-        } else {
-            blured(x,y,z,0) = 0.0;
-            blured(x,y,z,1) = 0.0;
-            blured(x,y,z,2) = 0.0;
-        }
-    }
-
-    //Blur
-    blured.blur(size,size,1);
-
-    //Combine
-    cimg_forXYZC((*image_),x,y,z,k) {
-        (*image_)(x,y,z,k) += blured(x,y,z,k);
-    }
-}
-
-
-void Bitmap::correctExposure(float exposure) {
-    if (!image_)
-        return;
-
-    bloom(40, 60000);
-
-    //Correct Exposure
-    cimg_forXYZC((*image_),x,y,z,k) {
-        (*image_)(x,y,z,k) = (1.0f - expf(((*image_)(x,y,z,k)/255.0f) * exposure)) * 255.0f;
-    }
-
-#ifdef OPENGL
-    if (!preview_)
-        return;
-
-    copyTo(preview_);
-#endif
-}
-
-
 int Bitmap::width()
 {
     if (image_ != NULL)
@@ -211,6 +161,94 @@ int Bitmap::height()
     if (image_ != NULL)
         return image_->height();
     return 0;
+}
+
+
+void Bitmap::toneMap_simple()
+{
+    if (!image_) return;
+
+    float v;
+
+    cimg_forXYZC((*image_),x,y,z,k) {
+        v = (*image_)(x,y,z,k) / 255.0f;
+
+        v = v / (v + 1.0f);
+
+        (*image_)(x,y,z,k) = v * 255.0f;
+    }
+
+    CopyDisplay()
+}
+
+void Bitmap::toneMap_gamma(float a, float gamma)
+{
+    // a > 0 and 0 < gamma < 1
+    // converts from [0, 1/a^(1/gamma)] to [0,1]
+    if (!image_) return;
+
+    float v;
+
+    cimg_forXYZC((*image_),x,y,z,k) {
+        v = (*image_)(x,y,z,k) / 255.0f;
+
+        v = a * pow(v, gamma);
+
+        (*image_)(x,y,z,k) = v * 255.0f;
+    }
+
+    CopyDisplay()
+}
+
+void Bitmap::toneMap_exp(float exposure)
+{
+    if (!image_) return;
+
+    float v;
+
+    cimg_forXYZC((*image_),x,y,z,k) {
+        v = (*image_)(x,y,z,k) / 255.0f;
+
+        v = 1.0f - expf( v * exposure );
+
+        (*image_)(x,y,z,k) = v * 255.0f;
+    }
+
+    CopyDisplay()
+}
+
+
+
+void Bitmap::bloom(float radius, float highpass) 
+{
+    if (!image_) return;
+
+    CImg<float> blured = *image_;
+
+    highpass *= 255.0f;
+
+    //High pass filter
+    cimg_forXYZ(blured,x,y,z) {
+        if ( (( blured(x,y,z,0) + blured(x,y,z,1) + blured(x,y,z,2) ) / 3.0f) > highpass) {
+            blured(x,y,z,0) = blured(x,y,z,0);
+            blured(x,y,z,1) = blured(x,y,z,1);
+            blured(x,y,z,2) = blured(x,y,z,2);
+        } else {
+            blured(x,y,z,0) = 0.0;
+            blured(x,y,z,1) = 0.0;
+            blured(x,y,z,2) = 0.0;
+        }
+    }
+
+    //Blur
+    blured.blur(radius,radius,1);
+
+    //Combine
+    cimg_forXYZC((*image_),x,y,z,k) {
+        (*image_)(x,y,z,k) += blured(x,y,z,k);
+    }
+
+    CopyDisplay()
 }
 
 

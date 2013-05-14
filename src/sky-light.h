@@ -25,6 +25,7 @@ class SkyLight : public Light, virtual public XmlObjectNamed
 
     protected:
        int samples_;
+
        Map* lightMap_;
 };
 

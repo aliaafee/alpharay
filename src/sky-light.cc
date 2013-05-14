@@ -23,11 +23,10 @@ void SkyLight::set(std::vector<Object*>* objects, Material &material, Vector &po
 
         BaseObject* intObject = getFirstIntersection(objects, lightRay, BIG_NUM);
 
-        if (lightMap_ != NULL) {
-            quantaIntensity = lightMap_->color(lightRay.direction_,Vector2(0,0)) / (float(samples_));
-        }
-
         if (intObject == NULL) {
+            if (lightMap_ != NULL) {
+                quantaIntensity = lightMap_->color(lightRay.direction_,Vector2(0,0)) / (float(samples_));
+            }
             quantaOrigin = lightRay.position_ + lightRay.direction_;
             material.addLight(quantaIntensity,
                         quantaOrigin,

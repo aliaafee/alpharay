@@ -21,14 +21,14 @@ Ray::Ray(Vector origin, Vector target) {
 }
 
 Ray Ray::getReflectedRay(Vector origin,Vector normal) {
-	Ray reflectedRay;
+	Ray reflectedRay = *this;
 	reflectedRay.position_ = origin;
 	reflectedRay.direction_ = direction_.getReflection(normal);
 	return reflectedRay;
 }
 
 Ray Ray::getRefractedRay(Vector origin, Vector normal, float newOpticDensity_) {
-	Ray refractedRay;
+	Ray refractedRay = *this;
 
     float n1 = opticDensity_;
     float n2 = newOpticDensity_;
@@ -57,7 +57,7 @@ Ray Ray::getRefractedRay(Vector origin, Vector normal, float newOpticDensity_) {
 
 
 Ray Ray::getRamdomRayInHemisphere(Vector origin, Vector normal, float scatter) {
-    Ray newRay;
+    Ray newRay = *this;
 
     double r1=2*M_PI*float((float)rand()/RAND_MAX);
     double r2=float((float)rand()/RAND_MAX) * scatter;

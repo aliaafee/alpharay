@@ -49,6 +49,8 @@ BaseObject* Light::getFirstIntersection(std::vector<Object*>* objects, Ray &ray,
     BaseObject *currentObject = NULL;
 	float distance;
 
+    ray.shadowRay_ = true;
+
     for (int i=0; i < (*objects).size(); i++) {
             currentObject = ((*objects)[i])->intersection(ray, &distance, rayLimit);
             if (currentObject != NULL) {

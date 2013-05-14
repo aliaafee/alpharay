@@ -120,6 +120,7 @@ int main (int argc, char **argv)
     if (outFile != "") {
         project.setFinalImage(&final);
         project.renderFinal();
+
         cout << "Saving render result..." << outFile << endl;
         final.save(outFile);
         return 0;
