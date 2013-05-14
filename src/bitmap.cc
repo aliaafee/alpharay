@@ -86,6 +86,8 @@ void Bitmap::enableDisplay()
     if (preview_ == NULL) {
         preview_ = new GLImage(width(), height());
     }
+#else
+    std::cout << "Compile with OpenGL to display" << std::endl;
 #endif
 }
 
@@ -97,7 +99,7 @@ void Bitmap::display()
         preview_->display();
     }
 #else
-    std::cout << "Compile with OpenGL to display"
+    std::cout << "Compile with OpenGL to display" << std::endl;
 #endif
 }
 
