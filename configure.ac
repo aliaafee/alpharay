@@ -10,7 +10,7 @@ AC_LANG(C++)
 
 AC_CONFIG_FILES([Makefile src/Makefile])
 
-#AC_CHECK_HEADERS([ limits cfloat iostream sstream string math.h])
+#AC_CHECK_HEADERS([cstdlib limits cfloat iostream sstream string math.h])
 
 havexml=1
 AC_CHECK_HEADER(tinyxml.h, [], [havexml=0] )
