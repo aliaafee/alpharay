@@ -1,3 +1,5 @@
+/* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
+
 #ifndef _VERTEX_H_
 #define _VERTEX_H_
 

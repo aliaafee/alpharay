@@ -1,4 +1,4 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
+/* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
 
 #ifndef _SUN_LIGHT_H_
 #define _SUN_LIGHT_H_

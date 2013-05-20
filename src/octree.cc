@@ -1,4 +1,7 @@
+/* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
+
 #include "octree.h"
+
 
 bool Octree::add(std::vector<Triangle*> *newtriangles, unsigned long currentDepth, unsigned long *leaves) {
     if (!newtriangles) {

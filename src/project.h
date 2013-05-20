@@ -1,3 +1,5 @@
+/* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
+
 #ifndef _PROJECT_H_
 #define _PROJECT_H_
 
@@ -26,34 +28,17 @@ class Project {
         Vector2 finalSize;
 
         Project () { renderer = NULL; preview = NULL; final = NULL; }
-        
-        bool load(string filename);
-        bool save(string filename);
 
         void setPreviewImage(Bitmap* image) 
             { preview = image; preview->create(previewSize.x, previewSize.y); }
         void setFinalImage(Bitmap* image) 
             { final = image; final->create(finalSize.x, finalSize.y); }
 
-        void renderPreview(bool join = false) {
-            if (renderer == NULL) return;
-            if (preview == NULL) return;
-
-            renderer->render(scene, preview, true);
-
-            //preview->bloom(10, 200);
-            preview->toneMap_exp(renderer->exposure_);
-        }
-
-        void renderFinal() {
-            if (renderer == NULL) return;
-            if (final == NULL) return;
-
-            renderer->render(scene, final, true);
-
-            //final->bloom(30, 150);
-            final->toneMap_exp(renderer->exposure_);
-        }
+        void renderPreview();
+        void renderFinal();
+        
+        bool load(string filename);
+        bool save(string filename);
 
     private:
         std::string pathBase(std::string path);

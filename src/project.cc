@@ -1,3 +1,5 @@
+/* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
+
 #include "project.h"
 
 
@@ -6,6 +8,32 @@ std::string Project::pathBase(std::string path) {
     if (end == 0)
         return path;
     return path.substr(0, end);
+}
+
+
+void Project::renderPreview() {
+    if (renderer == NULL) return;
+    if (preview == NULL) return;
+
+    std::cout << "Preview " << preview->width() << "x" << preview->height() << std::endl;
+
+    renderer->render(scene, preview, true);
+
+    preview->bloom(20, 150);
+    preview->toneMap_exp(renderer->exposure_);
+}
+
+
+void Project::renderFinal() {
+    if (renderer == NULL) return;
+    if (final == NULL) return;
+
+    std::cout << "Final " << final->width() << "x" << final->height() << std::endl;
+
+    renderer->render(scene, final, true);
+
+    final->bloom(10, 150);
+    final->toneMap_exp(renderer->exposure_);
 }
 
 

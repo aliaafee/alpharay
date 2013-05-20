@@ -1,4 +1,4 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
+/* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
 
 #include "renderer.h"
 
@@ -35,7 +35,7 @@ BaseObject* Renderer::closestIntersection(Scene &scene, Ray &ray, float *closest
 			currentObject = scene.objects[i]->intersection(ray, &distance, BIG_NUM);   
 
 			if (currentObject != NULL) {
-                if (distance > 0.01) {
+                if (distance > 0.0000001) {
 				    if (distance < *closest) {
                         closestObject = currentObject;
                         *closest = distance;
