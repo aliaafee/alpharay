@@ -67,16 +67,18 @@ void Material::addLight(Vector &lightIntensity,
     //
     //src: http://en.wikipedia.org/wiki/Phong_reflection_model
 
-    Vector L = (lightPosition - point).getUnitVector();
-    N.normalize();
+    Vector L;// = (lightPosition - point).getUnitVector();
+	V_SUB(L, lightPosition, point);
+	L.normalize();
+    //N.normalize();
 	Vector R = L.getReflection(N);
-	Vector V = viewerDirection.getUnitVector();
+	//Vector V = viewerDirection;//.getUnitVector();
 
-    double LdN = L*N;
-    double RdV = R*V;
+    double LdN = V_DOT(L, N);// = L*N;
 
 	if (LdN > 0.0) {
         diffuseIntensity_ += lightIntensity * kd_ * LdN ;
+		double RdV = V_DOT(R, viewerDirection);// = R*viewerDirection;
 	    if (RdV > 0.0) {
             highlightIntensity_ += lightIntensity * ks_ * pow(RdV,alpha_);
         }

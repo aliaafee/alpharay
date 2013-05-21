@@ -25,9 +25,12 @@ void SkyLight::set(std::vector<Object*>* objects, Material &material, Vector &po
 
         if (intObject == NULL) {
             if (lightMap_ != NULL) {
-                quantaIntensity = lightMap_->color(lightRay.direction_,Vector2(0,0)) / (float(samples_));
+                quantaIntensity = lightMap_->color(lightRay.direction_,Vector2(0,0));
+				quantaIntensity /= (float(samples_));
             }
-            quantaOrigin = lightRay.position_ + lightRay.direction_;
+
+			V_ADD(quantaOrigin, lightRay.position_, lightRay.direction_);
+
             material.addLight(quantaIntensity,
                         quantaOrigin,
                         viewDirection,

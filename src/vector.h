@@ -26,6 +26,11 @@
 
 #define V_DOT(v1, v2) (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z)
 
+#define V_ADD(dest, v1, v2) \
+    dest.x = v1.x + v2.x; \
+    dest.y = v1.y + v2.y; \
+    dest.z = v1.z + v2.z; \
+
 #define V_SUB(dest, v1, v2) \
     dest.x = v1.x - v2.x; \
     dest.y = v1.y - v2.y; \

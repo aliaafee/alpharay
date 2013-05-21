@@ -188,7 +188,7 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                 //UVMapping
                 Vector2 p;
                 token = "0"; getline(ss, token, ' ');
-                p.x = 1.0f - stof(token);
+                p.x = stof(token);
                 token = "0"; getline(ss, token, ' ');
                 p.y = 1.0f - stof(token);
 
