@@ -145,6 +145,8 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
         *object = new Sphere("");
     } else if (name == "plane") {
         *object = new Plane("");
+	} else if (name == "cone") {
+        *object = new Cone("");
     } else if (name == "mesh") {
         *object = new Mesh("");
     }

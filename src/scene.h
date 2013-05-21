@@ -29,6 +29,7 @@
 #include "object.h"
 #include "sphere.h"
 #include "plane.h"
+#include "cone.h"
 #include "mesh.h"
 
 
