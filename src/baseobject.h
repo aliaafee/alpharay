@@ -32,7 +32,7 @@ class BaseObject
         virtual Material material() //Return a copy of the material
             { if (material_ != NULL) { return Material(*material_); } else { return Material("default"); } } 
 
-        virtual BaseObject* intersection(Ray &ray, float *t, float limit) {return false; };
+        virtual BaseObject* intersection(Ray &ray, float *t, float limit) {return NULL; };
 
         virtual Vector transformPoint(Vector &point) {}; //Convert a point in object space to world space
         virtual Vector transformPointInv(Vector &point) {}; //Convert a point in world space to object space
