@@ -145,7 +145,7 @@ Color Map2dCylindrical::color(Vector  point, Vector2 point2 = Vector2(0,0))
 {
     point = transformPointInv(point);
 
-    point2.x = atan2(point.y, point.x) / (M_PI*2) * -1;
+    point2.x = atan2(point.y, point.x) / (M_PI*2);
     point2.y = -0.5 - (point.z/2);
 
     return Map2d::color(point2);
@@ -157,7 +157,7 @@ Color Map2dSpherical::color(Vector  point, Vector2 point2 = Vector2(0,0))
     point = transformPointInv(point);
 
     point.toSpherical();
-    point2.x = point.z / (M_PI*2) * -1;
+    point2.x = point.z / (M_PI*2);
     point2.y = point.y / (M_PI);
 
     return Map2d::color(point2);
