@@ -11,8 +11,8 @@ void Renderer::init()
         
     exposure_ = -1.0f;
 
-    subSamplesX_ = 1;
-    subSamplesY_ = 1;
+    subSamplesX_ = 4;
+    subSamplesY_ = 4;
 
     statusOn_ = true;
 
@@ -237,7 +237,7 @@ void Renderer::render (Scene& scene, Image* image, bool join)
 
     boost::thread status = boost::thread( &Renderer::statusDisplay, this );
 
-    if (!join) return;
+	//if (!join) return;
 
     for (int i = 0; i < threadCount_; i++) {
         renderThread[i].join();

@@ -19,7 +19,7 @@ void Project::renderPreview() {
 
     renderer->render(scene, preview, true);
 
-    preview->bloom(20, 150);
+	//preview->bloom(40, 0.9);
     preview->toneMap_exp(renderer->exposure_);
 }
 
