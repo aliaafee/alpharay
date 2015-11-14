@@ -35,6 +35,8 @@ class Project {
             { final = image; final->create(finalSize.x, finalSize.y); }
 
         void renderPreview();
+		Color renderPreviewPixel(int x, int y);
+
         void renderFinal();
         
         bool load(string filename);

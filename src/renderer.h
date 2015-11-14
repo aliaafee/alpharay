@@ -21,6 +21,7 @@ class Renderer : public XmlObject
             { init(); }
 
         virtual void render (Scene &scene, Image *image, bool join);
+		Color renderPixel (Scene& scene, Image* image, int x, int y);
         virtual void renderST (Scene &scene, Image *image);
 
         virtual TiXmlElement* getXml();

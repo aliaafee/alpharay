@@ -3,6 +3,8 @@
 #ifndef _BASE_OBJECT_H_
 #define _BASE_OBJECT_H_
 
+#include <string>
+
 #include "vector.h"
 #include "ray.h"
 #include "material.h"
@@ -41,6 +43,7 @@ class BaseObject
         virtual Vector transformDisplacement(Vector &point) {};
     	virtual Vector transformDisplacementInv(Vector &point) {};
 
+		virtual std::string str() { return "baseobject"; }
 
     protected:
         Material *material_;

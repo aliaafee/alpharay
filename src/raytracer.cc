@@ -140,10 +140,19 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
     float t;
     raysCast_ += 1;
 
+	if (scene.rayLog()) {
+		ray.log_ = true;
+		std::cout << "d" << depth << ": int test [" << std::endl;
+	}
+
 	BaseObject *closestObject = closestIntersection(scene, ray, &t);
 	
+	if (scene.rayLog()) {
+		std::cout << "]" << std::endl;
+	}
+
     if (closestObject == NULL)
-        return scene.envColor(ray);
+        return scene.envColor(ray);	
 
     //TODO: Optimize
     Material material = closestObject->material();
@@ -154,6 +163,10 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
     intNormal.normalize();
 
     closestObject->setPoint(intPointLocal, &material);
+
+	if (scene.rayLog()) {
+		std::cout << "d" << depth << ": int -> " << closestObject->str() << " @ " << intPoint << " n:" << intNormal << std::endl;
+	}
     
     setLighting(scene, material, intPoint, intNormal, ray.direction_);
 

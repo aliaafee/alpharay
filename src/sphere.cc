@@ -10,6 +10,7 @@ Bounds Sphere::bounds()
         
 Vector Sphere::normal(Vector point)
 {
+	point *= normal_;
     return transformNormal(point);
 }
 
@@ -29,6 +30,10 @@ BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
 	 solve using the general formula for a quadratic equation
 	*/
 
+	if (ray.log_) {
+		std::cout << "  " << name() << ": ";
+	}
+
 	//transform the ray to fit into object space
     Vector Ro = transformPointInv(ray.position_);
     Vector Rd = transformDisplacementInv(ray.direction_);
@@ -42,6 +47,7 @@ BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
 	float determinant = b*b - (4*a*c);
 
 	if (determinant < 0) {
+		if (ray.log_) { std::cout << std::endl;}
 		return NULL;
 	}
 
@@ -53,6 +59,19 @@ BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
 		determinant = sqrt(determinant);
 		float t1 = ((b*-1)+determinant)/(2*a);
 		float t2 = ((b*-1)-determinant)/(2*a);
+
+		if (normal_ > 0) {
+			if (t1 < 0 && t2 > 0) {
+				if (ray.log_) { std::cout << std::endl; }
+				return NULL;
+			}
+
+			if (t2 < 0 && t1 > 0) {
+				if (ray.log_) { std::cout << std::endl; }
+				return NULL;
+			}
+		}
+		
 		if (t1 < t2) {
 			t = t1;
             if (t < 0.0001) { //if too close pick the far one
@@ -64,14 +83,44 @@ BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
                 t = t1;
             }
         }
+
+		if (ray.log_) { std::cout << "t1=" << t1 << ",t2=" << t2 << ",t=" << t; }
 	}
 
 	if (t < 0) { // intersection point behind the ray
-        
+        if (ray.log_) { std::cout << std::endl; }
 		return NULL;
 	}
 
     *distance = t;
 
+	if (ray.log_) { std::cout << std::endl;}
+
+
 	return this;
 }
+
+
+bool Sphere::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
+{
+    init();
+
+    Object::loadXml(pElem, path, linkList);
+
+	pElem->QueryValueAttribute <int> ("normal", &normal_);
+
+	if (normal_ < 0) { normal_ = -1; } else { normal_ = 1; }
+
+	return true;
+}
+
+
+TiXmlElement* Sphere::getXml()
+{
+    TiXmlElement* root = Object::getXml();
+
+	root->SetAttribute("normal", normal_);
+
+    return root;
+}
+

@@ -33,6 +33,9 @@ void Scene::transform() {
     for (unsigned long i = 0; i < materials.size(); i++) {
 		(materials[i])->transform();
 	}
+	for (unsigned long i = 0; i < lights.size(); i++) {
+		(lights[i])->transform();
+	}
     for (unsigned long i = 0; i < objects.size(); i++) {
 		(objects[i])->transform();
 	}
@@ -149,6 +152,8 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
         *object = new Cone("");
     } else if (name == "mesh") {
         *object = new Mesh("");
+	} else if (name == "group") {
+		*object = new Group("");
     }
 
     if (*object) {
@@ -287,7 +292,9 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
     std::cout << "  " << objects.size() << " objects" << std::endl;
 
     //Linking
+	std::cout << "  Linking...";
     linkAll();
+	std::cout << "Done" << std::endl;
 
     std::cout << " Done" << std::endl;
 

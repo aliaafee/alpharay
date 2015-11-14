@@ -42,6 +42,14 @@ public:
             }
         }
     }
+
+	bool append(LinkList &foo) {
+		sources.insert(sources.end(), foo.sources.begin(), foo.sources.end());
+		type.insert(type.end(), foo.type.begin(), foo.type.end());
+		targets.insert(targets.end(), foo.targets.begin(), foo.targets.end());
+		
+		return true;
+	}
 };
 
 /*

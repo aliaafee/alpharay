@@ -19,6 +19,7 @@ Bitmap final("");
 
 Bitmap preview("");
 
+
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -36,6 +37,58 @@ void reshape(int width, int height)
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
 	gluOrtho2D (0.0, width, 0.0, height);
+}
+
+
+void mouse(int button, int state, int x, int y)
+{
+	if (button ==  GLUT_LEFT_BUTTON && state == GLUT_UP) {
+		std::cout << "Mouse is up at" << ",(" << x << "," << y << ")" << std::endl;
+		project.renderPreviewPixel(x,y);
+	}
+	glutPostRedisplay();
+}
+
+
+void keyboard(unsigned char key, int x, int y)
+{
+	std::cout << "Pressed " << int(key) << std::endl;
+	if (key == 27)
+		exit(0);
+
+	if (key == 13) {
+		project.renderPreview();
+	}
+	glutPostRedisplay();
+}
+
+
+void keyboardSpecial(int key, int x, int y)
+{
+	std::cout << "Pressed " << int(key) << std::endl;
+
+	/*
+	Object* obj = project.scene.getObject("two");
+
+	if (key == GLUT_KEY_UP) {
+		obj->position_.x += 0.1;;
+	}
+
+	if (key == GLUT_KEY_DOWN) {
+		obj->position_.x -= 0.1;;
+	}
+
+	if (key == GLUT_KEY_LEFT) {
+		obj->position_.y += 0.1;;
+	}
+
+	if (key == GLUT_KEY_RIGHT) {
+		obj->position_.y -= 0.1;;
+	}
+
+	project.renderPreview();
+	*/
+
 }
 
 
@@ -62,7 +115,10 @@ void initGlut(int argc, char** argv)
     
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
-    glutIdleFunc(idle);
+	glutIdleFunc(idle);
+	glutMouseFunc(mouse);
+	glutKeyboardFunc(keyboard);
+	glutSpecialFunc(keyboardSpecial);
 }
 
 #endif
@@ -73,22 +129,26 @@ void usage(string name)
          << "Options: " << endl
          << "\t-h\tDisplay this help message" << endl
          << "\t-o\tOutput image filename" << endl
+		 << "\t-s\tSave project to a new file" << endl
          << endl;
 }
 
 
 int main (int argc, char **argv)
 {
-    string projectFile, outFile;
+    string projectFile, outFile, projectSaveFile;
 
     int c;
 
-    while ((c = getopt (argc, argv, "hp:o:")) != -1)
+    while ((c = getopt (argc, argv, "ho:s:")) != -1)
     switch (c)
     {
         case 'o':
             outFile = optarg;
             break;
+		case 's':
+			projectSaveFile = optarg;
+			break;
         case 'h':
             usage(argv[0]);
             return 1;
@@ -116,6 +176,12 @@ int main (int argc, char **argv)
     if (!loaded) {
         cerr << "Failed to load " << projectFile << endl;
     }
+
+	if (projectSaveFile != "") {
+		project.save(projectSaveFile);
+		cout << "Saving Project to " << projectSaveFile << endl;
+		return 0;
+	}
 
     if (outFile != "") {
         project.setFinalImage(&final);

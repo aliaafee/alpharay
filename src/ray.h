@@ -9,7 +9,7 @@ class Ray
 {
 	friend std::ostream& operator<<(std::ostream& os, Ray& ray);
 public:
-	Ray() { position_ = Vector(0,0,0); direction_ = Vector(0,0,1); shadowRay_ = false; opticDensity_ = 1.0f;}
+	Ray() { position_ = Vector(0,0,0); direction_ = Vector(0,0,1); shadowRay_ = false; log_ = false; opticDensity_ = 1.0f;}
 	Ray(Vector origin, Vector target, bool shadowRay);
 	Ray(Vector origin, Vector target);
 	Ray getReflectedRay(Vector origin, Vector normal);
@@ -26,6 +26,7 @@ public:
 	bool shadowRay_;
 
     float opticDensity_;
+	bool log_;
 };
 
 inline std::ostream& operator<<(std::ostream& os, Ray& ray){

@@ -19,6 +19,7 @@ alpharay_SOURCES =   main.cc \
                      object.cc \
                      sphere.cc \
 					 cone.cc \
+					 group.cc \
                      scene.cc \
                      plane.cc \
                      mesh.cc \

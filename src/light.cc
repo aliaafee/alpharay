@@ -4,20 +4,27 @@
 
 
 void Light::init() { 
-    XmlObjectNamed::init(); 
+    Object::init(); 
 
     kIntensity_ = 5.0f;
 
-    position_ = Vector(0, 0, 1); 
     intensity_ = Color(100, 100, 100);
     shadowsOn_ = true;
 }
 
+void Light::transform()
+{
+    Object::transform();
+
+	Vector zero(0,0,0);
+	
+	tposition_ = transformPoint(zero);
+}
 
 void Light::set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection)
 {
-    Ray lightRay(point, position_, true);
-    float distance = point.distanceTo(position_);
+    Ray lightRay(point, tposition_, true);
+    float distance = point.distanceTo(tposition_);
 
     BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
 
@@ -28,7 +35,7 @@ void Light::set(std::vector<Object*>* objects, Material &material, Vector &point
     Color intensity = getIntensityByDistance(intensity_ , distance) ;
 
     material.addLight(intensity,
-                        position_,
+                        tposition_,
                         viewDirection,
                         point,
                         pointNormal );
@@ -66,10 +73,9 @@ BaseObject* Light::getFirstIntersection(std::vector<Object*>* objects, Ray &ray,
 
 
 TiXmlElement* Light::getXml() {
-    TiXmlElement* root = XmlObjectNamed::getXml();
+	TiXmlElement* root = Object::getXml();
 
-    root->SetAttribute("position", position_.str());
-    root->SetAttribute("intensity", intensity_.str());
+	root->SetAttribute("intensity", intensity_.str());
     root->SetAttribute("shadow", shadowsOn_);
 
     return root;
@@ -77,12 +83,13 @@ TiXmlElement* Light::getXml() {
 
 
 bool Light::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-    init();
+	init();
 
-    XmlObjectNamed::loadXml(pElem, path);
+    Object::loadXml(pElem, path, linkList);
 
-    pElem->QueryValueAttribute <Vector> ("position", &position_);
-    pElem->QueryValueAttribute <Vector> ("intensity", &intensity_);
+    TiXmlHandle hRoot = TiXmlHandle(pElem);
+
+	pElem->QueryValueAttribute <Vector> ("intensity", &intensity_);
     pElem->QueryBoolAttribute ("shadow", &shadowsOn_);
 
     return true;

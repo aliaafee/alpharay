@@ -24,6 +24,27 @@ void Project::renderPreview() {
 }
 
 
+Color Project::renderPreviewPixel(int x, int y)
+{
+	Color result;
+
+    if (renderer == NULL) return result;
+    if (preview == NULL) return result;
+
+	scene.setRayLog(true);
+
+	std::cout << "Tracing pixel at (" << x << "," << y << ") on preview..." << std::endl;
+
+    result = renderer->renderPixel(scene, preview, x, y);
+
+	std::cout << "Done. Result: " << result << std::endl;
+
+	scene.setRayLog(false);
+
+	return result;
+}
+
+
 void Project::renderFinal() {
     if (renderer == NULL) return;
     if (final == NULL) return;
@@ -65,7 +86,7 @@ bool Project::load(string filename)
         return false;
     }
 
-    cout << "Loading Project..." << endl;
+    cout << "Loading Project \"" << filename << "\" ..." << endl;
     hRoot = TiXmlHandle(pElem);
     
     //Renderer

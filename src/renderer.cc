@@ -273,6 +273,21 @@ void Renderer::renderST (Scene &scene, Image *image)
 }
 
 
+Color Renderer::renderPixel (Scene& scene, Image* image, int x, int y)
+{
+	//Setup the scene for render
+    scene.transform();
+    scene.setScreen(image->width(), image->height());
+
+	float sx,sy;
+
+	sx = x;
+	sy = y;
+
+	return trace(scene, scene.ray(sx,sy), 0);
+}
+
+
 bool Renderer::loadXml(TiXmlElement* pElem, std::string path) 
 {
     init();

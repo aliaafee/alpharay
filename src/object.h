@@ -7,6 +7,7 @@
 
 class Object : public BaseObject, virtual public XmlObjectNamed
 {
+		friend class Group;
     public:
         void init();
 
@@ -39,7 +40,9 @@ class Object : public BaseObject, virtual public XmlObjectNamed
         virtual Vector transformDisplacement(Vector &point);
     	virtual Vector transformDisplacementInv(Vector &point);
         virtual Ray transformRay(Ray ray);
-        
+
+		virtual std::string str() { return name(); }
+
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
@@ -48,7 +51,7 @@ class Object : public BaseObject, virtual public XmlObjectNamed
     	Vector rotation_;
     	Vector scale_;
 
-    private:
+    protected:
         Matrix4 transMatrix; // TRS
         Matrix4 transMatrixInv; // S^R^T^
         Matrix4 transMatrixND; //RS

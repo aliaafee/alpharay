@@ -31,6 +31,7 @@
 #include "plane.h"
 #include "cone.h"
 #include "mesh.h"
+#include "group.h"
 
 
 class Scene : public XmlObject 
@@ -48,6 +49,9 @@ public:
 
     void setScreen(float width, float height);
     Ray ray(float x, float y);
+
+	void setRayLog(bool state) { rayLog_ = state; }
+	bool rayLog() {return rayLog_; }
 
     Camera* camera() { return camera_; }
 
@@ -92,6 +96,8 @@ protected:
     std::vector<Map*> maps;
     std::vector<Material*> materials;
     std::vector<Object*> objects;
+
+	bool rayLog_;
 
 private:
     LinkList linkList_;

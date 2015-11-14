@@ -9,6 +9,7 @@ Ray::Ray(Vector origin, Vector target, bool shadowRay) {
 	direction_.normalize();
 	shadowRay_ = shadowRay;
     opticDensity_ = 1.0f;
+	log_ = false;
 }
 
 Ray::Ray(Vector origin, Vector target) {
@@ -17,6 +18,7 @@ Ray::Ray(Vector origin, Vector target) {
 	direction_.normalize();
 	shadowRay_ = false;
     opticDensity_ = 1.0f;
+	log_ = false;
 
 }
 
