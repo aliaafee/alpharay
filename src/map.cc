@@ -39,6 +39,8 @@ void Map2dPlane::init()
 
 void Map2dPlane::transform() 
 {
+	Map2d::transform();
+	
 	Matrix4 scale(
 		scale_.x , 0, 0, 0,
 	    0, scale_.y, 0, 0,

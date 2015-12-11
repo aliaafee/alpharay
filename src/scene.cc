@@ -86,7 +86,10 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
         *image = new Checker2d("");
     } else if (name == "bitmap") {
         *image = new Bitmap("");
+    } else if (name == "canvas") {
+        *image = new Canvas("");
     }
+
 
     if (*image) {
         (*image)->loadXml(pElem, path, &linkList_);

@@ -21,6 +21,7 @@
 
 #include "image.h"
 #include "bitmap.h"
+#include "canvas.h"
 
 #include "map.h"
 

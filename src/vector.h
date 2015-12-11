@@ -6,7 +6,7 @@
 #include <limits>
 
 #define     BIG_NUM 1000000000.0f
-#define   SMALL_NUM 0.0000001f
+#define   SMALL_NUM 0.0001f
 #define EPSILON 0.000001f
 
 #include <cstdlib>
@@ -129,6 +129,9 @@ public:
     
     Vector2 (float nx, float ny) {x = nx; y = ny;}
     Vector2 (std::string val);
+
+	float magnitude();
+	float magnitude2();
 
     Vector2 operator+(Vector2); //Add
 	Vector2 operator-(Vector2); //Subtract

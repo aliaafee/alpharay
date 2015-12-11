@@ -7,6 +7,22 @@ Vector2::Vector2 (std::string val) {
     y = 0;
 }
 
+
+float Vector2::magnitude() {
+	float m = pow(x,2) + pow(y,2);
+	if (m == 1 || m == 0) {
+		return m;
+	} else {
+		return sqrt(m);
+	}
+}
+
+
+float Vector2::magnitude2() {
+	return pow(x,2) + pow(y,2);
+}
+
+
 Vector2 Vector2::operator+(Vector2 param) {
 	Vector2 t;
 	t.x = x + param.x;

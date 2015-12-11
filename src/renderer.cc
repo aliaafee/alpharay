@@ -35,7 +35,7 @@ BaseObject* Renderer::closestIntersection(Scene &scene, Ray &ray, float *closest
 			currentObject = scene.objects[i]->intersection(ray, &distance, BIG_NUM);   
 
 			if (currentObject != NULL) {
-                if (distance > 0.0000001) {
+                if (distance > SMALL_NUM) {
 				    if (distance < *closest) {
                         closestObject = currentObject;
                         *closest = distance;

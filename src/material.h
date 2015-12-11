@@ -45,6 +45,9 @@ class Material : public XmlObjectNamed
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+
+		virtual void setLog(bool log) { log_ = log; }
+		virtual bool log() { return log_; }
         
     //protected:
         Color diffuseColor_;
@@ -71,6 +74,8 @@ class Material : public XmlObjectNamed
         float alpha_; //specular highlight amount
 
         bool flatShading_;
+
+		bool log_;
 
         //For path tracing
         Color emission_;

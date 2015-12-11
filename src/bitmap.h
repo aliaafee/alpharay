@@ -6,7 +6,7 @@
 #include "image.h"
 
 #define cimg_display 0
-#define cimg_OS 0
+//#define cimg_OS 1
 #include <CImg.h>
 
 using namespace cimg_library;

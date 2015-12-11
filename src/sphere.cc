@@ -60,6 +60,7 @@ BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
 		float t1 = ((b*-1)+determinant)/(2*a);
 		float t2 = ((b*-1)-determinant)/(2*a);
 
+		
 		if (normal_ > 0) {
 			if (t1 < 0 && t2 > 0) {
 				if (ray.log_) { std::cout << std::endl; }
@@ -71,6 +72,9 @@ BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
 				return NULL;
 			}
 		}
+		
+		
+		
 		
 		if (t1 < t2) {
 			t = t1;

@@ -29,6 +29,10 @@ void Light::set(std::vector<Object*>* objects, Material &material, Vector &point
     BaseObject* intObject = getFirstIntersection(objects, lightRay, distance);
 
     if (intObject != NULL) {
+		if (material.log()) {
+			std::cout << " lightint -> " << intObject->str() << " , dist " << distance << std::endl;
+		}
+
         return;
     }
 
@@ -62,7 +66,7 @@ BaseObject* Light::getFirstIntersection(std::vector<Object*>* objects, Ray &ray,
             currentObject = ((*objects)[i])->intersection(ray, &distance, rayLimit);
             if (currentObject != NULL) {
                 if (distance < rayLimit) {
-                    if (distance > 0.0001) {
+                    if (distance > SMALL_NUM) {
 				        return currentObject;
                     }
                 }

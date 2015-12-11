@@ -157,6 +157,10 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
     //TODO: Optimize
     Material material = closestObject->material();
 
+	if (scene.rayLog()) {
+		material.log_ = true;
+	}
+
     Vector intPoint = closestObject->point(ray, t);
     Vector intPointLocal = closestObject->transformPointInv(intPoint);
     Vector intNormal = closestObject->normal(intPointLocal);

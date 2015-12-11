@@ -46,6 +46,8 @@ class Map2d : public Map, virtual public XmlObjectNamed
 
         ~Map2d() { } ;
 
+		virtual void transform() { Map::transform(); image_->transform(); }
+
         virtual Color color(Vector  point, Vector2 point2);
 
         virtual TiXmlElement* getXml();

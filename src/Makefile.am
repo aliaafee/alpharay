@@ -8,6 +8,8 @@ alpharay_SOURCES =   main.cc \
                      map.cc \
                      material.cc \
                      bitmap.cc \
+					 object2d.cc \
+					 canvas.cc \
                      ray.cc \
                      camera.cc \
                      light.cc \

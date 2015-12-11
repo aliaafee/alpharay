@@ -31,6 +31,8 @@ class Image : virtual public XmlObjectNamed
         virtual int width()  { return width_; }
         virtual int height() { return height_; }
 
+		virtual void transform() {};
+
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
