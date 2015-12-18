@@ -62,6 +62,7 @@ Ray Camera::ray(float x, float y)
 
     ray.position_ = position_;
     ray.direction_.normalize();
+	ray.position2_ = Vector2(x/realScreenWidth_,y/realScreenHeight_);
     
 
     return ray;

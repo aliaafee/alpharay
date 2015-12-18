@@ -8,6 +8,7 @@
 #include "vector.h"
 #include "linklist.h"
 #include "xmlobject.h"
+#include "image.h"
 
 class Object2d : virtual public XmlObjectNamed
 {
@@ -32,7 +33,7 @@ class Object2d : virtual public XmlObjectNamed
         virtual Vector2 transformPointInv(Vector2 &point);
 
 		virtual bool isInside(Vector2 &point) { return false; }
-		virtual Color getColor(Vector2 &point) { return fillColor_; }
+		virtual Color getColor(Vector2 &point) { return Color(fillColor_.x, fillColor_.y, fillColor_.z, opacity_); }
 
 		virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
@@ -44,6 +45,8 @@ class Object2d : virtual public XmlObjectNamed
 
 		Color fillColor_;
 		Color strokeColor_;
+
+		float opacity_;
 
 	private:
 		Matrix4 transMatrix; // TRS
@@ -62,7 +65,8 @@ class Circle : virtual public Object2d, virtual public XmlObjectNamed
 
         ~Circle() {};
 
-		virtual bool isInside(Vector2 &point);};
+		virtual bool isInside(Vector2 &point);
+};
 
 
 class Square : virtual public Object2d, virtual public XmlObjectNamed
@@ -100,6 +104,28 @@ class Polygon : virtual public Object2d, virtual public XmlObjectNamed
 		std::vector<Vector2> points_;
 };
 
+
+class Picture : virtual public Object2d, virtual public XmlObjectNamed
+{
+	public:
+        void init() { Object2d::init(); image_ = NULL; mask_ = NULL; }
+
+        Picture(std::string name) 
+            : XmlObjectNamed ("picture", name) 
+            { init(); }
+
+        ~Picture() {};
+
+		virtual bool isInside(Vector2 &point);
+		virtual Color getColor(Vector2 &point);
+
+		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+		virtual TiXmlElement* getXml();
+
+	private:
+		Image* image_;
+		Image* mask_;
+};
 
 
 #endif // _OBJECT2D_H_

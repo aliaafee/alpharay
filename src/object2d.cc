@@ -10,6 +10,8 @@ void Object2d::init()
 	position_ = Vector2(0,0); 
 	rotation_ = 0; 
 	scale_ = Vector2(1,1); 
+
+	opacity_ = 1;
 }
 
 
@@ -74,6 +76,8 @@ bool Object2d::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList
 
 	pElem->QueryValueAttribute <Vector> ("fillcolor", &fillColor_);
 	pElem->QueryValueAttribute <Vector> ("strokecolor", &strokeColor_);
+	pElem->QueryFloatAttribute("opacity", &opacity_);
+
 
     return true;
 }
@@ -89,6 +93,7 @@ TiXmlElement* Object2d::getXml()
 
 	root->SetAttribute("fillcolor", fillColor_.str());
 	root->SetAttribute("strokecolor", strokeColor_.str());
+	root->SetAttribute("opacity", ftos(opacity_));
 
     return root;
 }
@@ -113,8 +118,8 @@ bool Square::isInside(Vector2 &point)
 { 
 	Vector2 newPoint = transformPointInv(point);
 
-	if (newPoint.x >= -1 && newPoint.x <= 1) {
-		if (newPoint.y >= -1 && newPoint.y <= 1) {
+	if (newPoint.x >= -0.5 && newPoint.x <= 0.5) {
+		if (newPoint.y >= -0.5 && newPoint.y <= 0.5) {
 			return true;
 		}
 	}
@@ -182,4 +187,103 @@ TiXmlElement* Polygon::getXml()
 	
     return root;
 }
+
+
+bool Picture::isInside(Vector2 &point) 
+{ 
+	Vector2 newPoint = transformPointInv(point);
+
+	if (newPoint.x >= -0.5 && newPoint.x <= 0.5) {
+		if (newPoint.y >= -0.5 && newPoint.y <= 0.5) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+Color Picture::getColor(Vector2 &point)
+{
+	Vector2 newPoint = transformPointInv(point);
+
+	if (image_ == NULL)
+        return Color(0,0,0);
+	
+	float u = newPoint.x + 0.5;
+    float v = newPoint.y + 0.5;
+
+    u = u - float(int(u));
+    v = v - float(int(v));
+
+    if (u < 0) { u = 1.0f + u; }
+    if (v < 0) { v = 1.0f + v; }
+
+	float ut,vt;
+	
+    ut = u * float(image_->width());
+    vt = v * float(image_->height());
+
+    newPoint.x = ut;
+    newPoint.y = vt;
+	
+	Color color = image_->getColor(newPoint);
+
+	if (mask_ != NULL) {
+		ut = u * float(mask_->width());
+		vt = v * float(mask_->height());
+
+		newPoint.x = ut;
+		newPoint.y = vt;
+
+		color.a = mask_->getColor(newPoint).intensity();
+	} else {
+		color.a = 1;
+	}
+            
+    return color;
+}
+
+
+bool Picture::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
+{
+	init();
+
+    Object2d::loadXml(pElem, path, linkList);
+
+	std::string imagename;
+
+	imagename = "";
+    pElem->QueryStringAttribute ("image", &imagename);
+    linkList->add(imagename, &image_);
+
+	imagename = "";
+	pElem->QueryStringAttribute ("mask", &imagename);
+    linkList->add(imagename, &mask_);
+
+    return true;
+	
+}
+
+
+TiXmlElement* Picture::getXml() 
+{
+    TiXmlElement* root = Object2d::getXml();
+	
+	if (image_ == NULL) {
+        root->SetAttribute("image", "");
+    } else {
+        root->SetAttribute("image", image_->name());
+    }
+
+	if (mask_ == NULL) {
+        root->SetAttribute("mask", "");
+    } else {
+        root->SetAttribute("mask", mask_->name());
+    }
+
+	
+    return root;
+}
+
 

@@ -16,50 +16,19 @@ void Canvas::init()
 
 Color Canvas::getColor(Vector2 point)
 {
+	Color color = backgroudColor_;
+	Color objectcolor;
+	float alpha;
+
 	for (unsigned long i = 0; i < objects.size(); i++) {
 		if (objects[i]->isInside(point)) {
-			return objects[i]->getColor(point);
+			objectcolor = objects[i]->getColor(point);
+			alpha = objectcolor.a;
+			color = color * ( 1-alpha) + objectcolor * alpha;
 		}
 	}
 
-	return backgroudColor_;
-
-	/*
-	Vector2 center(0.5,0.5);
-	Vector2 dir = point - center;
-	float m = dir.magnitude();
-	if (m <= 0.5) {
-		return Color (1,0,0);
-	} else {
-		return Color(1,1,1);
-	}
-	*/
-	
-	/*
-	Vector2 p1(0.5,0.5);
-	Vector2 p2(0.75,0.75);
-	if (point.x > p1.x && point.x < p2.x) {
-		if (point.y > p1.y && point.y < p2.y) {
-			return Color(1,0,0);
-		}
-	}
-	return Color(1,1,1);
-	*/
-	/*
-	if (point.x > 0.5 && point.y > 0.5) {
-        return Color(1,1,1);
-    }
-
-    if (point.x < 0.5 && point.y < 0.5) {
-        return Color(1,1,1);
-    }
-
-    if (point.x > 0.5 && point.y < 0.5) {
-        return Color(1,0,0);
-    }
-
-	return Color(1,0,0);
-	*/
+	return color;
 }
 
 
@@ -110,6 +79,8 @@ bool Canvas::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 			object = new Square("");
 		} else if (name == "polygon") {
 			object = new Polygon("");
+		} else if (name == "picture") {
+			object = new Picture("");
 		}
 
 		if (object) {

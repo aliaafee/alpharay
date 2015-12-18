@@ -260,16 +260,21 @@ class Bounds
 class Color : public Vector
 {
     public:
-        Color() {};
+        Color()
+			{ x = 0; y = 0; z = 0; a = 1; }
         Color(float r, float g, float b)
-            : Vector(r, g, b) {};
+            { x = r; y = g; z = b; a = 1; }
+		Color(float r, float g, float b, float a_)
+			{ x = r; y = g; z = b; a = a_; }
         Color(Vector v) { x = v.x; y = v.y; z = v.z; }
 
         float r() { return x; }
         float g() { return y; }
         float b() { return z; }
-
+		
         float intensity() { return (x + y + z)/3.0f; }
+		
+		float a;
 };
 
 inline Vector randomPointInHemisphere(Vector normal) {

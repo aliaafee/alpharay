@@ -23,10 +23,13 @@ Color Scene::envColor(const Ray &ray) {
         return envColor_;
     }
 
-    return envMap_->color(ray.direction_, Vector2(0,0));
+    return envMap_->color(ray.direction_, ray.position2_);
 }
 
 void Scene::transform() {
+	for (unsigned long i = 0; i < images.size(); i++) {
+		(images[i])->transform();
+	}
     for (unsigned long i = 0; i < maps.size(); i++) {
 		(maps[i])->transform();
 	}
@@ -93,7 +96,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
 
     if (*image) {
         (*image)->loadXml(pElem, path, &linkList_);
-        return true;
+		return true;
     }
 
     return false;

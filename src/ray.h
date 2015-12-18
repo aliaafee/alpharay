@@ -25,6 +25,8 @@ public:
 	Vector direction_;
 	bool shadowRay_;
 
+	Vector2 position2_;
+
     float opticDensity_;
 	bool log_;
 };
