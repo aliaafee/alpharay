@@ -108,7 +108,7 @@ class Polygon : virtual public Object2d, virtual public XmlObjectNamed
 class Picture : virtual public Object2d, virtual public XmlObjectNamed
 {
 	public:
-        void init() { Object2d::init(); image_ = NULL; mask_ = NULL; }
+        void init() { Object2d::init(); image_ = NULL; mask_ = NULL; tile_ = Vector2(1,1); }
 
         Picture(std::string name) 
             : XmlObjectNamed ("picture", name) 
@@ -125,6 +125,7 @@ class Picture : virtual public Object2d, virtual public XmlObjectNamed
 	private:
 		Image* image_;
 		Image* mask_;
+		Vector2 tile_;
 };
 
 

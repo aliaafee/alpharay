@@ -207,11 +207,17 @@ Color Picture::getColor(Vector2 &point)
 {
 	Vector2 newPoint = transformPointInv(point);
 
+	newPoint.x += 0.5;
+	newPoint.y += 0.5;
+
+	newPoint.x = newPoint.x * tile_.x;
+	newPoint.y = newPoint.y * tile_.y;
+
 	if (image_ == NULL)
         return Color(0,0,0);
 	
-	float u = newPoint.x + 0.5;
-    float v = newPoint.y + 0.5;
+	float u = newPoint.x;
+    float v = newPoint.y;
 
     u = u - float(int(u));
     v = v - float(int(v));
@@ -251,6 +257,8 @@ bool Picture::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 
     Object2d::loadXml(pElem, path, linkList);
 
+	pElem->QueryValueAttribute <Vector2> ("tile", &tile_);
+
 	std::string imagename;
 
 	imagename = "";
@@ -269,6 +277,8 @@ bool Picture::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 TiXmlElement* Picture::getXml() 
 {
     TiXmlElement* root = Object2d::getXml();
+
+	root->SetAttribute("tile", tile_.str());
 	
 	if (image_ == NULL) {
         root->SetAttribute("image", "");
