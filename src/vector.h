@@ -14,7 +14,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <math.h>
+#include <cmath>
 #include "matrix4.h"
 
 #define  ARRAY(x, y, z, w, h, d) (x*w*d + y*d + z)
@@ -96,7 +96,7 @@ inline std::string ftos(float value) {
     return ss.str();
 }
 
-inline float stof(std::string value) {
+inline float stringtofloat(std::string value) {
     std::stringstream ss (std::stringstream::in | std::stringstream::out);
     float result;
     ss << value;
@@ -104,7 +104,7 @@ inline float stof(std::string value) {
     return result;
 }
 
-inline unsigned long stol(std::string value) {
+inline unsigned long stringtolong(std::string value) {
     std::stringstream ss (std::stringstream::in | std::stringstream::out);
     if (value == "" ) { value = "0"; }
     unsigned long result;
@@ -214,15 +214,15 @@ inline std::stringstream& operator>>(std::stringstream& ss, Vector& vector) {
 
     token = "";
     std::getline(ss, token, ',');
-    vector.x = stof(token);
+    vector.x = stringtofloat(token);
 
     token = "";
     std::getline(ss, token, ',');
-    vector.y = stof(token);
+    vector.y = stringtofloat(token);
 
     token = "";
     std::getline(ss, token, ',');
-    vector.z = stof(token);
+    vector.z = stringtofloat(token);
 
     return ss;
 }
@@ -237,11 +237,11 @@ inline std::stringstream& operator>>(std::stringstream& ss, Vector2& vector) {
 
     token = "";
     std::getline(ss, token, ',');
-    vector.x = stof(token);
+    vector.x = stringtofloat(token);
 
     token = "";
     std::getline(ss, token, ',');
-    vector.y = stof(token);
+    vector.y = stringtofloat(token);
 
     return ss;
 }

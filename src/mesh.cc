@@ -206,29 +206,29 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                 token = ""; getline(ss, token, ' '); 
                 std::stringstream s0(token);
                 vert = "0"; getline(s0, vert, '/'); 
-                v0 = (stol(vert)) -1;
+                v0 = (stringtolong(vert)) -1;
                 map = "0"; getline(s0, map, '/'); 
-                m0 = (stol(map));
+                m0 = (stringtolong(map));
                 norm = "0"; getline(s0, norm, '/');
-                n0 = (stol(norm)) -1;
+                n0 = (stringtolong(norm)) -1;
 
                 token = ""; getline(ss, token, ' '); 
                 std::stringstream s1(token);
                 vert = "0"; getline(s1, vert, '/'); 
-                v1 = (stol(vert)) -1;
+                v1 = (stringtolong(vert)) -1;
                 map = "0"; getline(s1, map, '/'); 
-                m1 = (stol(map));
+                m1 = (stringtolong(map));
                 norm = "0"; getline(s1, norm, '/');
-                n1 = (stol(norm)) -1;
+                n1 = (stringtolong(norm)) -1;
 
                 token = ""; getline(ss, token, ' '); 
                 std::stringstream s2(token);
                 vert = "0"; getline(s2, vert, '/'); 
-                v2 = (stol(vert)) -1;
+                v2 = (stringtolong(vert)) -1;
                 map = "0"; getline(s2, map, '/'); 
-                m2 = (stol(map));
+                m2 = (stringtolong(map));
                 norm = "0"; getline(s2, norm, '/');
-                n2 = (stol(norm)) -1;
+                n2 = (stringtolong(norm)) -1;
 
                 Vector n = ((*normals[n0]) + (*normals[n1]) + (*normals[n2])) / 3.0;
 
