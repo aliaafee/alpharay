@@ -30,6 +30,8 @@ bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path) {
     name_ = "unnamed"; 
 
     pElem->QueryStringAttribute ("name", &name_);
+
+	return true;
 }
 
 

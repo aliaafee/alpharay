@@ -58,6 +58,8 @@ bool Octree::add(std::vector<Triangle*> *newtriangles, unsigned long currentDept
         //cout << currentDepth << endl;
         delete newtriangles;
     }
+	
+	return true;
 }
 
 

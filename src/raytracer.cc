@@ -184,6 +184,8 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
         case FRES:
             traceFresnel(scene, ray, intPoint, intNormal, material, depth);
             break;
+		case DIFF:
+			break;
     }
 
     return material.color();

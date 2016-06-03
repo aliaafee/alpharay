@@ -204,6 +204,8 @@ bool Renderer::statusDisplay()
 
     std::cout << raysCast_ << " rays cast" << std::endl;
     std::cout << "Done" << std::endl;
+
+	return true;
 }
 
 

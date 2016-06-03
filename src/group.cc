@@ -181,7 +181,7 @@ bool Group::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
 
 template< typename T > void Group::addFromXml(TiXmlElement* pElem, std::string path) {
     if (pElem) {
-        for (pElem; pElem; pElem = pElem->NextSiblingElement()) {
+        for (; pElem; pElem = pElem->NextSiblingElement()) {
             T* newthing;
             fromXml(pElem, &newthing, path);
             if (newthing) {

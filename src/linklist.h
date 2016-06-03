@@ -39,8 +39,10 @@ public:
             if (thing.xmlTag() == type[i]) {
                 *source = sources[i];
                 *target = reinterpret_cast <T**> (targets[i]);
+				return true;
             }
         }
+		return false;
     }
 
 	bool append(LinkList &foo) {

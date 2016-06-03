@@ -68,7 +68,7 @@ bool Canvas::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 
 	pElem = pElem->FirstChildElement();
 
-	for (pElem; pElem; pElem = pElem->NextSiblingElement()) {
+	for (; pElem; pElem = pElem->NextSiblingElement()) {
 		std::string name(pElem->Value());
 
 		Object2d* object = NULL;

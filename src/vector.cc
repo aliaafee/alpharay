@@ -311,7 +311,7 @@ void Vector::toCylindrical() {
     
     x = r;
     y = t;
-    z = z;
+    //z = z; No Change to z
 }
 
 

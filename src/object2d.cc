@@ -138,7 +138,7 @@ bool Polygon::isInside(Vector2 &point)
 	bool oddNodes = false;
 	int i, j = points_.size() - 1;
 	for (i = 0; i < points_.size(); i++) {
-		if (points_[i].y < o.y && points_[j].y  >= o.y || points_[j].y < o.y && points_[i].y >= o.y ) {
+		if ((points_[i].y < o.y && points_[j].y  >= o.y) || (points_[j].y < o.y && points_[i].y >= o.y)) {
 			if (points_[i].x + (o.y-points_[i].y)/(points_[j].y-points_[i].y)*(points_[j].x-points_[i].x)<o.x) {
 				oddNodes = !oddNodes;
 			}

@@ -34,14 +34,14 @@ class BaseObject
         virtual Material material() //Return a copy of the material
             { if (material_ != NULL) { return Material(*material_); } else { return Material("default"); } } 
 
-        virtual BaseObject* intersection(Ray &ray, float *t, float limit) {return NULL; };
+        virtual BaseObject* intersection(Ray &ray, float *t, float limit) { return NULL; };
 
-        virtual Vector transformPoint(Vector &point) {}; //Convert a point in object space to world space
-        virtual Vector transformPointInv(Vector &point) {}; //Convert a point in world space to object space
-        virtual Vector transformNormal(Vector &point) {}; //Convert a normal in object space to world space
-        virtual Vector transformNormalInv(Vector &point) {}; //Convert a normal in world space to object space
-        virtual Vector transformDisplacement(Vector &point) {};
-    	virtual Vector transformDisplacementInv(Vector &point) {};
+        virtual Vector transformPoint(Vector &point) { return Vector(0,0,0); }; //Convert a point in object space to world space
+        virtual Vector transformPointInv(Vector &point) { return Vector(0,0,0); }; //Convert a point in world space to object space
+        virtual Vector transformNormal(Vector &point) { return Vector(0,0,0); }; //Convert a normal in object space to world space
+        virtual Vector transformNormalInv(Vector &point) { return Vector(0,0,0); }; //Convert a normal in world space to object space
+        virtual Vector transformDisplacement(Vector &point) { return Vector(0,0,0); };
+    	virtual Vector transformDisplacementInv(Vector &point) { return Vector(0,0,0); };
 
 		virtual std::string str() { return "baseobject"; }
 

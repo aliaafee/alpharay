@@ -14,6 +14,8 @@ TiXmlElement* Map::getXml()
 bool Map::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
 {
     XmlObjectNamed::loadXml(pElem, path);
+
+	return true;
 }
 
 void Map2d::init()
@@ -193,6 +195,8 @@ bool Map2d::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
     std::string imagename = "";
     pElem->QueryStringAttribute ("image", &imagename);
     linkList->add(imagename, &image_);
+
+	return true;
 }
 
 
@@ -219,6 +223,8 @@ bool Map2dPlane::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkLi
     pElem->QueryValueAttribute <Vector> ("position", &position_);
     pElem->QueryValueAttribute <Vector> ("rotation", &rotation_);
     pElem->QueryValueAttribute <Vector> ("scale", &scale_);
+
+	return true;
 }
 
 
