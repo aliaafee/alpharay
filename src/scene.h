@@ -24,6 +24,7 @@
 #include "canvas.h"
 
 #include "map.h"
+#include "sky-map.h"
 
 #include "material.h"
 

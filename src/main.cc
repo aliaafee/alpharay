@@ -175,6 +175,7 @@ int main (int argc, char **argv)
     bool loaded = project.load(projectFile);
     if (!loaded) {
         cerr << "Failed to load " << projectFile << endl;
+		return 0;
     }
 
 	if (projectSaveFile != "") {

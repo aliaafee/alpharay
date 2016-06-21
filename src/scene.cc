@@ -116,6 +116,8 @@ bool Scene::fromXml(TiXmlElement* pElem, Map** map, std::string path) {
         *map = new Map2dCylindrical("");
     } else if (name == "map2dspherical") {
         *map = new Map2dSpherical("");
+	} else if (name == "skymap") {
+		*map = new SkyMap("");
     }
 
     if (*map) {

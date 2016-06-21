@@ -53,7 +53,7 @@ Ray Camera::ray(float x, float y)
     
     //Plane Camera
 	Vector target = 	screen_1 + (
-			(screen_w * (x/realScreenWidth_)) //Left Position
+			(screen_w * ((realScreenWidth_-x)/realScreenWidth_)) //Left Position
 			+ 
 			(screen_h * (y/realScreenHeight_)) //TopPosition
 		);

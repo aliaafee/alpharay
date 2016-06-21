@@ -14,7 +14,33 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+
+#define _USE_MATH_DEFINES
 #include <cmath>
+
+#include <chrono>
+inline std::string durationDisplay(std::chrono::nanoseconds ns)
+{
+	using namespace std;
+    using namespace std::chrono;
+
+	std::chrono::hours h = duration_cast<hours>(ns);
+    ns -= h;
+    std::chrono::minutes m = duration_cast<minutes>(ns);
+    ns -= m;
+	std::chrono::milliseconds ms = duration_cast<milliseconds>(ns);
+
+	std::stringstream ss;
+    ss << h.count() << "h:"
+       << m.count() << "m:"
+	   << ms.count() / 1000.0 << "s" ;
+
+    return ss.str();
+};
+#define TIMER_START std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now()
+#define TIMER_RESET t1 = std::chrono::high_resolution_clock::now()
+#define TIMER_ELAPSED durationDisplay(std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - t1 ))
+
 #include "matrix4.h"
 
 #define  ARRAY(x, y, z, w, h, d) (x*w*d + y*d + z)

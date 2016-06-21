@@ -111,8 +111,8 @@ BaseObject* Triangle::intersection(Ray &ray, float *t, float limit)
 
     float det = V_DOT(edge[0], pvec);
 
-    if (det > -EPSILON && det < EPSILON) {
-    //if (det < EPSILON) {
+    //if (det > -EPSILON && det < EPSILON) {
+    if (det < EPSILON) {
         return NULL;
     }
 

@@ -3,6 +3,14 @@
 #include "mesh.h"
 
 
+void Mesh::init() { 
+	Object::init();
+
+	octreeMaxDepth_ = 10;
+	octreeMaxTrig_ = 100;
+}
+
+
 void Mesh::transform()
 {
     Object::transform();
@@ -18,15 +26,16 @@ void Mesh::genBounds()
 {
     Bounds b = bounds();
 
-    std::cout << "   gen octree " << b.min << b.max << std::endl;
+    std::cout << "   generating octree with bounds" << b.min << "to" << b.max << std::endl;
 
     unsigned long leafCount = 0;
 
-    octree_ = Octree(b.min, b.max, 10, 25);
-
+	TIMER_START;
+    octree_ = Octree(b.min, b.max, octreeMaxDepth_, octreeMaxTrig_);
+    
     octree_.add(&triangles, 0, &leafCount);
 
-    std::cout << "     leaves " << leafCount << std::endl;
+    std::cout << "     leaves " << leafCount << ", generated in " << TIMER_ELAPSED << std::endl;
 }
 
 
@@ -64,9 +73,6 @@ BaseObject* Mesh::intersection(Ray &ray, float *distance, float limit)
 
     closest = octree_.intersection(rayt, distance, limit);
 
-    if (closest == NULL)
-        return NULL;
-
 	return closest;
 }
 
@@ -75,15 +81,21 @@ TiXmlElement* Mesh::getXml()
 {
     TiXmlElement* root = Object::getXml();
 
+	root->SetAttribute("octree-max-depth", octreeMaxDepth_);
+    root->SetAttribute("octree-max-triangles-leaf", octreeMaxTrig_);
+
     return root;
 }
 
 
 bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
-    init();
+	init();
 
     Object::loadXml(pElem, path, linkList);
+
+    pElem->QueryIntAttribute ("octree-max-depth", &octreeMaxDepth_);
+	pElem->QueryIntAttribute ("octree-max-triangles-leaf", &octreeMaxTrig_);
 
     TiXmlHandle hRoot = TiXmlHandle(pElem);
 
@@ -131,8 +143,12 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
        Wavefront Obj loader
        --------------------
        Needs a bit of work (bit slow)
-    */
-    std::cout << "  Loading obj file " << std::flush;
+    */  
+
+	std::stringstream displayss; displayss << "0 vertices 0 normals 0 uvps 0 triangles";
+
+	std::cout << "  Loading obj file " << filename << std::endl;
+	std::cout << "   " << displayss.str() << std::flush;
 
     std::string line;
     std::ifstream objfile (filename.c_str());
@@ -159,9 +175,9 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                 token = "0"; getline(ss, token, ' ');
                 p.x = stof(token) * scale;
                 token = "0"; getline(ss, token, ' ');
-                p.z = stof(token) * scale;
-                token = "0"; getline(ss, token, ' ');
                 p.y = stof(token) * scale;
+                token = "0"; getline(ss, token, ' ');
+                p.z = stof(token) * scale;
 
                 p += position;
 
@@ -176,9 +192,9 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                 token = "0"; getline(ss, token, ' ');
                 p.x = stof(token);
                 token = "0"; getline(ss, token, ' ');
-                p.z = stof(token);
-                token = "0"; getline(ss, token, ' ');
                 p.y = stof(token);
+                token = "0"; getline(ss, token, ' ');
+                p.z = stof(token);
 
                 n += 1;
                 
@@ -230,6 +246,7 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                 norm = "0"; getline(s2, norm, '/');
                 n2 = (stringtolong(norm)) -1;
 
+				//Face normal is the average of vertex normals
                 Vector n = ((*normals[n0]) + (*normals[n1]) + (*normals[n2])) / 3.0;
 
                 t += 1;
@@ -248,16 +265,32 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
             //status
             if ( v+n+m+t > pcount + 5000) {
                 pcount = v+n+m+t;
-                std::cout << "." << std::flush;
+
+				for (int w = 0; w < displayss.str().size(); w ++) { std::cout << "\b";}
+				displayss.str("");
+				displayss << v << " vertices "
+						  << n << " normals "
+						  << m << " uvps "
+						  << t << " triangles";
+                std::cout << displayss.str() << std::flush;
             }
 
 		}
 		objfile.close();
 
-        std::cout << std::endl;
+        //std::cout << std::endl;
 
-        std::cout << "  mesh " << vertexs.size() << " verts, " << uvpoints.size() 
-            << " uvps, " << normals.size() << " norms, " << triangles.size() << " trigs" << std::endl;
+        //std::cout << "  mesh " << vertexs.size() << " verts, " << uvpoints.size() 
+        //    << " uvps, " << normals.size() << " norms, " << triangles.size() << " trigs" << std::endl;
+
+		for (int w = 0; w < displayss.str().size(); w ++) { std::cout << "\b";}
+				displayss.str("");
+				displayss << v << " vertices "
+						  << n << " normals "
+						  << m << " uvps "
+						  << t << " triangles";
+                std::cout << displayss.str() << std::endl;
+
         
         genBounds();
         

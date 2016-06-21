@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 #include "object.h"
 #include "vertex.h"
@@ -15,7 +16,7 @@
 class Mesh : virtual public Object, virtual public XmlObjectNamed
 {
     public:
-        void init() { Object::init(); }
+        void init();// { Object::init(); }
 
         Mesh(std::string name, BaseObject* parent=NULL) 
             : XmlObjectNamed ("mesh", name) 
@@ -36,6 +37,8 @@ class Mesh : virtual public Object, virtual public XmlObjectNamed
 
     protected:
         Octree octree_;
+		int octreeMaxDepth_; //Maximum depth of octree
+		int octreeMaxTrig_; //Maximum number of triangles per left of octree
 
         std::vector<Vertex*>     vertexs;
         std::vector<Normal*>     normals;

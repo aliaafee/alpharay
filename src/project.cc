@@ -17,10 +17,14 @@ void Project::renderPreview() {
 
     std::cout << "Preview " << preview->width() << "x" << preview->height() << std::endl;
 
-    renderer->render(scene, preview, true);
+	TIMER_START;
+    
+	renderer->render(scene, preview, true);
 
 	//preview->bloom(40, 0.9);
     preview->toneMap_exp(renderer->exposure_);
+	
+	std::cout << "Render time: " << TIMER_ELAPSED << std::endl;
 }
 
 
@@ -35,9 +39,11 @@ Color Project::renderPreviewPixel(int x, int y)
 
 	std::cout << "Tracing pixel at (" << x << "," << y << ") on preview..." << std::endl;
 
+	TIMER_START;
+
     result = renderer->renderPixel(scene, preview, x, y);
 
-	std::cout << "Done. Result: " << result << std::endl;
+	std::cout << "Done. Result: " << result << ", duration" << TIMER_ELAPSED << std::endl;
 
 	scene.setRayLog(false);
 
@@ -51,10 +57,14 @@ void Project::renderFinal() {
 
     std::cout << "Final " << final->width() << "x" << final->height() << std::endl;
 
+	TIMER_START;
+
     renderer->render(scene, final, true);
 
-    final->bloom(10, 150);
+    //final->bloom(10, 150);
     final->toneMap_exp(renderer->exposure_);
+
+	std::cout << "Render time: " << TIMER_ELAPSED << std::endl;
 }
 
 
