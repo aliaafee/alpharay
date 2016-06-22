@@ -123,17 +123,14 @@ def exportPlyFile(obj, filepathxml):
 def exportWavefrontObj(obj, filepathxml):
     mesh = obj.to_mesh( scene = bpy.context.scene,
                         apply_modifiers = True,
-                        settings = "RENDER")
-    
-    
-    
-    #bm = bmesh.new()
-    #bm.from_object(obj, bpy.context.scene, deform=True, render=True, cage=False, face_normals=True)
-    #bmesh.ops.triangulate(bm, faces=bm.faces)
-    #mesh = bpy.data.meshes.new('Copy')
-    #bm.to_mesh(mesh)
-    #bm.free()
-    #del bm
+                        settings = "RENDER",
+                        calc_tessface=False)
+
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    bmesh.ops.triangulate(bm, faces=bm.faces)
+    bm.to_mesh(mesh)
+    bm.free()
 
     folderpath = os.path.dirname(filepathxml)
 
@@ -145,62 +142,6 @@ def exportWavefrontObj(obj, filepathxml):
 
         f.write("o {0}\n".format(obj.name))
 
-        """
-        strVertices = {}
-        strNormals = {}
-        strUVs = {}
-        strFaces = ""
-
-        v = ""
-        n = ""
-        u = ""
-
-
-        for face in mesh.polygons:
-            for vi, li in zip(face.vertices, face.loop_indices):
-                vertex = mesh.vertices[vi]
-                strVertices[vi] = "v {0} {1} {2}\n".format( vertex.co.x,
-                                                         vertex.co.y,
-                                                         vertex.co.z,
-                                                         vi)
-                strNormals[vi] = "vn {0} {1} {2}\n".format( vertex.normal.x,
-                                                         vertex.normal.y,
-                                                         vertex.normal.z,
-                                                         vi)
-                if hasUV:
-                    uv = mesh.uv_layers.active.data[li].uv
-                    strUVs[vi]= "vt {0} {1}\n".format( uv.x,
-                                                     uv.y,
-                                                     li, vi)
-
-            tfaces = []
-            if len(face.vertices) == 3:
-                tfaces.append([face.vertices[0], face.vertices[1], face.vertices[2]]);
-            else:
-                tfaces.append([face.vertices[0], face.vertices[1], face.vertices[2]]);
-                tfaces.append([face.vertices[2], face.vertices[3], face.vertices[0]]);
-
-            for tface in tfaces:
-                vertices = []
-                for vertex in tface:
-                    index = vertex + 1
-                    uv = index if hasUV else ""
-                    normal = index
-                    vertices.append("{0}/{1}/{2}".format(index, uv, normal))
-                strFaces += "f {0}\n".format(" ".join(vertices));
-
-        for i in sorted(strVertices):
-            v += strVertices[i]
-            n += strNormals[i]
-            if hasUV:
-                u += strUVs[i]
-
-        f.write(v)
-        f.write(n)
-        f.write(u)
-        f.write(strFaces)
-        
-        """
         strVertices = ""
         strNormals = ""
         countUVs = 0
@@ -218,42 +159,20 @@ def exportWavefrontObj(obj, filepathxml):
         hasUV = True if mesh.uv_layers.active is not None else False
 
         for face in mesh.polygons:
-            vertices = []
-            uvs = []
+            strFaceVertices = []
             for vi, li in zip(face.vertices, face.loop_indices):
-                vertices.append(mesh.vertices[vi])
+                vertexIndex = mesh.vertices[vi].index + 1
+                normalIndex = vertexIndex
+                uvIndex = ""
                 if hasUV:
-                    uvs.append(mesh.uv_layers.active.data[li].uv)
+                    countUVs += 1
+                    uvIndex = str(countUVs)
+                    uv = mesh.uv_layers.active.data[li].uv
+                    strUVs += "vt {0} {1}\n".format(uv.x, uv.y)
 
+                strFaceVertices.append("{0}/{1}/{2}".format(vertexIndex, uvIndex, normalIndex))
 
-            tFaceVertices = []
-            tFaceUVs = []
-            if len(face.vertices) == 3:
-                tFaceVertices.append([vertices[0], vertices[1], vertices[2]]);
-                if hasUV:
-                    tFaceUVs.append([uvs[0], uvs[1], uvs[2]])
-            else:
-                tFaceVertices.append([vertices[0], vertices[1], vertices[2]]);
-                tFaceVertices.append([vertices[2], vertices[3], vertices[0]]);
-                if hasUV:
-                    tFaceUVs.append([uvs[0], uvs[1], uvs[2]])
-                    tFaceUVs.append([uvs[2], uvs[3], uvs[0]])
-
-            
-            for i in range(0, len(tFaceVertices)):
-                tFace = tFaceVertices[i]
-                vertices = []
-                for iv in range(0, len(tFace)):
-                    vertex = tFace[iv]
-                    uv = ""
-                    if hasUV:
-                        countUVs += 1
-                        strUVs += "vt {0} {1}\n".format(tFaceUVs[i][iv].x, tFaceUVs[i][iv].y)
-                        uv = countUVs
-                    index = vertex.index + 1
-                    normal = index
-                    vertices.append("{0}/{1}/{2}".format(index, uv, normal))
-                strFaces += "f {0}\n".format(" ".join(vertices));
+            strFaces += "f {0}\n".format(" ".join(strFaceVertices));
 
         f.write(strVertices)
         f.write(strNormals)
