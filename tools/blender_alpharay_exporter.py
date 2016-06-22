@@ -64,8 +64,6 @@ def uniqueFileName(folderpath, filename, extension):
     filename = filename.lower()
     filename_ext = "{0}{1}".format(filename, extension)
     filepath = os.path.join(folderpath, filename_ext)
-    return filepath
-    
     if os.path.isfile(filepath) or os.path.isdir(filepath):
         i = 0
         while os.path.isfile(filepath) or os.path.isdir(filepath):
@@ -205,7 +203,7 @@ def exportWavefrontObj(obj, filepathxml):
         """
         strVertices = ""
         strNormals = ""
-        lstUVs = []
+        countUVs = 0
         strUVs = ""
         strFaces = ""
 
@@ -213,20 +211,9 @@ def exportWavefrontObj(obj, filepathxml):
             strVertices += "v {0} {1} {2}\n".format( vertex.co.x,
                                                      vertex.co.y,
                                                      vertex.co.z)
-
-        for vertex in mesh.vertices:
             strNormals += "vn {0} {1} {2}\n".format( vertex.normal.x,
                                                      vertex.normal.y,
                                                      vertex.normal.z)
-        """
-        if mesh.uv_layers.active is not None:
-            hasUV = True
-            for vertex in mesh.vertices:
-                i = vertex.index
-                line = "vt {0} {1}\n".format( mesh.uv_layers.active.data[i].uv.x,
-                                              mesh.uv_layers.active.data[i].uv.y)
-                f.write(line)
-        """
 
         hasUV = True if mesh.uv_layers.active is not None else False
 
@@ -260,14 +247,13 @@ def exportWavefrontObj(obj, filepathxml):
                     vertex = tFace[iv]
                     uv = ""
                     if hasUV:
-                        lstUVs.append("vt {0} {1}\n".format(tFaceUVs[i][iv].x, tFaceUVs[i][iv].y))
-                        uv = len(lstUVs)
+                        countUVs += 1
+                        strUVs += "vt {0} {1}\n".format(tFaceUVs[i][iv].x, tFaceUVs[i][iv].y)
+                        uv = countUVs
                     index = vertex.index + 1
                     normal = index
                     vertices.append("{0}/{1}/{2}".format(index, uv, normal))
                 strFaces += "f {0}\n".format(" ".join(vertices));
-
-        strUVs = "\n".join(lstUVs) + "\n"
 
         f.write(strVertices)
         f.write(strNormals)
@@ -306,7 +292,7 @@ def do_export(context, props, filepath):
         lamps = []
         meshes = []
 
-        for obj in bpy.data.objects:
+        for obj in context.scene.objects:
             if obj.type == 'MESH':
                 meshes.append(meshXml(obj, filepath))
             if obj.type == "FONT":

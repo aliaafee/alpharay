@@ -54,12 +54,12 @@ void Object::transform() {
 	);
 	Matrix4 itranslation = translation.getInverse();
 
-	transMatrix = translation * xrot * yrot * zrot * scale;
-	transMatrixInv = iscale * izrot * iyrot * ixrot * itranslation;
-    transMatrixND = xrot * yrot * zrot * scale;
-    transMatrixNDInv = iscale * izrot * iyrot * ixrot;
-	transMatrixNormal = xrot * yrot * zrot * iscale;
-    transMatrixNormalInv = scale * izrot * iyrot * ixrot;
+	transMatrix = translation * zrot * yrot * xrot * scale;
+	transMatrixInv = iscale * ixrot * iyrot * izrot * itranslation;
+    transMatrixND = zrot * yrot * xrot * scale;
+    transMatrixNDInv = iscale * ixrot * iyrot * izrot;
+	transMatrixNormal = zrot * yrot * xrot * iscale;
+    transMatrixNormalInv = scale * ixrot * iyrot * izrot;
 }
 
 
