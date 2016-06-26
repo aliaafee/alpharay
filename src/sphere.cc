@@ -8,7 +8,7 @@ Bounds Sphere::bounds()
 }
 
         
-Vector Sphere::normal(Vector point)
+Vector Sphere::normal(Vector point, Material* material)
 {
 	point *= normal_;
     return transformNormal(point);

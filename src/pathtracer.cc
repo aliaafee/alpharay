@@ -36,7 +36,7 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
     if (depth > traceDepth_)
         return color;
 
-    Vector intNormal = closestObject->normal(intPointLocal);
+    Vector intNormal = closestObject->normal(intPointLocal, &material);
 
     Ray newRay;
         

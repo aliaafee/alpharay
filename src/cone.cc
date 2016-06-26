@@ -8,7 +8,7 @@ Bounds Cone::bounds()
 }
 
         
-Vector Cone::normal(Vector point)
+Vector Cone::normal(Vector point, Material* material)
 {
 	point.normalize();
     Vector normal(point.x, point.y, 0.5);

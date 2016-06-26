@@ -26,7 +26,7 @@ class BaseObject
         virtual Vector point(Ray &ray, float t);
         virtual Vector pointLocal(Ray &ray, float t);
 
-        virtual Vector normal(Vector point)  { return Vector(0,0,0); } //Return normal in world space at point (local space)
+        virtual Vector normal(Vector point, Material* material)  { return Vector(0,0,0); } //Return normal in world space at point (local space)
         
         virtual void setPoint(Vector point, Material* material) 
             { Vector2 point2; return material->setPoint(point, point2); } //Set material to given point

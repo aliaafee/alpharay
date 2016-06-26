@@ -18,7 +18,7 @@ class Sphere : virtual public Object, virtual public XmlObjectNamed
 
         virtual Bounds bounds();
         
-        virtual Vector normal(Vector point);
+        virtual Vector normal(Vector point, Material* material);
 
         virtual BaseObject* intersection(Ray &ray, float *t, float limit);
 

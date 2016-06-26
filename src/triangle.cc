@@ -40,6 +40,36 @@ void Triangle::transform()
         edge[0] = e1;
         edge[1] = e0;
     }
+
+	if (m[0] != NULL && m[1] != NULL && m[2] != NULL) {
+		Vector E0 = (*v[1]) - (*v[0]);
+		Vector E1 = (*v[2]) - (*v[0]);
+
+		Vector2 m0 = (*m[1]) - (*m[0]);
+		Vector2 m1 = (*m[2]) - (*m[0]);
+
+		float det = m0.x * m1.y - m1.x * m0.y;
+		float q = 1/det;
+
+		face_t.x =  m1.y * E0.x - m0.y * E1.x * q;
+		face_b.x = -m1.x * E0.x + m0.x * E1.x * q;
+
+		face_t.y =  m1.y * E0.y - m0.y * E1.y * q;
+		face_b.y = -m1.x * E0.y + m0.x * E1.y * q;
+
+		face_t.z =  m1.y * E0.z - m0.y * E1.z * q;
+		face_b.z = -m1.x * E0.z + m0.x * E1.z * q;
+
+		face_t.normalize();
+		face_b.normalize();
+		face_n.normalize();
+
+		det = (face_t % face_b) * face_n;
+		if (det < 0) {
+			face_t *= -1;
+			face_b *= -1;
+		}
+	}
 }
 
 
@@ -59,18 +89,28 @@ Bounds Triangle::bounds()
 }
 
 
-Vector Triangle::normal(Vector point)
+Vector Triangle::normal(Vector point, Material* material)
 {
-    if (parent_->material().flatShading()) {
-        return face_n;
+    if (material->flatShading()) {
+        return transformNormal(face_n);
     }
 
     float w0, w1, w2;
     calculateWeights(point, &w0, &w1, &w2);
 
-    Vector localnormal = ((*n[0]) * w0) + ((*n[1]) * w1) + ((*n[2]) * w2);
+	Vector os_normal = ((*n[0]) * w0) + ((*n[1]) * w1) + ((*n[2]) * w2);
 
-    return transformNormal(localnormal);
+	if (m[0] != NULL && m[1] != NULL && m[2] != NULL) {
+		if (material->normalMap_ != NULL) {
+			Vector os_tangent = ((*v[0]).t * w0) + ((*v[1]).t * w1) + ((*v[2]).t * w2);
+			Vector os_binormal = ((*v[0]).b * w0) + ((*v[1]).b * w1) + ((*v[2]).b * w2);
+			
+			Vector ts_normal = (material->normalDisplacement_ * 2.0) - Vector(1.0, 1.0, 1.0);
+			os_normal = os_tangent * ts_normal.x + os_binormal * ts_normal.y + os_normal * ts_normal.z ;
+		}
+	}
+	
+    return transformNormal(os_normal);
 }
 
 
@@ -153,11 +193,11 @@ void Triangle::calculateWeights(Vector point, float *w0, float *w1, float *w2) {
     (Need to explain this a bit more)
 
     */
-    Vector e0;
-    V_SUB(e0, (*v[0]), (*v[1]));
+    //Vector e0;
+    //V_SUB(e0, (*v[0]), (*v[1]));
 
-    Vector e1;
-    V_SUB(e1, (*v[0]), (*v[2]));
+    //Vector e1;
+    //V_SUB(e1, (*v[0]), (*v[2]));
     
     Vector f0;
     V_SUB(f0, (*v[0]), point);
@@ -169,7 +209,7 @@ void Triangle::calculateWeights(Vector point, float *w0, float *w1, float *w2) {
     V_SUB(f2, (*v[2]), point);
 
     Vector xa;
-    V_CROSS(xa, e0, e1);
+    V_CROSS(xa, edge[0], edge[1]);
 
     Vector xa0;
     V_CROSS(xa0, f1, f2);

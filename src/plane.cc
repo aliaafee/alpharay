@@ -8,7 +8,7 @@ Bounds Plane::bounds()
 }
 
         
-Vector Plane::normal(Vector point)
+Vector Plane::normal(Vector point, Material* material)
 {
     return transformNormal(normal_);
 }

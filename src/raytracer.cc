@@ -152,7 +152,7 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
 	}
 
     if (closestObject == NULL)
-        return scene.envColor(ray);	
+        return scene.envColor(ray);
 
     //TODO: Optimize
     Material material = closestObject->material();
@@ -163,10 +163,11 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
 
     Vector intPoint = closestObject->point(ray, t);
     Vector intPointLocal = closestObject->transformPointInv(intPoint);
-    Vector intNormal = closestObject->normal(intPointLocal);
+    
+	closestObject->setPoint(intPointLocal, &material);
+	
+	Vector intNormal = closestObject->normal(intPointLocal, &material);
     intNormal.normalize();
-
-    closestObject->setPoint(intPointLocal, &material);
 
 	if (scene.rayLog()) {
 		std::cout << "d" << depth << ": int -> " << closestObject->str() << " @ " << intPoint << " n:" << intNormal << std::endl;

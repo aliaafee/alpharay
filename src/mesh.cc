@@ -19,6 +19,26 @@ void Mesh::transform()
         triangles[i]->transform();
     }
 
+	//Calculate the tangents and bitangents for each vertex, store it in each vertex
+	if (uvpoints.size() > 0) {
+		for (unsigned long vi=0; vi < vertexs.size(); vi++) {
+			Vector total_t;
+			Vector total_b;
+			float count = 0;
+			for (unsigned long ti=0; ti < triangles.size(); ti++) {
+				for (unsigned int vti=0; vti < 3; vti++) {
+					int vertexIndex = ((triangles[ti]->v)[vti])->i();
+					if ( vertexIndex == (vertexs[vi])->i()) {
+						total_t += triangles[ti]->face_t;
+						total_b += triangles[ti]->face_b;
+						count += 1.0;
+					}
+				}
+			}
+			vertexs[vi]->t = total_t / count;
+			vertexs[vi]->b = total_b / count;
+		}
+	}
 }
 
 
@@ -248,6 +268,17 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
 
 				//Face normal is the average of vertex normals
                 Vector n = ((*normals[n0]) + (*normals[n1]) + (*normals[n2])) / 3.0;
+				/*
+				Vector e0 = *vertexs[v1] - *vertexs[v0];
+				Vector e1 = *vertexs[v2] - *vertexs[v0];
+				Vector fn = (e0 % e1);
+				float det = n * fn;
+				if (det < 0) {
+					fn *= -1;
+				}
+				*/
+
+
 
                 t += 1;
 
@@ -256,7 +287,7 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                 trig->set( vertexs[v0],  vertexs[v1],  vertexs[v2],
                           normals[n0],  normals[n1],  normals[n2],
                           uvpoints[m0], uvpoints[m1], uvpoints[m2],
-                          Vector(n.x, n.y, n.z) );
+                          n );
 
                 triangles.push_back(trig);
                           

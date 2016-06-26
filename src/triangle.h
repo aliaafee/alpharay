@@ -26,7 +26,7 @@ class Triangle : public BaseObject, public XmlObjectIndexed
 
         Bounds bounds();
         
-        Vector normal(Vector point);
+        Vector normal(Vector point, Material* material);
         void setPoint(Vector point, Material* material);
 
         Material material() { return parent_->material(); }
@@ -35,14 +35,14 @@ class Triangle : public BaseObject, public XmlObjectIndexed
         
         TiXmlElement* getXml();
 
-    protected:
+    //protected:
         Vertex* v[3];
         Normal* n[3];
         MapPoint2* m[3];
 
         Vector face_n;
-
-        Vector edge[2];
+		Vector face_t;
+		Vector face_b;
 
         Vector transformPoint(Vector &point) { return parent_->transformPoint(point); }
         Vector transformPointInv(Vector &point) { return parent_->transformPointInv(point); }
@@ -53,6 +53,13 @@ class Triangle : public BaseObject, public XmlObjectIndexed
 
     private:
         void calculateWeights(Vector point, float *w0, float *w1, float *w2);
+
+		Vector edge[2];
+
+		Vector T[3];
+		Vector B[3];
+		//Vector e0;
+		//Vector e1;
 };
 
 /*

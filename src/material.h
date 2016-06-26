@@ -54,6 +54,7 @@ class Material : public XmlObjectNamed
         Color highlightColor_;
         Color reflection_;
         Color transmission_;
+		Color normalDisplacement_;
 
         float reflectionCoeff_;
         float transmissionCoeff_;

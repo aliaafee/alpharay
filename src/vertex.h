@@ -16,6 +16,9 @@ class Vertex : public Vector, public XmlObjectIndexed
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
+
+		Vector t;
+		Vector b;
 };
 
 

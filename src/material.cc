@@ -119,6 +119,9 @@ void Material::setPoint(Vector& point, Vector2& point2)
     if (reflectivityMap_ != NULL) {
         reflectivity_ = reflectivityMap_->color(point, point2).intensity();
     }
+	if (normalMap_ != NULL) {
+		normalDisplacement_ = normalMap_->color(point, point2);
+	}
 }
 
 
