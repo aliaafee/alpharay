@@ -111,6 +111,15 @@ Color Material::color()
 }
 
 
+Vector Material::normalObjectSpace(Vector& os_normal, Vector& os_tangent, Vector& os_bitangent)
+{
+	//if (normalMap_ != NULL) {
+	return os_tangent * ts_normal_.x + os_bitangent * ts_normal_.y + os_normal * ts_normal_.z;
+	//}
+	//return Vector(0, 0, 0);
+}
+
+
 void Material::setPoint(Vector& point, Vector2& point2)
 {
     if (diffuseMap_ != NULL) {
@@ -120,7 +129,11 @@ void Material::setPoint(Vector& point, Vector2& point2)
         reflectivity_ = reflectivityMap_->color(point, point2).intensity();
     }
 	if (normalMap_ != NULL) {
-		normalDisplacement_ = normalMap_->color(point, point2);
+		ts_normal_ = normalMap_->color(point, point2);
+		ts_normal_ *= 2.0;
+		ts_normal_.x -= 1.0;
+		ts_normal_.y -= 1.0;
+		ts_normal_.z -= 1.0;
 	}
 }
 

@@ -3,12 +3,15 @@
 #ifndef _VERTEX_H_
 #define _VERTEX_H_
 
+#include <vector>
+
 #include <tinyxml.h>
 #include "vector.h"
 #include "xmlobject.h"
 
 class Vertex : public Vector, public XmlObjectIndexed
 {
+	friend class Triangle;
     public:
         Vertex(int i, float x, float y, float z)
             : Vector (x,y,z), XmlObjectIndexed("vert", i)
@@ -19,6 +22,11 @@ class Vertex : public Vector, public XmlObjectIndexed
 
 		Vector t;
 		Vector b;
+
+		std::vector<unsigned long> triangleIndexes;
+
+		virtual void addTriangle(unsigned long triangleIndex)
+			{triangleIndexes.push_back(triangleIndex);}
 };
 
 

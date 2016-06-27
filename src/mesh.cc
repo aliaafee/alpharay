@@ -20,20 +20,20 @@ void Mesh::transform()
     }
 
 	//Calculate the tangents and bitangents for each vertex, store it in each vertex
+	if (material_ == NULL) { return; }
+
+	if (material_->normalMap_ == NULL) { return; }
+	
 	if (uvpoints.size() > 0) {
 		for (unsigned long vi=0; vi < vertexs.size(); vi++) {
 			Vector total_t;
 			Vector total_b;
 			float count = 0;
-			for (unsigned long ti=0; ti < triangles.size(); ti++) {
-				for (unsigned int vti=0; vti < 3; vti++) {
-					int vertexIndex = ((triangles[ti]->v)[vti])->i();
-					if ( vertexIndex == (vertexs[vi])->i()) {
-						total_t += triangles[ti]->face_t;
-						total_b += triangles[ti]->face_b;
-						count += 1.0;
-					}
-				}
+			for (unsigned long ti=0; ti < vertexs[vi]->triangleIndexes.size(); ti++) {
+				unsigned long tti = vertexs[vi]->triangleIndexes[ti];
+				total_t += triangles[tti]->face_t;
+				total_b += triangles[tti]->face_b;
+				count += 1.0;
 			}
 			vertexs[vi]->t = total_t / count;
 			vertexs[vi]->b = total_b / count;
@@ -268,17 +268,6 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
 
 				//Face normal is the average of vertex normals
                 Vector n = ((*normals[n0]) + (*normals[n1]) + (*normals[n2])) / 3.0;
-				/*
-				Vector e0 = *vertexs[v1] - *vertexs[v0];
-				Vector e1 = *vertexs[v2] - *vertexs[v0];
-				Vector fn = (e0 % e1);
-				float det = n * fn;
-				if (det < 0) {
-					fn *= -1;
-				}
-				*/
-
-
 
                 t += 1;
 
@@ -290,7 +279,11 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
                           n );
 
                 triangles.push_back(trig);
-                          
+
+				//Add links to triangle to all vertices
+				(vertexs[v0])->addTriangle(triangles.size()-1);
+				(vertexs[v1])->addTriangle(triangles.size()-1);
+				(vertexs[v2])->addTriangle(triangles.size()-1);
             }
 
             //status
@@ -308,11 +301,6 @@ bool Mesh::loadWavefrontObj(std::string filename, float scale, Vector position) 
 
 		}
 		objfile.close();
-
-        //std::cout << std::endl;
-
-        //std::cout << "  mesh " << vertexs.size() << " verts, " << uvpoints.size() 
-        //    << " uvps, " << normals.size() << " norms, " << triangles.size() << " trigs" << std::endl;
 
 		for (int w = 0; w < displayss.str().size(); w ++) { std::cout << "\b";}
 				displayss.str("");

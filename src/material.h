@@ -43,6 +43,8 @@ class Material : public XmlObjectNamed
         virtual float reflectivity() { return reflectivity_; }
         virtual bool flatShading() { return flatShading_; }
 
+		virtual Vector normalObjectSpace(Vector& os_normal, Vector& os_tangent, Vector& os_bitangent);
+
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
@@ -54,7 +56,8 @@ class Material : public XmlObjectNamed
         Color highlightColor_;
         Color reflection_;
         Color transmission_;
-		Color normalDisplacement_;
+		
+		Vector ts_normal_;
 
         float reflectionCoeff_;
         float transmissionCoeff_;

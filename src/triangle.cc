@@ -49,25 +49,27 @@ void Triangle::transform()
 		Vector2 m1 = (*m[2]) - (*m[0]);
 
 		float det = m0.x * m1.y - m1.x * m0.y;
-		float q = 1/det;
+		if (det != 0) {
+			float q = 1/det;
 
-		face_t.x =  m1.y * E0.x - m0.y * E1.x * q;
-		face_b.x = -m1.x * E0.x + m0.x * E1.x * q;
+			face_t.x =  m1.y * E0.x - m0.y * E1.x * q;
+			face_b.x = -m1.x * E0.x + m0.x * E1.x * q;
 
-		face_t.y =  m1.y * E0.y - m0.y * E1.y * q;
-		face_b.y = -m1.x * E0.y + m0.x * E1.y * q;
+			face_t.y =  m1.y * E0.y - m0.y * E1.y * q;
+			face_b.y = -m1.x * E0.y + m0.x * E1.y * q;
 
-		face_t.z =  m1.y * E0.z - m0.y * E1.z * q;
-		face_b.z = -m1.x * E0.z + m0.x * E1.z * q;
+			face_t.z =  m1.y * E0.z - m0.y * E1.z * q;
+			face_b.z = -m1.x * E0.z + m0.x * E1.z * q;
 
-		face_t.normalize();
-		face_b.normalize();
-		face_n.normalize();
+			face_t.normalize();
+			face_b.normalize();
+			face_n.normalize();
 
-		det = (face_t % face_b) * face_n;
-		if (det < 0) {
-			face_t *= -1;
-			face_b *= -1;
+			det = (face_t % face_b) * face_n;
+			if (det < 0) {
+				face_t *= -1;
+				face_b *= -1;
+			}
 		}
 	}
 }
@@ -100,13 +102,12 @@ Vector Triangle::normal(Vector point, Material* material)
 
 	Vector os_normal = ((*n[0]) * w0) + ((*n[1]) * w1) + ((*n[2]) * w2);
 
-	if (m[0] != NULL && m[1] != NULL && m[2] != NULL) {
-		if (material->normalMap_ != NULL) {
+	if (material->normalMap_ != NULL) {
+		if (m[0] != NULL && m[1] != NULL && m[2] != NULL) {
 			Vector os_tangent = ((*v[0]).t * w0) + ((*v[1]).t * w1) + ((*v[2]).t * w2);
-			Vector os_binormal = ((*v[0]).b * w0) + ((*v[1]).b * w1) + ((*v[2]).b * w2);
-			
-			Vector ts_normal = (material->normalDisplacement_ * 2.0) - Vector(1.0, 1.0, 1.0);
-			os_normal = os_tangent * ts_normal.x + os_binormal * ts_normal.y + os_normal * ts_normal.z ;
+			Vector os_bitangent = ((*v[0]).b * w0) + ((*v[1]).b * w1) + ((*v[2]).b * w2);
+
+			os_normal = material->normalObjectSpace(os_normal, os_tangent, os_bitangent) ;
 		}
 	}
 	
