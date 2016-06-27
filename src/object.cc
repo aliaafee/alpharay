@@ -114,7 +114,9 @@ Vector Object::transformNormal(Vector &normal) {
 
 
 Vector Object::transformNormalInv(Vector &normal) {
-    return normal * transMatrixNormalInv;
+	Vector result;
+	V_MUL_MATRIX(result, normal, transMatrixNormalInv);
+    return result;
 }
 
 

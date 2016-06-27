@@ -103,12 +103,16 @@ Vector Triangle::normal(Vector point, Material* material)
 	Vector os_normal = ((*n[0]) * w0) + ((*n[1]) * w1) + ((*n[2]) * w2);
 
 	if (material->normalMap_ != NULL) {
-		if (m[0] != NULL && m[1] != NULL && m[2] != NULL) {
-			Vector os_tangent = ((*v[0]).t * w0) + ((*v[1]).t * w1) + ((*v[2]).t * w2);
-			Vector os_bitangent = ((*v[0]).b * w0) + ((*v[1]).b * w1) + ((*v[2]).b * w2);
+		Vector os_tangent;
+		Vector os_bitangent;
 
-			os_normal = material->normalObjectSpace(os_normal, os_tangent, os_bitangent) ;
+		if (m[0] != NULL && m[1] != NULL && m[2] != NULL) {
+			os_tangent = ((*v[0]).t * w0) + ((*v[1]).t * w1) + ((*v[2]).t * w2);
+			os_bitangent = ((*v[0]).b * w0) + ((*v[1]).b * w1) + ((*v[2]).b * w2);
 		}
+		material->normalMap_->getTangents(point, &os_tangent, &os_bitangent);
+
+		os_normal = material->normalObjectSpace(os_normal, os_tangent, os_bitangent);
 	}
 	
     return transformNormal(os_normal);

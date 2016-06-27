@@ -26,6 +26,37 @@ void Map2d::init()
     imageScale_ = Vector2(1, 1);
 }
 
+
+Color Map2d::color(Vector2 point2)
+{
+    if (image_ == NULL)
+        return Color(0,0,0);
+
+    float u = point2.x / imageScale_.x;
+    float v = point2.y / imageScale_.y;
+
+    u = u - float(int(u));
+    v = v - float(int(v));
+
+    if (u < 0) { u = 1.0f + u; }
+    if (v < 0) { v = 1.0f + v; }
+            
+    u = u * float(image_->width());
+    v = v * float(image_->height());
+
+    point2.x = u;
+    point2.y = v;
+            
+    return Color(image_->getColor(point2));
+}
+
+
+Color Map2d::color(Vector  point, Vector2 point2 = Vector2(0,0))
+{
+    return color(point2);
+}
+
+
 void Map2dPlane::init()
 {
     Map2d::init();
@@ -83,12 +114,24 @@ void Map2dPlane::transform()
 	);
 	Matrix4 itranslation = translation.getInverse();
 
-	transMatrix = translation * xrot * yrot * zrot * scale;
-	transMatrixInv = iscale * izrot * iyrot * ixrot * itranslation;
+	transMatrix = translation * zrot * yrot * xrot * scale;
+	transMatrixInv = iscale * ixrot * iyrot * izrot * itranslation;
+	transMatrixNormal = zrot * yrot * xrot * iscale;
+    transMatrixNormalInv = scale * ixrot * iyrot * izrot;
+
+	Vector ts_tangent = Vector(1, 0, 0);
+	os_tangent_ = transformNormal(ts_tangent);
+	os_tangent_.normalize();
+
+	Vector ts_bitangent = Vector(0, 1, 0);
+	os_bitangent_ = transformNormal(ts_bitangent);
+	os_bitangent_.normalize();
+
+	std::cout << os_bitangent_ << "," << os_tangent_;
 }
 
 
-Vector Map2dPlane::transformPoint(Vector vector) 
+Vector Map2dPlane::transformPoint(Vector &vector) 
 {
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrix);
@@ -96,7 +139,7 @@ Vector Map2dPlane::transformPoint(Vector vector)
 }
 
 
-Vector Map2dPlane::transformPointInv(Vector vector) 
+Vector Map2dPlane::transformPointInv(Vector &vector) 
 {
     Vector result;
     V_MUL_MATRIX(result, vector, transMatrixInv);
@@ -104,33 +147,17 @@ Vector Map2dPlane::transformPointInv(Vector vector)
 }
 
 
-Color Map2d::color(Vector2 point2)
-{
-    if (image_ == NULL)
-        return Color(0,0,0);
-
-    float u = point2.x / imageScale_.x;
-    float v = point2.y / imageScale_.y;
-
-    u = u - float(int(u));
-    v = v - float(int(v));
-
-    if (u < 0) { u = 1.0f + u; }
-    if (v < 0) { v = 1.0f + v; }
-            
-    u = u * float(image_->width());
-    v = v * float(image_->height());
-
-    point2.x = u;
-    point2.y = v;
-            
-    return Color(image_->getColor(point2));
+Vector Map2dPlane::transformNormal(Vector &normal) {
+    Vector result;
+    V_MUL_MATRIX(result, normal, transMatrixNormal);
+    return result;
 }
 
 
-Color Map2d::color(Vector  point, Vector2 point2 = Vector2(0,0))
-{
-    return color(point2);
+Vector Map2dPlane::transformNormalInv(Vector &normal) {
+	Vector result;
+	V_MUL_MATRIX(result, normal, transMatrixNormalInv);
+    return result;
 }
 
 
@@ -144,6 +171,21 @@ Color Map2dPlane::color(Vector  point, Vector2 point2 = Vector2(0,0))
     return Map2d::color(point2);
 }
 
+void Map2dPlane::getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent) {
+	*os_tangent = os_bitangent_;
+	*os_bitangent = os_bitangent_;
+}
+
+
+void Map2dCylindrical::transform()
+{
+	Map2dPlane::transform();
+
+	Vector ts_tangent = Vector(0, 0, 1);
+	os_tangent_ = transformNormal(ts_tangent);
+	os_tangent_.normalize();
+}
+	
 
 Color Map2dCylindrical::color(Vector  point, Vector2 point2 = Vector2(0,0))
 {
@@ -156,6 +198,15 @@ Color Map2dCylindrical::color(Vector  point, Vector2 point2 = Vector2(0,0))
 }
 
 
+void Map2dCylindrical::getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent) {
+	*os_tangent = os_bitangent_;
+	point = transformPointInv(point);
+	point.normalize();
+
+	*os_bitangent = point % os_tangent_;
+}
+
+
 Color Map2dSpherical::color(Vector  point, Vector2 point2 = Vector2(0,0))
 {
     point = transformPointInv(point);
@@ -165,6 +216,15 @@ Color Map2dSpherical::color(Vector  point, Vector2 point2 = Vector2(0,0))
     point2.y = point.y / (M_PI);
 
     return Map2d::color(point2);
+}
+
+
+void Map2dSpherical::getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent) {
+	point = transformPointInv(point);
+	point.normalize();
+
+	*os_bitangent = point % pole_;
+	*os_tangent = point % *os_bitangent;
 }
 
 

@@ -10,8 +10,20 @@ Bounds Sphere::bounds()
         
 Vector Sphere::normal(Vector point, Material* material)
 {
-	point *= normal_;
-    return transformNormal(point);
+	//point *= normal_;
+	Vector os_normal = point;
+	os_normal.normalize();
+
+	if (material->normalMap_ != NULL) {
+		Vector os_bitangent;// = material->normalMap_->os_bitangent(point);
+		Vector os_tangent;// = material->normalMap_->os_tangent(point);
+
+		material->normalMap_->getTangents(point, &os_tangent, &os_bitangent);
+		
+		os_normal = material->normalObjectSpace(os_normal, os_tangent, os_bitangent);
+	}
+
+    return transformNormal(os_normal);
 }
 
 

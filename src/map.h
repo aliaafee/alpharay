@@ -29,6 +29,8 @@ class Map : virtual public XmlObjectNamed
 
         virtual Color color(Vector  point, Vector2 point2) { return Color(0, 0, 0); }
 
+		virtual void getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent) {;}
+
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
@@ -76,6 +78,8 @@ class Map2dPlane : public Map2d, virtual public XmlObjectNamed
 
         virtual Color color(Vector  point, Vector2 point2);
 
+		virtual void getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent);
+
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
@@ -84,12 +88,19 @@ class Map2dPlane : public Map2d, virtual public XmlObjectNamed
 	    Vector rotation_;
 	    Vector scale_;
 
-        Vector transformPoint(Vector point);
-        Vector transformPointInv(Vector point);
+		Vector os_tangent_;
+		Vector os_bitangent_;
+
+        Vector transformPoint(Vector &point);
+        Vector transformPointInv(Vector &point);
+		Vector transformNormal(Vector &normal);
+		Vector transformNormalInv(Vector &normal);
         
     private:
         Matrix4 transMatrix; // TRS
 	    Matrix4 transMatrixInv; // S^R^T^
+		Matrix4 transMatrixNormal; // RS^
+        Matrix4 transMatrixNormalInv; // SR^
 };
 
 
@@ -104,14 +115,18 @@ class Map2dCylindrical : public Map2dPlane, virtual public XmlObjectNamed
 
         ~Map2dCylindrical() { } ;
 
+		virtual void transform();
+
         virtual Color color(Vector  point, Vector2 point2);
+
+		virtual void getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent);
 };
 
 
 class Map2dSpherical : public Map2dPlane, virtual public XmlObjectNamed
 {
     public:
-        virtual void init() { Map2dPlane::init(); }
+        virtual void init() { Map2dPlane::init(); pole_ = Vector(0, 0, 1); }
         
         Map2dSpherical( std::string name ) 
             : Map2dPlane(name), XmlObjectNamed("map2dspherical", name)
@@ -120,6 +135,11 @@ class Map2dSpherical : public Map2dPlane, virtual public XmlObjectNamed
         ~Map2dSpherical() { } ;
 
         virtual Color color(Vector  point, Vector2 point2);
+
+		virtual void getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent);
+		
+	private:
+		Vector pole_;
 };
 
 

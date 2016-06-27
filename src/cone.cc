@@ -11,9 +11,18 @@ Bounds Cone::bounds()
 Vector Cone::normal(Vector point, Material* material)
 {
 	point.normalize();
-    Vector normal(point.x, point.y, 0.5);
+    Vector os_normal(point.x, point.y, 0.5);
 
-    return transformNormal(normal);
+	if (material->normalMap_ != NULL) {
+		Vector os_bitangent;// = material->normalMap_->os_bitangent(point);
+		Vector os_tangent;// = material->normalMap_->os_tangent(point);
+
+		material->normalMap_->getTangents(point, &os_tangent, &os_bitangent);
+		
+		os_normal = material->normalObjectSpace(os_normal, os_tangent, os_bitangent);
+	}
+
+    return transformNormal(os_normal);
 }
 
 

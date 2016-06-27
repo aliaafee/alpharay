@@ -30,7 +30,7 @@ void Material::init() {
 	diffuseMap_ = NULL;
     reflectivityMap_ = NULL;
     normalMap_ = NULL;
-
+	
 	log_ = false;
 }
 
