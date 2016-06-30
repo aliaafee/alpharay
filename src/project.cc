@@ -22,6 +22,7 @@ void Project::renderPreview() {
 	renderer->render(scene, preview, true);
 
 	//preview->bloom(40, 0.9);
+	std::cout << renderer->exposure_;
     preview->toneMap_exp(renderer->exposure_);
 	
 	std::cout << "Render time: " << TIMER_ELAPSED << std::endl;

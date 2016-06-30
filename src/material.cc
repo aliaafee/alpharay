@@ -18,9 +18,11 @@ void Material::init() {
     scatterFactor_ = 0;
     scatterSamples_ = 1;
 	ka_ = 0.1;
-	kd_ = 0.8;
-	ks_ = 0.8; 
-	alpha_ = 15; 
+	roughness_ = 0.1;
+	refractiveIndex_ = 3;
+	//kd_ = 0.8;
+	//ks_ = 0.8; 
+	//alpha_ = 15; 
 
     flatShading_ = false;
 
@@ -61,14 +63,16 @@ void Material::setFresnelCoeff(float rcoeff, float tcoeff)
 
 void Material::addLight(Vector &lightIntensity, 
                         Vector &lightPosition, 
-                        Vector &viewerDirection, 
+                        Vector &V, 
                         Vector &point, 
                         Vector &N)
 {
+	/*
     //Phong reflection model
     //
     //src: http://en.wikipedia.org/wiki/Phong_reflection_model
 
+	
     Vector L;// = (lightPosition - point).getUnitVector();
 	V_SUB(L, lightPosition, point);
 	L.normalize();
@@ -85,7 +89,78 @@ void Material::addLight(Vector &lightIntensity,
             highlightIntensity_ += lightIntensity * ks_ * pow(RdV,alpha_);
         }
     }
+	*/
+	
 
+	//Microofacet BRDF Model 
+	//---------------------
+	//src: http://simonstechblog.blogspot.com/2011/12/microfacet-brdf.html
+	
+	//Roughness 
+	//float m = roughness_;
+
+	//refractive index
+	//float n = refractiveIndex_;
+
+	Vector L;
+	V_SUB(L, lightPosition, point);
+	L.normalize();
+
+	//Vector V;
+	//V = viewerDirection;
+
+	N.normalize();
+
+	Vector H;
+	H = N + L;
+	H.normalize();
+
+	//Shclick approximation to the Fresnel equation
+	float f0 = pow((1 - refractiveIndex_)/(1 + refractiveIndex_), 2);
+	float fresnelTerm = f0 + (1 - f0) * pow((1 - L * H), 5);
+
+	float m2 = pow(roughness_, 2);
+
+	/*
+	//Blinn Phong distribution function
+	float a = (2 / m2) - 2;
+	float distributionTermBlinn = ( (a + 2) / (2 * M_PI) ) * (N * H);
+	*/
+
+	//Beckmann Distibution function
+	float NdH = N * H;
+	
+	float NdH2 = pow(NdH, 2);
+	float NdH4 = pow(NdH, 4);
+	
+	float distributionTermBeck = exp( (NdH2 - 1) / (m2 * NdH2) ) / (M_PI * m2 * NdH4);
+
+	float NdL = N * L;
+	float NdV = N * V;
+	float VdH = V * H;
+
+	//Implicit Geometry Function 
+	float geometryTermImplicit = (NdL) * (NdV);
+
+	/*
+	//Cook-Torrnce Geometry Function 
+	float x = ((2 * NdH) / VdH);
+	float cookA = x * NdV;
+	float cookB = x * NdL;
+	float minAB = std::min(cookA, cookB);
+	float geometryTermCook = std::min(1.0f, minAB);
+	*/
+	
+	//TO DO: Approximation of Smith's shadowing function
+	
+	//Microfacte BRDF
+	float brdf = (fresnelTerm * distributionTermBeck * geometryTermImplicit) / (4 * NdL * NdV);
+	float diffuseTerm = 1 - f0 + ((1 - f0) * pow(NdL, 5));
+
+	if (NdL > 0.0) {
+		highlightIntensity_ += lightIntensity * brdf;
+		diffuseIntensity_ += lightIntensity * diffuseTerm * NdL;
+	}
 }
 
 
@@ -149,10 +224,12 @@ TiXmlElement* Material::getXml()
     root->SetAttribute("opticdensity", ftos(opticDensity_));
     root->SetAttribute("scatterfactor", ftos(scatterFactor_));
     root->SetAttribute("scattersamples", scatterSamples_);
-    root->SetAttribute("ka", ftos(ka_));
-    root->SetAttribute("kd", ftos(kd_));
-    root->SetAttribute("ks", ftos(ks_));
-    root->SetAttribute("alpha", ftos(alpha_));
+    root->SetAttribute("ambient", ftos(ka_));
+    //root->SetAttribute("kd", ftos(kd_));
+    //root->SetAttribute("ks", ftos(ks_));
+    //root->SetAttribute("alpha", ftos(alpha_));
+	root->SetAttribute("roughness", ftos(roughness_));
+	root->SetAttribute("refractive-index", ftos(refractiveIndex_));
     root->SetAttribute("flatshading", flatShading_);
 
     root->SetAttribute("emission", emission_.str());
@@ -203,10 +280,12 @@ bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList
     pElem->QueryFloatAttribute("opticdensity", &opticDensity_);
     pElem->QueryFloatAttribute ("scatterfactor", &scatterFactor_);
     pElem->QueryIntAttribute ("scattersamples", &scatterSamples_);
-    pElem->QueryFloatAttribute ("ka", &ka_);
-    pElem->QueryFloatAttribute ("kd", &kd_);
-    pElem->QueryFloatAttribute ("ks", &ks_);
-    pElem->QueryFloatAttribute ("alpha", &alpha_);
+    pElem->QueryFloatAttribute ("ambient", &ka_);
+    //pElem->QueryFloatAttribute ("kd", &kd_);
+    //pElem->QueryFloatAttribute ("ks", &ks_);
+    //pElem->QueryFloatAttribute ("alpha", &alpha_);
+	pElem->QueryFloatAttribute ("roughness", &roughness_);
+    pElem->QueryFloatAttribute ("refractive-index", &refractiveIndex_);
     pElem->QueryBoolAttribute ("flatshading", &flatShading_);
 
     pElem->QueryValueAttribute <Vector> ("emission", &emission_);

@@ -303,7 +303,6 @@ bool Renderer::loadXml(TiXmlElement* pElem, std::string path)
     pElem->QueryIntAttribute("subcellsx", &cellCx);
     pElem->QueryIntAttribute("subcellsy", &cellCy);
 
-
     return true;
 }
 

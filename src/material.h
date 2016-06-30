@@ -3,6 +3,8 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
+#include <algorithm>
+
 #include "vector.h"
 #include "xmlobject.h"
 #include "map.h"
@@ -73,9 +75,13 @@ class Material : public XmlObjectNamed
         int scatterSamples_;
 
         float ka_; //ambient reflection coefficient
-        float kd_; //diffuse reflection coefficient
-        float ks_; //specular reflection coefficient
-        float alpha_; //specular highlight amount
+        
+		//float kd_; //diffuse reflection coefficient
+        //float ks_; //specular reflection coefficient
+        //float alpha_; //specular highlight amount
+
+		float roughness_;
+		float refractiveIndex_;
 
         bool flatShading_;
 
@@ -92,6 +98,11 @@ class Material : public XmlObjectNamed
     private:
         Color diffuseIntensity_;
         Color highlightIntensity_;
+
+		float microfacetBRDF_;
+		//float fresnelTerm_;
+		//float distributionTerm_;
+		//float geometryTerm_;
 };
 
 
