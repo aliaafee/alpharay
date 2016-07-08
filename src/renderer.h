@@ -7,6 +7,8 @@
 #include <boost/thread.hpp>
 #endif
 
+#include <functional>
+
 #include "xmlobject.h"
 #include "scene.h"
 #include "image.h"
@@ -20,7 +22,8 @@ class Renderer : public XmlObject
             : XmlObject("renderer") 
             { init(); }
 
-        virtual void render (Scene &scene, Image *image, bool join);
+        virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback);
+		virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
 		Color renderPixel (Scene& scene, Image* image, int x, int y);
         virtual void renderST (Scene &scene, Image *image);
 
@@ -28,6 +31,11 @@ class Renderer : public XmlObject
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
         float exposure_;
+
+		bool rendering() { return rendering_;}
+		std::string status() { return status_;}
+
+		void cancel();
 
     protected:
         int traceDepth_;  
@@ -49,13 +57,18 @@ class Renderer : public XmlObject
                             Vector *Vreflect, Vector *Vrefract,
                             float *reflectionCoeff, float *transmissionCoeff );
 
-        //void correctExposure(Color &color);
+        void toneMap_exp(Color *color);
     private:
+		bool rendering_;
+		bool cancel_;
+		
         int threadCount_;
 
         int cellCx, cellCy, curCell, maxCell, cellW, cellH;
 
-        double completed;
+        int completed;
+
+		std::string status_;
 
         virtual void renderCell
             (Scene &scene, Image *image, int x0, int y0, int x1, int y1);
@@ -67,6 +80,8 @@ class Renderer : public XmlObject
         bool getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int height);
 
         void resetCells(Image* image);
+
+		std::function<void()> onDoneCallback_;
 };
 
 

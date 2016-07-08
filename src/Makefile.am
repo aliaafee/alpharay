@@ -31,7 +31,10 @@ alpharay_SOURCES =   main.cc \
                      pathtracer.cc \
                      project.cc \
                      bbox.cc \
-                     octree.cc
+                     octree.cc \
+					 tinyfiledialogs.cc
+
+AM_CPPFLAGS = -std=c++11 -Wc++11-extensions -Wdeprecated-declarations
 
 alpharay_LDFLAGS =  -ltinyxml
 
@@ -41,7 +44,7 @@ endif
 
 if OPENGL
     alpharay_SOURCES += gl-image.cc
-    alpharay_LDFLAGS += -lgl -lglut -lX11 -lglu
+    alpharay_LDFLAGS += -lgl -lglut -lX11 -lglu -lglui
 endif
 
 alpharay_LDADD = 

@@ -6,6 +6,8 @@
 #include <tinyxml.h>
 #include <string>
 #include <iostream>
+#include <functional>
+//using namespace std::placeholders;
 
 using namespace std;
 
@@ -34,10 +36,14 @@ class Project {
         void setFinalImage(Bitmap* image) 
             { final = image; final->create(finalSize.x, finalSize.y); }
 
-        void renderPreview();
+        void renderPreview(std::function<void()> onDoneCallback);
+		void onDoneRenderPreview();
+
 		Color renderPreviewPixel(int x, int y);
 
+		void setOutFile(std::string filename) { outFile_ = filename; };
         void renderFinal();
+		void onDoneRenderFinal();
         
         bool load(string filename);
         bool save(string filename);
@@ -45,6 +51,11 @@ class Project {
     private:
         std::string pathBase(std::string path);
 
+		std::chrono::high_resolution_clock::time_point timerStart_;
+
+		std::string outFile_;
+
+		std::function<void()> onDonePreviewCallback_;
 };
 
 

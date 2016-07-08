@@ -126,8 +126,6 @@ void Map2dPlane::transform()
 	Vector ts_bitangent = Vector(0, 1, 0);
 	os_bitangent_ = transformNormal(ts_bitangent);
 	os_bitangent_.normalize();
-
-	std::cout << os_bitangent_ << "," << os_tangent_;
 }
 
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <unistd.h>
 
 #include "project.h"
@@ -12,31 +13,89 @@ using namespace std;
 Project project;
 Bitmap final("");
 
+string projectFile, outFile, projectSaveFile;
+
 #ifdef OPENGL
 
 #include <GL/freeglut.h>
 #include <GL/glu.h>
+#include "glui.h"
+#include "tinyfiledialogs.h"
+
+//GLUI Command IDs
+#define GLUI_CMD_RENDER 1
+#define GLUI_CMD_CANCEL_RENDER 2
+#define GLUI_CMD_SAVE 3
+
+//Main Window Menu
+enum MENU_TYPE
+{
+	MENU_SAVE_RENDER,
+	MENU_EDIT_MATERIAL
+};
+
+//Tiny File Dialogue 
+char const * saveImagePatters[1] = { "*.*" };
+
 
 Bitmap preview("");
 
+int mainWindow;
+
+int toolWindow;
+GLUI_Button* btnRender;
+GLUI_Button* btnCancelRender;
+GLUI_StaticText* lblStatus;
+GLUI_EditText* txtOutFile;
 
 void display(void)
-{
+{	
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	if (project.renderer->rendering() == false) {
+		btnRender->enable();
+		btnCancelRender->disable();
+		lblStatus->set_text(project.renderer->status().c_str());
+	} else {
+		btnRender->disable();
+		btnCancelRender->enable();
+		lblStatus->set_text(project.renderer->status().c_str());
+	}
+
     preview.display();
+
+	/*
+	//Image overlay
+	glLineWidth(1); 
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex2f(0.0, 0.0);
+	glVertex2f(10, 10);
+	glEnd();
+	*/
     
     glutSwapBuffers();
-    
 }
 
 
 void reshape(int width, int height)
 {
-    glViewport(0, 0, width, height);
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity ();
-	gluOrtho2D (0.0, width, 0.0, height);
+    //glViewport(0, 0, width, height);
+	//glMatrixMode (GL_PROJECTION);
+	//glLoadIdentity ();
+	//gluOrtho2D (0.0, width, 0.0, height);
+	
+	//int vx, vy, vw, vh;
+
+	//GLUI_Master.get_viewport_area(&vx, &vy, &vw, &vh);
+
+	//glViewport(vx,vy,vw,vh);
+
+	//glutPostRedisplay();
+
+	//std::cout<<vx <<","<<vy<<","<<vw<<","<<vh << std::endl;
+
+	//GLUI_Master.auto_set_viewport();
 }
 
 
@@ -57,7 +116,7 @@ void keyboard(unsigned char key, int x, int y)
 		exit(0);
 
 	if (key == 13) {
-		project.renderPreview();
+		//project.renderPreview(&onDoneRender);
 	}
 	glutPostRedisplay();
 }
@@ -94,7 +153,58 @@ void keyboardSpecial(int key, int x, int y)
 
 void idle(void)
 {
+	glutSetWindow(mainWindow);
+	
     glutPostRedisplay();
+}
+
+
+void onDoneRender()
+{
+	;	
+}
+
+
+void gluiCommand(int ID)
+{
+	switch (ID) {
+		case GLUI_CMD_RENDER:
+			project.renderPreview(&onDoneRender);
+			break;
+		case GLUI_CMD_CANCEL_RENDER:
+			project.renderer->cancel();
+			break;
+		case GLUI_CMD_SAVE:
+			outFile = txtOutFile->get_text();
+			project.preview->save(outFile);
+			break;
+	}
+	
+}
+
+
+
+void menu(int ID)
+{
+	switch (ID) {
+		case MENU_SAVE_RENDER:
+			char const *saveFileName;
+			saveFileName = tinyfd_saveFileDialog(
+				"Save Image",
+				"render.jpg",
+				2,
+				saveImagePatters,
+				NULL);
+			if (!saveFileName) {
+				cout << "Bad Save Filename" << endl;
+			} else {
+				outFile = saveFileName;
+				project.preview->save(outFile);
+			}
+			break;
+		case MENU_EDIT_MATERIAL:
+			break;
+	}
 }
 
 
@@ -106,19 +216,37 @@ void initGlut(int argc, char** argv)
     
     glutInitWindowSize(preview.width(), preview.height());
 
-    glutCreateWindow("Render Result");
+    mainWindow = glutCreateWindow("Render Result");
     
     glClearColor (0.0, 0.0, 0.0, 0.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	glOrtho(0.0, preview.width(),preview.height(),0.0, -1.0, 1.0);
     
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
 	glutIdleFunc(idle);
-	glutMouseFunc(mouse);
+	//glutMouseFunc(mouse);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(keyboardSpecial);
+
+	glutCreateMenu(menu);
+	glutAddMenuEntry("Save Image", MENU_SAVE_RENDER);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+	//GLUI 
+	GLUI *glui = GLUI_Master.create_glui( "GLUI", 0 , preview.width(), 0);
+	//GLUI *glui = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_LEFT);
+	lblStatus = glui->add_statictext("");
+	GLUI_Panel *render_panel = glui->add_panel( "Render" );
+	btnRender = glui->add_button_to_panel(render_panel, "Render", GLUI_CMD_RENDER, gluiCommand);
+	btnCancelRender = glui->add_button_to_panel(render_panel, "Cancel", GLUI_CMD_CANCEL_RENDER, gluiCommand);
+	//glui->add_separator_to_panel(render_panel);
+	//txtOutFile = glui->add_edittext_to_panel(render_panel, "Filename");
+	//glui->add_button_to_panel(render_panel, "Save", GLUI_CMD_SAVE, gluiCommand);
+
+	glui->set_main_gfx_window( mainWindow );
+	GLUI_Master.set_glutIdleFunc(idle);
 }
 
 #endif
@@ -128,7 +256,11 @@ void usage(string name)
     cerr << "Usage: " << name << " <options(s)> PROJECT" << endl
          << "Options: " << endl
          << "\t-h\tDisplay this help message" << endl
-         << "\t-o\tOutput image filename" << endl
+#ifdef OPENGL
+         << "\t-o\tOutput image filename (Optional)" << endl
+#else
+		<< "\t-o\tOutput image filename (Required)" << endl
+#endif
 		 << "\t-s\tSave project to a new file" << endl
          << endl;
 }
@@ -136,8 +268,6 @@ void usage(string name)
 
 int main (int argc, char **argv)
 {
-    string projectFile, outFile, projectSaveFile;
-
     int c;
 
     while ((c = getopt (argc, argv, "ho:s:")) != -1)
@@ -167,7 +297,7 @@ int main (int argc, char **argv)
 #ifndef OPENGL
     if (outFile == "") {
         usage(argv[0]);
-        cerr << "Compile with freeglut to enable render preview" << endl;
+        cerr << "NOTE: Compile with freeglut to enable render preview" << endl;
         return 1;
     }
 #endif
@@ -185,18 +315,21 @@ int main (int argc, char **argv)
 	}
 
     if (outFile != "") {
+		project.setOutFile(outFile);
         project.setFinalImage(&final);
         project.renderFinal();
+		//initGlut(argc, argv);
+		//glutMainLoop();
 
-        cout << "Saving render result..." << outFile << endl;
-        final.save(outFile);
+        //cout << "Saving render result..." << outFile << endl;
+        //final.save(outFile);
         return 0;
     }
 
 #ifdef OPENGL
     project.setPreviewImage(&preview);
     preview.enableDisplay();
-    project.renderPreview();
+    project.renderPreview(&onDoneRender);
     initGlut(argc, argv);
     glutMainLoop();
 #endif

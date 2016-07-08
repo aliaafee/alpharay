@@ -39,7 +39,11 @@ void Material::init() {
 
 void Material::transform() 
 {
-    ;
+    //scatterFactor_ = roughness_ - 0.01;
+	//if (scatterFactor_ < 0) { scatterFactor_ = 0; }
+
+	//reflectivity_ = 1 - roughness_;
+	//if (reflectivity_ < 0) { reflectivity_ = 0; }
 }
 
 

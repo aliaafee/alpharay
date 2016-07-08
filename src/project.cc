@@ -11,21 +11,31 @@ std::string Project::pathBase(std::string path) {
 }
 
 
-void Project::renderPreview() {
+void Project::renderPreview(std::function<void()> onDoneCallback) {
     if (renderer == NULL) return;
     if (preview == NULL) return;
+	if (renderer->rendering()) return;
+
+	onDonePreviewCallback_ = onDoneCallback;
 
     std::cout << "Preview " << preview->width() << "x" << preview->height() << std::endl;
 
-	TIMER_START;
+	timerStart_ = std::chrono::high_resolution_clock::now();
     
-	renderer->render(scene, preview, true);
-
-	//preview->bloom(40, 0.9);
-	std::cout << renderer->exposure_;
-    preview->toneMap_exp(renderer->exposure_);
+	auto fp = std::bind(&Project::onDoneRenderPreview, this);
 	
-	std::cout << "Render time: " << TIMER_ELAPSED << std::endl;
+	renderer->render(scene, preview, fp);
+}
+
+void Project::onDoneRenderPreview() {
+	std::cout << "Done Preview" << std::endl;
+	
+	//Post processing here
+	preview->toneMap_exp(renderer->exposure_);
+
+	std::cout << "Render time: " << durationDisplay(std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - timerStart_ )) << std::endl;
+
+	onDonePreviewCallback_();
 }
 
 
@@ -58,14 +68,22 @@ void Project::renderFinal() {
 
     std::cout << "Final " << final->width() << "x" << final->height() << std::endl;
 
-	TIMER_START;
+	timerStart_ = std::chrono::high_resolution_clock::now();
 
-    renderer->render(scene, final, true);
+	auto fp = std::bind(&Project::onDoneRenderFinal, this);
+    renderer->render(scene, final, fp, true);
+}
 
-    //final->bloom(10, 150);
-    final->toneMap_exp(renderer->exposure_);
 
-	std::cout << "Render time: " << TIMER_ELAPSED << std::endl;
+void Project::onDoneRenderFinal() {
+	std::cout << "Done Render Final" << std::endl;
+
+	//Post processing here
+	final->toneMap_exp(renderer->exposure_);
+	
+	std::cout << "Render time: " << durationDisplay(std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - timerStart_ )) << std::endl;
+
+	final->save(outFile_);
 }
 
 
