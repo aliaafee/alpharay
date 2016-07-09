@@ -8,42 +8,28 @@ void Bitmap::init()
     Image::init(); 
     
     image_ = NULL;
-
-#ifdef OPENGL
-    preview_ = NULL;
-#endif
+	imageSize_ = 0;
 }
 
 
 Bitmap::~Bitmap()
 {
-    if (image_ != NULL) {
-        delete image_;
+    if (imageSize_ != 0) {
+        delete[] image_;
     }
-
-#ifdef OPENGL
-    if (preview_ != NULL) {
-        delete preview_;
-    }
-#endif
 }
 
 
 bool Bitmap::create(int width, int height)
 {
-    if (image_ != NULL) {
-        delete image_;
+    if (imageSize_ != 0) {
+        delete[] image_;
     }
 
-#ifdef OPENGL
-    if (preview_ != NULL) {
-        delete preview_;
-    }
-#endif
-
-    init();
-
-    image_ = new cimg_library::CImg<float>(width, height, 1, 3, 0);
+	width_ = width;
+	height_ = height;
+	imageSize_ = width_ * height_ * 3;
+	image_ = new float[width_ * height_ * 3];
 
     return true;
 }
@@ -51,178 +37,231 @@ bool Bitmap::create(int width, int height)
 
 bool Bitmap::load(std::string filename)
 {
-    if (image_ != NULL) {
-        delete image_;
+    if (imageSize_ != 0) {
+        delete[] image_;
     }
+#ifdef CIMG
+	CImg<float> loadedImage(filename.c_str());
 
-#ifdef OPENGL
-    if (preview_ != NULL) {
-        delete preview_;
-    }
-#endif
+	width_ = loadedImage.width();
+	height_ = loadedImage.height();
+	imageSize_ = width_ * height_ * 3;
+	image_ = new float[width_ * height_ * 3];
 
-    init();
+	unsigned int i;
+	cimg_forXY(loadedImage, x, y) {
+		i = y * width_ * 3 + x * 3;
+		image_[i] = loadedImage(x, y, 0) / 255.0;
+		image_[i+1] = loadedImage(x, y, 1) / 255.0;
+		image_[i+2] = loadedImage(x, y, 2) / 255.0;
+	}
 
-    image_ = new cimg_library::CImg<float>();
-    image_->load(filename.c_str());
+	return true;
+#else
+	//Load PPM image
+	char *t;
+	char buf[256];
+	int r;
+	unsigned int w, h, d;
+	
+	FILE *fp = fopen(filename.c_str(), "rb");
+
+	if (fp == NULL) { 
+		std::cerr << "Image file not found" << std::endl;
+		return false;
+	}
+	
+	t = fgets(buf, 256, fp);
+	if ( (t == NULL) || (strncmp(buf, "P6\n", 3) != 0) ) {
+		std::cerr << "PPM Load: Invalid image format" << std::endl;
+		return false;
+	}
+
+	do {
+		t = fgets(buf, 256, fp);
+		if (t == NULL) {
+			std::cerr << "PPM Load: Invalid image file: ended unexpectadly" << std::endl;
+			return false;
+		}
+	} while (strncmp(buf, "#", 1) == 0);
+
+	r = sscanf(buf, "%u %u", &w, &h);
+	if (r < 2) {
+		std::cerr << "PPM Load: Invalid image file: bad dimensions" << std::endl;
+		return false;
+	}
+
+	r= fscanf(fp, "%u", &d);
+	if ( (r < 1) || (d != 255)) {
+		std::cerr << "PPM Load: Invalid image file: unsupported image depth" << std::endl;
+		return false;
+	}
+
+	fseek(fp, 1, SEEK_CUR);
+	
+	width_ = w;
+	height_ = h;
+	imageSize_ = width_ * height_ * 3;
+	image_ = new float[width_ * height_ * 3];
+
+	size_t rd;
+	unsigned char pixel[3];
+	for (unsigned int i = 0; i < imageSize_-3 && rd == 3; i += 3) {
+		rd = fread(pixel, 1, 3, fp);
+		image_[i] = float(pixel[0]) / 255.0;
+		image_[i+1] = float(pixel[1]) / 255.0;
+		image_[i+2] = float(pixel[2]) / 255.0;
+	}
+
+	refresh();
 
     return true;
+#endif
 }
 
 
 bool Bitmap::save(std::string filename)
 {
-    if (image_ != NULL) {
-        image_->save(filename.c_str());
-        return true;
-    }
-    return false;
-}
+    if (imageSize_ == 0) return false;
 
+#ifdef CIMG
+	CImg<float> outImage(width(), height(), 1, 3, 0);
+	
+	unsigned int i;
+	cimg_forXY(outImage, x, y) {
+		i = y * width_ * 3 + x * 3;
+		outImage(x, y, 0) = image_[i] * 255.0;
+		outImage(x, y, 1) = image_[i+1] * 255.0;
+		outImage(x, y, 2) = image_[i+2] * 255.0;
+	}
 
-void Bitmap::enableDisplay()
-{
-#ifdef OPENGL
-    if (preview_ == NULL) {
-        preview_ = new GLImage(width(), height());
-    }
+	/*
+	float col[3];
+	for (unsigned int x = 0; x < width_; x ++) {
+		for (unsigned int y = 0; y < height_; y ++) {
+			i = y * width_ * 3 + x * 3;
+			col[0] = image_[i] * 255.0f;
+			col[1] = image_[i+1] * 255.0f;
+			col[2] = image_[i+2] * 255.0f;
+			outImage.draw_point(x, y, col);
+		}
+	}
+	*/
+
+	outImage.save(filename.c_str());
+
+	return true;
 #else
-    std::cout << "Compile with OpenGL to display" << std::endl;
-#endif
-}
+	//Save image to PPM Format
+	FILE *fp = fopen(filename.c_str(), "wb");
+	(void) fprintf(fp, "P6\n%d %d\n255\n", width_, height_);
+	for (unsigned int i = 0; i < imageSize_; i++) {
+		static unsigned char color[3];
+		color[0] = char(image_[i] * 255.0f);
+		if (color[0] > 255) { color[0] = 255; }
 
-
-void Bitmap::display()
-{
-#ifdef OPENGL
-    if (image_ != NULL && preview_ != NULL) {
-        preview_->display();
-    }
-#else
-    std::cout << "Compile with OpenGL to display" << std::endl;
+		(void) fwrite(color, 1, 1, fp);
+	}
+	(void) fclose(fp);
+	
+	return true;
 #endif
 }
 
 
 Color Bitmap::getColor(Vector2 point)
 {
-    if (!image_) {
-        return Color(0,0,0);
-    }
+	Color result;
 
-    float col[3];
-    
-    col[0] = image_->linear_atXY (point.x-1, point.y-1, 0);
-	col[1] = image_->linear_atXY (point.x-1, point.y-1, 1);
-	col[2] = image_->linear_atXY (point.x-1, point.y-1, 2);
+	if (imageSize_ == 0) return result;
 
-    return Color(float(col[0])/255.0f ,float(col[1])/255.0f ,float(col[2])/255.0f);
+	int u = int(point.x-1) % width_;
+	int v = int(point.y-1) % height_;
+
+	int i = v * width_ * 3 + u * 3;
+
+	result.x = image_[i];
+	result.y = image_[i+1];
+	result.z = image_[i+2];
+
+	return result;
 }
 
 
 bool Bitmap::setColor(Vector2 point, Color color)
 {
-    if (!image_) return false;
+	if (imageSize_ == 0) return false;
 
-    //color.capColor();
+	int u = int(point.x-1) % width_;
+	int v = int(point.y-1) % height_;
 
-    float col[3];
+	int i = v * width_ * 3 + u * 3;
 
-    /*
-    col[0] = unsigned(char(color.x * 255.0f));
-    col[1] = unsigned(char(color.y * 255.0f));
-    col[2] = unsigned(char(color.z * 255.0f));
-    */
-    col[0] = color.x * 255.0f;
-    col[1] = color.y * 255.0f;
-    col[2] = color.z * 255.0f;
+	image_[i] = color.x;
+	image_[i+1] = color.y;
+	image_[i+2] = color.z;
 
-    image_->draw_point(int(point.x)-1 ,int(point.y)-1 ,col);
-
-#ifdef OPENGL
-    if (!preview_)
-        return true;
-
-    preview_->setColor(point, color);
-#endif
-
-    return true;
+	return true;
 }
 
 
 int Bitmap::width()
 {
-    if (image_ != NULL)
-        return image_->width();
-    return 0;
+	return width_;
 }
 
 
 int Bitmap::height()
 {
-    if (image_ != NULL)
-        return image_->height();
-    return 0;
+	return height_;
 }
 
 
 void Bitmap::toneMap_simple()
 {
-    if (!image_) return;
+	if (imageSize_ == 0) return;
 
-    float v;
-
-    cimg_forXYZC((*image_),x,y,z,k) {
-        v = (*image_)(x,y,z,k) / 255.0f;
-
-        v = v / (v + 1.0f);
-
-        (*image_)(x,y,z,k) = v * 255.0f;
-    }
-
-    CopyDisplay()
+	for (unsigned int i = 0; i < imageSize_; i++) {
+		image_[i] = image_[i] / (image_[i] + 1.0f);
+	}
+	
+	refresh();
 }
 
 void Bitmap::toneMap_gamma(float a, float gamma)
 {
-    // a > 0 and 0 < gamma < 1
+	// a > 0 and 0 < gamma < 1
     // converts from [0, 1/a^(1/gamma)] to [0,1]
-    if (!image_) return;
 
-    float v;
+	if (imageSize_ == 0) return;
 
-    cimg_forXYZC((*image_),x,y,z,k) {
-        v = (*image_)(x,y,z,k) / 255.0f;
+	for (unsigned int i = 0; i < imageSize_; i++) {
+		image_[i] = a * pow(image_[i], gamma);
+	}
 
-        v = a * pow(v, gamma);
-
-        (*image_)(x,y,z,k) = v * 255.0f;
-    }
-
-    CopyDisplay()
+	refresh();
 }
 
 void Bitmap::toneMap_exp(float exposure)
 {
-    if (!image_) return;
+	if (imageSize_ == 0) return;
 
-    float v;
+	for (unsigned int i = 0; i < imageSize_; i++) {
+		image_[i] = 1.0f - expf(image_[i] * exposure);
+	}
 
-    cimg_forXYZC((*image_),x,y,z,k) {
-        v = (*image_)(x,y,z,k) / 255.0f;
-
-        v = 1.0f - expf( v * exposure );
-
-        (*image_)(x,y,z,k) = v * 255.0f;
-    }
-
-    CopyDisplay()
+	refresh();
 }
 
 
 
 void Bitmap::bloom(float radius, float highpass) 
 {
+	if (imageSize_ == 0) return;
+	//Do Bloom
+	
+	
+	/*
     if (!image_) return;
 
     CImg<float> blured = *image_;
@@ -251,6 +290,7 @@ void Bitmap::bloom(float radius, float highpass)
     }
 
     CopyDisplay()
+	*/
 }
 
 

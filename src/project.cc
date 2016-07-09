@@ -32,7 +32,7 @@ void Project::onDoneRenderPreview() {
 	
 	//Post processing here
 	preview->toneMap_exp(renderer->exposure_);
-
+	
 	std::cout << "Render time: " << durationDisplay(std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - timerStart_ )) << std::endl;
 
 	onDonePreviewCallback_();

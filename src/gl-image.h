@@ -3,39 +3,40 @@
 #ifndef _GL_IMAGE_H_
 #define _GL_IMAGE_H_
 
-#include "image.h"
+#include "bitmap.h"
 
 #include <GL/freeglut.h>
 
 
-class GLImage : public Image, virtual public XmlObjectNamed
+class GLImage : public Bitmap, virtual public XmlObjectNamed
 {
     public:
-        virtual void init() { Image::init(); image_ = NULL; }
-
+        virtual void init();
+		
         GLImage( int width, int height ) 
-            : Image("unnamed"), XmlObjectNamed("image", "unnamed")
+            : Bitmap("unnamed"), XmlObjectNamed("glimage", "unnamed")
             { init(); create(width, height); }
         
         GLImage( std::string name ) 
-            : Image(name), XmlObjectNamed("image", name)
+            : Bitmap(name), XmlObjectNamed("glimage", name)
             { init(); }
 
-        ~GLImage() { if (image_ != NULL) delete[] image_; }
+        ~GLImage() { 
+			if (imageSize_ != 0) delete[] glImage_; }
 
-        virtual bool create(int width, int height);
 
-        virtual void display();
+		virtual bool create(int width, int height);
+        virtual bool load(std::string filename);
+        //virtual bool save(std::string filename);
 
-        virtual Color getColor(Vector2 point);
+        //virtual Color getColor(Vector2 point);
         virtual bool setColor(Vector2 point, Color color);
 
-        virtual int width();
-        virtual int height();
-
+		void refresh();
+		void display();
     protected:
-        GLubyte *image_;
-
+        GLubyte *glImage_;
+		unsigned int glImageSize_;
 };
 
 #endif // _GL_IMAGE_H_

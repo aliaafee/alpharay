@@ -5,18 +5,17 @@
 
 #include "image.h"
 
-#define cimg_display 0
-//#define cimg_OS 1
-#include <CImg.h>
+#ifdef CIMG
 
+#define cimg_display 0
+#define cimg_OS 1
+#include <CImg.h>
 using namespace cimg_library;
 
-#ifdef OPENGL
-#include "gl-image.h"
-#define CopyDisplay() if (!preview_) return; copyTo(preview_);
-#else
-#define CopyDisplay() ;
 #endif
+
+
+#include <stdio.h>
 
 
 class Bitmap : public Image, virtual public XmlObjectNamed
@@ -38,14 +37,13 @@ class Bitmap : public Image, virtual public XmlObjectNamed
         virtual bool load(std::string filename);
         virtual bool save(std::string filename);
 
-        virtual void enableDisplay();
-        virtual void display();
-
         virtual Color getColor(Vector2 point);
         virtual bool setColor(Vector2 point, Color color);
 
         virtual int width();
         virtual int height();
+
+		virtual void refresh() {};
 
         void toneMap_simple();
         void toneMap_gamma(float a, float gamma);
@@ -57,12 +55,9 @@ class Bitmap : public Image, virtual public XmlObjectNamed
 
     protected:
         std::string filename_;
-
-        CImg<float>* image_;
-
-#ifdef OPENGL
-        GLImage* preview_;
-#endif
+		
+		float *image_;
+		unsigned int imageSize_;
 };
 
 #endif // _BITMAP_H_

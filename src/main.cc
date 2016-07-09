@@ -21,6 +21,7 @@ string projectFile, outFile, projectSaveFile;
 #include <GL/glu.h>
 #include "glui.h"
 #include "tinyfiledialogs.h"
+#include "gl-image.h"
 
 //GLUI Command IDs
 #define GLUI_CMD_RENDER 1
@@ -38,7 +39,7 @@ enum MENU_TYPE
 char const * saveImagePatters[1] = { "*.*" };
 
 
-Bitmap preview("");
+GLImage preview("");
 
 int mainWindow;
 
@@ -52,18 +53,8 @@ void display(void)
 {	
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if (project.renderer->rendering() == false) {
-		btnRender->enable();
-		btnCancelRender->disable();
-		lblStatus->set_text(project.renderer->status().c_str());
-	} else {
-		btnRender->disable();
-		btnCancelRender->enable();
-		lblStatus->set_text(project.renderer->status().c_str());
-	}
-
-    preview.display();
-
+	preview.display();
+		
 	/*
 	//Image overlay
 	glLineWidth(1); 
@@ -73,8 +64,7 @@ void display(void)
 	glVertex2f(10, 10);
 	glEnd();
 	*/
-    
-    glutSwapBuffers();
+	glutSwapBuffers();
 }
 
 
@@ -91,7 +81,8 @@ void reshape(int width, int height)
 
 	//glViewport(vx,vy,vw,vh);
 
-	//glutPostRedisplay();
+	glutPostRedisplay();
+	//preview.postRedisplay();
 
 	//std::cout<<vx <<","<<vy<<","<<vw<<","<<vh << std::endl;
 
@@ -152,16 +143,28 @@ void keyboardSpecial(int key, int x, int y)
 
 
 void idle(void)
-{
+{	
+	if (project.renderer->rendering() == false) {
+		btnRender->enable();
+		btnCancelRender->disable();
+		lblStatus->set_text(project.renderer->status().c_str());
+	} else {
+		btnRender->disable();
+		btnCancelRender->enable();
+		lblStatus->set_text(project.renderer->status().c_str());
+
+	}
+
 	glutSetWindow(mainWindow);
-	
-    glutPostRedisplay();
+	glutPostRedisplay();
+
+	usleep(100);
 }
 
 
 void onDoneRender()
 {
-	;	
+	cout << "Done Render" << endl;
 }
 
 
@@ -210,8 +213,8 @@ void menu(int ID)
 
 void initGlut(int argc, char** argv)
 {
-    glutInit(&argc, argv);
-    
+	glutInit(&argc, argv);
+	
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
     
     glutInitWindowSize(preview.width(), preview.height());
@@ -328,7 +331,7 @@ int main (int argc, char **argv)
 
 #ifdef OPENGL
     project.setPreviewImage(&preview);
-    preview.enableDisplay();
+    //preview.enableDisplay();
     project.renderPreview(&onDoneRender);
     initGlut(argc, argv);
     glutMainLoop();

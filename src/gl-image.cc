@@ -3,73 +3,81 @@
 #include "gl-image.h"
 
 
+void GLImage::init() 
+{ 
+	Bitmap::init(); 
+    
+    glImage_ = NULL;
+	glImageSize_ = 0;
+}
+
+
 bool GLImage::create(int width, int height)
 {
-    if (image_ != NULL) {
-        delete[] image_;
+	Bitmap::create(width, height);
+
+	if (glImageSize_ != 0) {
+        delete[] glImage_;
     }
+	
+	glImageSize_ = width_ * height_ * 3;
+    glImage_ = new GLubyte[glImageSize_];
 
-    init();
-
-    width_ = width;
-    height_ = height;
-
-    image_ = new GLubyte[width_ * height_ * 3];
+	for (unsigned int i = 0; i < glImageSize_; i++) {
+		glImage_[i] = 0;
+	}
 
     return true;
 
+}
+
+
+bool GLImage::load(std::string filename)
+{
+	Bitmap::load(filename);
+}
+
+
+void GLImage::refresh()
+{
+	Bitmap::refresh();
+	
+	unsigned int i, gli;
+	for (unsigned int x = 0; x < width_; x++) {
+		for (unsigned int y = 0; y < height_; y++) {
+			i = y * width_ * 3 + x * 3;
+			gli = ((height_-1) - y) * width_ * 3 + x * 3;
+
+			glImage_[gli] =  GLubyte(image_[i]*255.0f);
+			glImage_[gli+1] =  GLubyte(image_[i+1]*255.0f);
+			glImage_[gli+2] =  GLubyte(image_[i+2]*255.0f);
+		}
+	}
 }
 
 
 void GLImage::display()
 {
-    glDrawPixels(width_, height_, GL_RGB, GL_UNSIGNED_BYTE, image_ );
-}
-
-
-Color GLImage::getColor(Vector2 point)
-{
-    Color result;
-
-    int ui = int(point.x)-1;
-    int vi = height_ - int(point.y);
-    int i = vi*width_*3 + ui*3;
-    
-    result.x = float(image_[i])/255.0f;
-	result.y = float(image_[i+1])/255.0f;
-	result.z = float(image_[i+2])/255.0f;
-    
-    return result;
+    glDrawPixels(width_, height_, GL_RGB, GL_UNSIGNED_BYTE, glImage_ );
 }
 
 
 bool GLImage::setColor(Vector2 point, Color color)
 {
-    int ui = int(point.x)-1;
-    int vi = height_ - int(point.y);
-    int i = vi*width_*3 + ui*3;
+	Bitmap::setColor(point, color);
 
-    color.capColor();
+	if (glImageSize_ == 0) return false;
 
-    image_[i] = GLubyte(color.x*255.0f);
-    image_[i+1] = GLubyte(color.y*255.0f);
-    image_[i+2] = GLubyte(color.z*255.0f);
-    
-    return true;
-}
+	int u = int(point.x-1) % width_;
+	int v = (height_-int(point.y)) % height_;
 
+	int i = v * width_ * 3 + u * 3;
+	
+	color.capColor();
 
-int GLImage::width()
-{
-    if (image_ != NULL)
-        return width_;
-    return 0;
-}
+	glImage_[i] = GLubyte(color.x*255.0f);
+    glImage_[i+1] = GLubyte(color.y*255.0f);
+    glImage_[i+2] = GLubyte(color.z*255.0f);
 
-
-int GLImage::height()
-{
-    if (image_ != NULL)
-        return height_;
-    return 0;
+	return true;
 }

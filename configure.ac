@@ -21,9 +21,14 @@ fi
 
 havecimg=1
 AC_CHECK_HEADER(CImg.h, [], [havecimg=0] )
-if test $havecimg == 0
+if test $havecimg == 1
 then
-    AC_MSG_ERROR([CImg not available, cannot continue])
+    AC_DEFINE(CIMG, true)
+    AM_CONDITIONAL(CIMG, true)
+    AC_MSG_NOTICE([Using CImg for image load/save])
+else
+    AM_CONDITIONAL(CIMG, false)
+    AC_MSG_NOTICE([CImg not available])
 fi
 
 havethread=1
