@@ -22,25 +22,19 @@ Required Dependencies
 
 The required dependencies are:
     * tinyxml
-    * CImg
 
 Install it in the standard manner for your system or get it from:
     * http://sourceforge.net/projects/tinyxml/
-    * http://sourceforge.net/projects/cimg/
-
+	
 
 Optional Dependencies
 =====================
 
 The following optional dependencies are supported:
 
+	* CImg for handling more image file types 
     * boost for multi threading
     * freeglut to display preview of render
-
-alpharay natively supports these image formates (via CImg library):
-    RAW, ASC, HDR, INR, PPM/PGM, BMP, PAN, DLM
-
-For additional file formates install ImageMagick.
 
 
 Usage
