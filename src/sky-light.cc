@@ -4,10 +4,9 @@
 
 
 void SkyLight::init() { 
-    Light::init(); 
+	addEditable(new Editable<int>("samples", &samples_, 10));
 
-    samples_ = 10;
-    lightMap_ = NULL;
+	addEditableLink(new EditableLink<Map>("lightmap", &lightMap_));
 }
 
 
@@ -39,36 +38,4 @@ void SkyLight::set(std::vector<Object*>* objects, Material &material, Vector &po
         }
 
     }
-}
-
-
-TiXmlElement* SkyLight::getXml() {
-    TiXmlElement* root = Light::getXml();
-
-    root->SetAttribute("samples", samples_);
-
-    if (lightMap_ == NULL) {
-        root->SetAttribute("lightmap", "");
-    } else {
-        root->SetAttribute("lightmap", lightMap_->name());
-    }
-
-    return root;
-}
-
-
-bool SkyLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-    init();
-
-    Light::loadXml(pElem, path, linkList);
-
-    pElem->QueryIntAttribute("samples", &samples_);
-
-    std::string mapname; 
-
-    mapname = "";
-    pElem->QueryStringAttribute ("lightmap", &mapname);
-    linkList->add(mapname, &lightMap_);
-
-    return true;
 }

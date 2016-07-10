@@ -19,7 +19,7 @@ class Light : virtual public Object, virtual public XmlObjectNamed
         virtual void init();
 
         Light( std::string name ) 
-            :XmlObjectNamed("pointlight", name)
+            :Object(name, NULL), XmlObjectNamed("pointlight", name)
             { init(); }
 
         ~Light() { } ;
@@ -28,9 +28,6 @@ class Light : virtual public Object, virtual public XmlObjectNamed
 
         //Adds this light to the material
         virtual void set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
-
-        virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         float kIntensity_;

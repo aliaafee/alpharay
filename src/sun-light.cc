@@ -4,11 +4,10 @@
 
 
 void SunLight::init() { 
-    Light::init(); 
+	addEditable(new Editable<int>("samples", &samples_, 10));
+	addEditable(new Editable<float>("size", &size_, 0.6));
 
-    samples_ = 1;
-    size_ = 0;
-    lightMap_ = NULL;
+	addEditableLink(new EditableLink<Map>("lightmap", &lightMap_));
 }
 
 
@@ -40,38 +39,4 @@ void SunLight::set(std::vector<Object*>* objects, Material &material, Vector &po
         }
 
     }
-}
-
-
-TiXmlElement* SunLight::getXml() {
-    TiXmlElement* root = Light::getXml();
-
-    root->SetAttribute("samples", samples_);
-    root->SetAttribute("size", ftos(size_));
-
-    if (lightMap_ == NULL) {
-        root->SetAttribute("lightmap", "");
-    } else {
-        root->SetAttribute("lightmap", lightMap_->name());
-    }
-
-    return root;
-}
-
-
-bool SunLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-    init();
-
-    Light::loadXml(pElem, path, linkList);
-
-    pElem->QueryIntAttribute("samples", &samples_);
-    pElem->QueryFloatAttribute("size", &size_);
-
-    std::string mapname; 
-
-    mapname = "";
-    pElem->QueryStringAttribute ("lightmap", &mapname);
-    linkList->add(mapname, &lightMap_);
-
-    return true;
 }

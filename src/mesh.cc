@@ -4,10 +4,8 @@
 
 
 void Mesh::init() { 
-	Object::init();
-
-	octreeMaxDepth_ = 10;
-	octreeMaxTrig_ = 100;
+	addEditable(new Editable<int>("octree-max-depth", &octreeMaxDepth_, 10));
+	addEditable(new Editable<int>("octree-max-triangles-leaf", &octreeMaxTrig_, 100));
 }
 
 
@@ -101,9 +99,6 @@ TiXmlElement* Mesh::getXml()
 {
     TiXmlElement* root = Object::getXml();
 
-	root->SetAttribute("octree-max-depth", octreeMaxDepth_);
-    root->SetAttribute("octree-max-triangles-leaf", octreeMaxTrig_);
-
     return root;
 }
 
@@ -113,9 +108,6 @@ bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 	init();
 
     Object::loadXml(pElem, path, linkList);
-
-    pElem->QueryIntAttribute ("octree-max-depth", &octreeMaxDepth_);
-	pElem->QueryIntAttribute ("octree-max-triangles-leaf", &octreeMaxTrig_);
 
     TiXmlHandle hRoot = TiXmlHandle(pElem);
 

@@ -21,7 +21,9 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
     if (closestObject == NULL)
         return scene.envColor(ray);
 
-    Material material = closestObject->material();
+	Material material;	
+	closestObject->copyMaterial(&material);
+
     Vector intPoint = closestObject->point(ray, t);
     Vector intPointLocal = closestObject->transformPointInv(intPoint);
 

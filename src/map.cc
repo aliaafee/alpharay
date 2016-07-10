@@ -3,27 +3,18 @@
 #include "map.h"
 
 
-TiXmlElement* Map::getXml()
-{
-    TiXmlElement* root = XmlObjectNamed::getXml();
-
-    return root;
-}
-
-
 bool Map::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
 {
-    XmlObjectNamed::loadXml(pElem, path);
+	XmlObjectNamed::loadXml <LinkList> (pElem, path, linkList);
 
 	return true;
 }
 
 void Map2d::init()
 {
-    Map::init();
+	addEditable(new Editable<Vector2>("imagescale", &imageScale_, Vector2(1, 1)));
 
-    image_ = NULL;
-    imageScale_ = Vector2(1, 1);
+	addEditableLink(new EditableLink<Image>("image", &image_));
 }
 
 
@@ -59,14 +50,9 @@ Color Map2d::color(Vector  point, Vector2 point2 = Vector2(0,0))
 
 void Map2dPlane::init()
 {
-    Map2d::init();
-
-    position_ = Vector(0, 0, 0);
-    rotation_ = Vector(0, 0, 0);
-    scale_ = Vector(1, 1, 1);
-
-    image_ = NULL;
-    imageScale_ = Vector2(1, 1);
+	addEditable(new Editable<Vector>("position", &position_, Vector(0, 0, 0)));
+	addEditable(new Editable<Vector>("rotation", &rotation_, Vector(0, 0, 0)));
+	addEditable(new Editable<Vector>("scale", &scale_, Vector(1, 1, 1)));
 }
 
 
@@ -224,65 +210,3 @@ void Map2dSpherical::getTangents(Vector& point, Vector* os_tangent, Vector* os_b
 	*os_bitangent = point % pole_;
 	*os_tangent = point % *os_bitangent;
 }
-
-
-TiXmlElement* Map2d::getXml()
-{
-    TiXmlElement* root = Map::getXml();
-
-    root->SetAttribute("imagescale", imageScale_.str());
-
-    if (image_ == NULL) {
-        root->SetAttribute("image", "");
-    } else {
-        root->SetAttribute("image", image_->name());
-    }
-
-    return root;
-}
-
-
-bool Map2d::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
-{
-    init();
-
-    Map::loadXml(pElem, path, linkList);
-
-    pElem->QueryValueAttribute <Vector2> ("imagescale", &imageScale_);
-
-    std::string imagename = "";
-    pElem->QueryStringAttribute ("image", &imagename);
-    linkList->add(imagename, &image_);
-
-	return true;
-}
-
-
-TiXmlElement* Map2dPlane::getXml()
-{
-    TiXmlElement* root = Map2d::getXml();
-
-    root->SetAttribute("name", name_);
-    root->SetAttribute("position", position_.str());
-    root->SetAttribute("rotation", rotation_.str());
-    root->SetAttribute("scale", scale_.str());
-
-    return root;
-}
-
-
-bool Map2dPlane::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
-{
-    init();
-
-    Map2d::loadXml(pElem, path, linkList);
-
-    pElem->QueryStringAttribute ("name", &name_);
-    pElem->QueryValueAttribute <Vector> ("position", &position_);
-    pElem->QueryValueAttribute <Vector> ("rotation", &rotation_);
-    pElem->QueryValueAttribute <Vector> ("scale", &scale_);
-
-	return true;
-}
-
-

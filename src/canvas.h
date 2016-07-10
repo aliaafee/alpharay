@@ -32,7 +32,7 @@ class Canvas : public Image, virtual public XmlObjectNamed
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
 	protected:
-		Color backgroudColor_;
+		Color backgroundColor_;
 		std::vector<Object2d*> objects;
 };
 

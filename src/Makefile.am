@@ -8,6 +8,7 @@ alpharay_SOURCES =   main.cc \
                      map.cc \
 					 sky-map.cc \
                      material.cc \
+					 image.cc \
                      bitmap.cc \
 					 object2d.cc \
 					 canvas.cc \

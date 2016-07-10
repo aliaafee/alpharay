@@ -2,6 +2,13 @@
 
 #include "sphere.h"
 
+void Sphere::init()
+{
+	//normal_ = 1;
+
+	addEditable(new Editable<int>("normal", &normal_, 1));
+}
+
 Bounds Sphere::bounds()
 {
     return Bounds( Vector(-1, -1, -1), Vector(1, 1, 1) );
@@ -116,10 +123,10 @@ BaseObject* Sphere::intersection(Ray &ray, float *distance, float limit)
 	return this;
 }
 
-
+/*
 bool Sphere::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
-    init();
+    //init();
 
     Object::loadXml(pElem, path, linkList);
 
@@ -139,4 +146,4 @@ TiXmlElement* Sphere::getXml()
 
     return root;
 }
-
+*/

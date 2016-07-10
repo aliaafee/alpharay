@@ -5,7 +5,7 @@
 
 void Raytracer::init()
 {
-    Renderer::init();
+	
 }
 
 
@@ -155,7 +155,8 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
         return scene.envColor(ray);
 
     //TODO: Optimize
-    Material material = closestObject->material();
+    Material material;	
+	closestObject->copyMaterial(&material);
 
 	if (scene.rayLog()) {
 		material.log_ = true;

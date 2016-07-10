@@ -5,18 +5,21 @@
 
 void Canvas::init() 
 {
-	Image::init();
-	
-	width_ = 1;
-	height_ = 1;
+	//width_ = 1;
+	//height_ = 1;
 
-	backgroudColor_ = Color(1, 1, 1);
+	//backgroundColor_ = Color(1, 1, 1);
+
+	addEditable(new Editable<Color>("backgroundcolor", &backgroundColor_, Color(1, 1, 1)));
+
+	addEditable(new Editable<int>("width", &width_, 1));
+	addEditable(new Editable<int>("height", & height_, 1));
 }
 
 
 Color Canvas::getColor(Vector2 point)
 {
-	Color color = backgroudColor_;
+	Color color = backgroundColor_;
 	Color objectcolor;
 	float alpha;
 
@@ -44,10 +47,6 @@ TiXmlElement* Canvas::getXml()
 {
 	TiXmlElement* root = Image::getXml();
 
-    root->SetAttribute("width", width_);
-	root->SetAttribute("height", height_);
-	root->SetAttribute("backgroundcolor", backgroudColor_.str());
-
 	for (unsigned long i = 0; i < objects.size(); i++) {
         root->LinkEndChild( objects[i]->getXml() );
     }
@@ -61,11 +60,7 @@ bool Canvas::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 	init();
 
     Image::loadXml(pElem, path, linkList);
-
-	pElem->QueryValueAttribute <int> ("width", &width_);
-	pElem->QueryValueAttribute <int> ("height", &height_);
-	pElem->QueryValueAttribute <Vector> ("backgroundcolor", &backgroudColor_);
-
+	
 	pElem = pElem->FirstChildElement();
 
 	for (; pElem; pElem = pElem->NextSiblingElement()) {

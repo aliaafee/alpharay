@@ -231,7 +231,7 @@ public:
 };
 
 inline std::ostream& operator<<(std::ostream& os, Vector& vector) {
-	os << "(" << vector.x << "," << vector.y << "," << vector.z << ")";
+	os << vector.x << "," << vector.y << "," << vector.z;
 	return os;
 }
 
@@ -254,7 +254,7 @@ inline std::stringstream& operator>>(std::stringstream& ss, Vector& vector) {
 }
 
 inline std::ostream& operator<<(std::ostream& os, Vector2& vector) {
-	os << "(" << vector.x << "," << vector.y << ")";
+	os << vector.x << "," << vector.y;
 	return os;
 }
 
@@ -271,6 +271,7 @@ inline std::stringstream& operator>>(std::stringstream& ss, Vector2& vector) {
 
     return ss;
 }
+
 
 class Bounds
 {

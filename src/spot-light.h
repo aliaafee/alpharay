@@ -19,9 +19,6 @@ class SpotLight : public Light, virtual public XmlObjectNamed
 
         virtual void set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
 
-        virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
-
     protected:
         Vector target_;
         float angle_;

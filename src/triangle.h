@@ -29,7 +29,10 @@ class Triangle : public BaseObject, public XmlObjectIndexed
         Vector normal(Vector point, Material* material);
         void setPoint(Vector point, Material* material);
 
-        Material material() { return parent_->material(); }
+        //Material material() { return parent_->material(); }
+		virtual void copyMaterial(Material* target) {
+			parent_->copyMaterial(target);
+		}
 
         BaseObject* intersection(Ray &ray, float *t, float limit);
         

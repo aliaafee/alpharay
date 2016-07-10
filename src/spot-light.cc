@@ -4,11 +4,9 @@
 
 
 void SpotLight::init() { 
-    Light::init(); 
-
-    target_ = Vector(0,0,1);
-    angle_ = M_PI / 5;
-    angleFalloff_ = M_PI / 5;
+	addEditable(new Editable<Vector>("target", &target_, Vector(0, 0, 1)));
+	addEditable(new Editable<float>("angle", &angle_, M_PI / 5));
+	addEditable(new Editable<float>("anglefalloff", &angleFalloff_, M_PI / 5));
 }
 
 
@@ -45,8 +43,6 @@ void SpotLight::set(std::vector<Object*>* objects, Material &material, Vector &p
 
 Color SpotLight::getIntensityByAngle(Color intensity, Vector PO, Vector TO)
 {
-    //return intensity;
-
     PO.normalize();
     TO.normalize();
     
@@ -61,28 +57,4 @@ Color SpotLight::getIntensityByAngle(Color intensity, Vector PO, Vector TO)
     }
 
     return intensity;
-}
-
-
-TiXmlElement* SpotLight::getXml() {
-    TiXmlElement* root = Light::getXml();
-
-    root->SetAttribute("target", target_.str());
-    root->SetAttribute("angle", ftos(angle_));
-    root->SetAttribute("anglefalloff", ftos(angleFalloff_));
-
-    return root;
-}
-
-
-bool SpotLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-    init();
-
-    Light::loadXml(pElem, path, linkList);
-
-    pElem->QueryValueAttribute <Vector> ("target", &target_);
-    pElem->QueryFloatAttribute("angle", &angle_);
-    pElem->QueryFloatAttribute("anglefalloff", &angleFalloff_);
-
-    return true;
 }

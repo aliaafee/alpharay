@@ -5,12 +5,11 @@
 
 void Object::init()
 {
-    BaseObject::init(); 
-    XmlObjectNamed::init();
+	addEditable(new Editable<Vector>("position", &position_, Vector(0, 0, 0)));
+	addEditable(new Editable<Vector>("rotation", &rotation_, Vector(0, 0, 0)));
+	addEditable(new Editable<Vector>("scale", &scale_, Vector(1, 1, 1)));
 
-    position_ = Vector(0, 0, 0);
-    rotation_ = Vector(0, 0, 0);
-    scale_ = Vector(1, 1, 1);
+	addEditableLink(new EditableLink<Material>("material", &material_));
 }
 
 void Object::transform() {
@@ -131,34 +130,13 @@ Ray Object::transformRay(Ray ray) {
 
 
 bool Object::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-    init();
-
-    XmlObjectNamed::loadXml(pElem, path);
-
-    pElem->QueryValueAttribute <Vector> ("position", &position_);
-    pElem->QueryValueAttribute <Vector> ("rotation", &rotation_);
-    pElem->QueryValueAttribute <Vector> ("scale", &scale_);
-
-    std::string matname = "";
-    pElem->QueryStringAttribute ("material", &matname);
-    linkList->add(matname, &material_);
+    XmlObjectNamed::loadXml <LinkList> (pElem, path, linkList);
 
     return true;
 }
 
 TiXmlElement* Object::getXml() {
     TiXmlElement* root = XmlObjectNamed::getXml();
-
-    root->SetAttribute("position", position_.str());
-    root->SetAttribute("rotation", rotation_.str());
-    root->SetAttribute("scale", scale_.str());
-
-    if (material_ == NULL) {
-        root->SetAttribute("material", "");
-    } else {
-        root->SetAttribute("material", material_->name());
-    }
-
-
+	
     return root;
 }

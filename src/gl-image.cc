@@ -34,7 +34,7 @@ bool GLImage::create(int width, int height)
 
 bool GLImage::load(std::string filename)
 {
-	Bitmap::load(filename);
+	return Bitmap::load(filename);
 }
 
 
@@ -68,8 +68,8 @@ bool GLImage::setColor(Vector2 point, Color color)
 
 	if (glImageSize_ == 0) return false;
 
-	int u = int(point.x-1) % width_;
-	int v = (height_-int(point.y)) % height_;
+	int u = int(point.x) % width_;
+	int v = ((height_-1)-int(point.y)) % height_;
 
 	int i = v * width_ * 3 + u * 3;
 	

@@ -4,11 +4,11 @@
 
 
 void Bitmap::init() 
-{ 
-    Image::init(); 
-    
+{  
     image_ = NULL;
 	imageSize_ = 0;
+
+	addEditable(new Editable<std::string>("filename", &filename_, ""));
 }
 
 
@@ -32,6 +32,12 @@ bool Bitmap::create(int width, int height)
 	image_ = new float[width_ * height_ * 3];
 
     return true;
+}
+
+
+bool Bitmap::load()
+{
+	return load(absfilename_);
 }
 
 
@@ -175,8 +181,8 @@ Color Bitmap::getColor(Vector2 point)
 
 	if (imageSize_ == 0) return result;
 
-	int u = int(point.x-1) % width_;
-	int v = int(point.y-1) % height_;
+	int u = int(point.x) % width_;
+	int v = int(point.y) % height_;
 
 	int i = v * width_ * 3 + u * 3;
 
@@ -192,8 +198,8 @@ bool Bitmap::setColor(Vector2 point, Color color)
 {
 	if (imageSize_ == 0) return false;
 
-	int u = int(point.x-1) % width_;
-	int v = int(point.y-1) % height_;
+	int u = int(point.x) % width_;
+	int v = int(point.y) % height_;
 
 	int i = v * width_ * 3 + u * 3;
 
@@ -294,28 +300,12 @@ void Bitmap::bloom(float radius, float highpass)
 }
 
 
-inline TiXmlElement* Bitmap::getXml()
-{
-    TiXmlElement* root = Image::getXml();
-
-    root->SetAttribute("filename", filename_);
-
-    return root;
-}
-
-
 bool Bitmap::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
-    init();
-
     Image::loadXml(pElem, path, linkList);
 
-    filename_ = "";
-    pElem->QueryStringAttribute("filename", &filename_);
-
     if (filename_ != "") {
-        std::string absfilename = pathJoin(path, filename_);
-        return load(absfilename);
+        absfilename_ = pathJoin(path, filename_);
     }
 
     return false;

@@ -37,6 +37,8 @@ class Bitmap : public Image, virtual public XmlObjectNamed
         virtual bool load(std::string filename);
         virtual bool save(std::string filename);
 
+		virtual bool load();
+
         virtual Color getColor(Vector2 point);
         virtual bool setColor(Vector2 point, Color color);
 
@@ -50,11 +52,12 @@ class Bitmap : public Image, virtual public XmlObjectNamed
         void toneMap_exp(float exposure);
         void bloom(float size, float highpass);
 
-        virtual TiXmlElement* getXml();
+        //virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
         std::string filename_;
+		std::string absfilename_;
 		
 		float *image_;
 		unsigned int imageSize_;

@@ -25,6 +25,9 @@ class Material : public XmlObjectNamed
             :XmlObjectNamed("material", name)
             { init(); }
 
+		Material()
+			{;}
+
         ~Material() { } ;
 
         virtual void transform();

@@ -11,7 +11,6 @@ class LinkList
 {
 public:
     std::vector<std::string> sources;
-    std::vector<std::string> type;
     std::vector<XmlObjectNamed**> targets;
 
     LinkList() {};
@@ -21,9 +20,6 @@ public:
 
         XmlObjectNamed** targetxmlobj = reinterpret_cast <XmlObjectNamed**> (target);
 
-        T thing("");
-        type.push_back(thing.xmlTag());
-
         sources.push_back(source);
         targets.push_back(targetxmlobj);
     }
@@ -32,22 +28,18 @@ public:
         return sources.size();
     }
 
-    template <typename T> bool get(int i, std::string* source, T*** target) {
-        if (i >= 0 && i < sources.size()) {
-            //Rudimentary type checking to prevent wrong type from being linked
-            T thing("");
-            if (thing.xmlTag() == type[i]) {
-                *source = sources[i];
-                *target = reinterpret_cast <T**> (targets[i]);
-				return true;
-            }
+    template <typename T> bool get(unsigned int i, std::string* source, T*** target) {
+		//Type checking was removed, needs to look into this
+        if (i < sources.size()) {
+            *source = sources[i];
+            *target = reinterpret_cast <T**> (targets[i]);
+			return true;
         }
 		return false;
     }
 
 	bool append(LinkList &foo) {
 		sources.insert(sources.end(), foo.sources.begin(), foo.sources.end());
-		type.insert(type.end(), foo.type.begin(), foo.type.end());
 		targets.insert(targets.end(), foo.targets.begin(), foo.targets.end());
 		
 		return true;

@@ -4,12 +4,10 @@
 
 
 void Light::init() { 
-    Object::init(); 
-
     kIntensity_ = 5.0f;
 
-    intensity_ = Color(100, 100, 100);
-    shadowsOn_ = true;
+	addEditable(new Editable<Color>("intensity", &intensity_, Color(100, 100, 100)));
+	addEditable(new Editable<bool>("shadow", &shadowsOn_, true));
 }
 
 void Light::transform()
@@ -74,29 +72,3 @@ BaseObject* Light::getFirstIntersection(std::vector<Object*>* objects, Ray &ray,
     }
     return NULL;
 }
-
-
-TiXmlElement* Light::getXml() {
-	TiXmlElement* root = Object::getXml();
-
-	root->SetAttribute("intensity", intensity_.str());
-    root->SetAttribute("shadow", shadowsOn_);
-
-    return root;
-}
-
-
-bool Light::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-	init();
-
-    Object::loadXml(pElem, path, linkList);
-
-    TiXmlHandle hRoot = TiXmlHandle(pElem);
-
-	pElem->QueryValueAttribute <Vector> ("intensity", &intensity_);
-    pElem->QueryBoolAttribute ("shadow", &shadowsOn_);
-
-    return true;
-}
-
-

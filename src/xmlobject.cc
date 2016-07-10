@@ -15,10 +15,23 @@ std::string XmlObject::pathJoin(std::string path, std::string filename) {
 }
 
 
+void XmlObjectNamed::init()  { 
+	//XmlObject::init();
+
+	addEditable(new Editable<std::string>("name", &name_, "noname"));
+}
+
+
 TiXmlElement* XmlObjectNamed::getXml() {
     TiXmlElement* root = XmlObject::getXml();
 
-    root->SetAttribute("name", name_);
+	for (unsigned long i = 0; i < editables.size(); i++) {
+		root->SetAttribute(editables[i]->name(), editables[i]->str());
+	}
+
+	for (unsigned long i = 0; i < editableLinks.size(); i++) {
+		root->SetAttribute(editableLinks[i]->name(), editableLinks[i]->str());
+	}
 
     return root;
 }
@@ -27,9 +40,14 @@ TiXmlElement* XmlObjectNamed::getXml() {
 bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path) {
     XmlObject::loadXml(pElem, path);
 
-    name_ = "unnamed"; 
-
-    pElem->QueryStringAttribute ("name", &name_);
+	std::string value;
+	int queryResult;
+	for (unsigned long i = 0; i < editables.size(); i++) {
+		queryResult = pElem->QueryStringAttribute((editables[i]->name()).c_str(), &value);
+		if (queryResult == TIXML_SUCCESS) {
+			editables[i]->set(value);
+		}
+	}
 
 	return true;
 }

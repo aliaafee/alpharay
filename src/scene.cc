@@ -96,6 +96,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
 
     if (*image) {
         (*image)->loadXml(pElem, path, &linkList_);
+		(*image)->load();
 		return true;
     }
 
@@ -163,7 +164,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
 	} else if (name == "group") {
 		*object = new Group("");
     }
-
+	
     if (*object) {
         (*object)->loadXml(pElem, path, &linkList_);
 

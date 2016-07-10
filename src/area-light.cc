@@ -4,10 +4,9 @@
 
 
 void AreaLight::init() { 
-    SpotLight::init(); 
+	addEditable(new Editable<float>("lightradius", &lightRadius_, 0.6));
 
-    lightRadius_ = 0.6;
-    samples_ = 5;
+	addEditable(new Editable<int>("samples", &samples_, 5));
 }
 
 
@@ -65,26 +64,4 @@ void AreaLight::set(std::vector<Object*>* objects, Material &material, Vector &p
     }
 
     
-}
-
-
-TiXmlElement* AreaLight::getXml() {
-    TiXmlElement* root = SpotLight::getXml();
-
-    root->SetAttribute("lightradius", ftos(lightRadius_));
-    root->SetAttribute("samples", samples_);
-
-    return root;
-}
-
-
-bool AreaLight::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-    init();
-
-    SpotLight::loadXml(pElem, path, linkList);
-
-    pElem->QueryFloatAttribute("lightradius", &lightRadius_);
-    pElem->QueryIntAttribute("samples", &samples_);
-
-    return true;
 }
