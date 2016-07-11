@@ -224,6 +224,7 @@ void initGlut(int argc, char** argv)
 
 void guiMain(Project* prj, int argc, char** argv) {
 	guiProject = prj;
+	preview.setGlExposure(guiProject->renderer->exposure_);
 	guiProject->setPreviewImage(&preview);
     guiProject->renderPreview(&onDoneRender);
     initGlut(argc, argv);

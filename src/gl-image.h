@@ -34,9 +34,14 @@ class GLImage : public Bitmap, virtual public XmlObjectNamed
 
 		void refresh();
 		void display();
+
+		void setGlExposure(float exp) 
+			{ glExposure_ = exp; }
     protected:
         GLubyte *glImage_;
 		unsigned int glImageSize_;
+
+		float glExposure_;
 };
 
 #endif // _GL_IMAGE_H_

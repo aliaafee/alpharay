@@ -8,10 +8,24 @@
 #endif
 
 #include <functional>
+#include <vector>
+#include <algorithm>
 
 #include "xmlobject.h"
 #include "scene.h"
 #include "image.h"
+
+
+class RendererCell {
+	public:
+	int x0, y0, x1, y1;
+	RendererCell(int x0_, int y0_, int x1_, int y1_) {
+		x0 = x0_; y0 = y0_;
+		x1 = x1_; y1 = y1_;
+	}
+};
+
+
 
 class Renderer : public XmlObject 
 {
@@ -64,9 +78,12 @@ class Renderer : public XmlObject
 		
         int threadCount_;
 
-        int cellCx, cellCy, curCell, maxCell, cellW, cellH;
+        int cellCx, cellCy;
 
-        int completed;
+		std::vector<RendererCell> cells_;
+
+		int currentCell;
+        int completedCells;
 
 		std::string status_;
 

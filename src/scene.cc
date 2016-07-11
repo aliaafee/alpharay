@@ -3,19 +3,11 @@
 #include "scene.h"
 
 void Scene::init() {
-    XmlObject::init();
-
     envColor_ = Color(0, 0, 0);
     envMap_ = NULL;
-    /*
-    std::cout << "List Size Max " << lights.max_size() << std::endl;
-    std::cout << "int max, min " << std::numeric_limits<int>::min() << "," << std::numeric_limits<int>::max() << std::endl;
-    std::cout << "unsigned int max, min " << std::numeric_limits<unsigned int>::min() << "," << std::numeric_limits<unsigned int>::max() << std::endl;
-    std::cout << "long max, min " << std::numeric_limits<long>::min() << "," << std::numeric_limits<long>::max() << std::endl;
-    std::cout << "unsigned long max, min " << std::numeric_limits<unsigned long>::min() << "," << std::numeric_limits<unsigned long>::max() << std::endl;
 
-    std::cout << std::numeric_limits<unsigned long>::max() - lights.max_size() << std::endl;
-    */
+	addEditable(new Editable<Color>("skycolor", &envColor_, Vector(0, 0, 0)));
+	addEditableLink(new EditableLink<Map>("skymap", &envMap_));
 }
 
 Color Scene::envColor(const Ray &ray) {
@@ -188,15 +180,7 @@ template< typename T > void Scene::addFromXml(TiXmlElement* pElem, std::string p
 
 
 TiXmlElement* Scene::getXml() {
-    TiXmlElement* root = XmlObject::getXml();
-
-    //environment
-    root->SetAttribute("skycolor", envColor_.str());
-    if (envMap_ == NULL) {
-        root->SetAttribute("skymap", "");
-    } else {
-        root->SetAttribute("skymap", envMap_->name());
-    }
+    TiXmlElement* root = XmlObjectNamed::getXml();
 
     //camera
     root->LinkEndChild(camera_->getXml());
@@ -245,16 +229,10 @@ TiXmlElement* Scene::getXml() {
 }
 
 
-bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
-    XmlObject::loadXml(pElem, path);
+bool Scene::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
+    XmlObjectNamed::loadXml(pElem, path, linkList);
 
     std::cout << " Loading Scene..." << std::endl;
-
-    //Environment
-    pElem->QueryValueAttribute <Vector> ("skycolor", &envColor_);
-    std::string mapname = "";
-    pElem->QueryStringAttribute ("skymap", &mapname);
-    linkList_.add(mapname, &envMap_);
 
     //Get handle to element
     TiXmlHandle hRoot = TiXmlHandle(pElem);
@@ -270,7 +248,7 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
         } else {
             camera_ = new Camera();
         }
-        camera_->loadXml(pElem, path);
+        camera_->loadXml(pElem, path, &linkList_);
     } else {
         camera_ = new Camera();
     }

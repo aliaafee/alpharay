@@ -5,7 +5,7 @@
 
 #include "vector.h"
 #include "linklist.h"
-#include "xmlobject.h"
+#include "xmlobject-named.h"
 
 
 class Image : virtual public XmlObjectNamed
@@ -34,9 +34,6 @@ class Image : virtual public XmlObjectNamed
         virtual int height() { return height_; }
 
 		virtual void transform() {};
-
-		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
-
     protected:
         int width_;
         int height_;

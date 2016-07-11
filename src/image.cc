@@ -19,21 +19,13 @@ void Image::copyTo(Image* target)
 }
 
 
-bool Image::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
-{
-	XmlObjectNamed::loadXml <LinkList> (pElem, path, linkList);
-
-    return true;
-}
-
-
 void Checker2d::init()
 {
 	width_ = 1; 
 	height_ = 1; 
 	
 	addEditable(new Editable<Color>("color1", &color1_, Color(0, 0, 0)));
-	addEditable(new Editable<Color>("color2", &color2_, Color(0, 0, 0)));
+	addEditable(new Editable<Color>("color2", &color2_, Color(1, 1, 1)));
 }
 
 

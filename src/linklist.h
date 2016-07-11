@@ -11,14 +11,14 @@ class LinkList
 {
 public:
     std::vector<std::string> sources;
-    std::vector<XmlObjectNamed**> targets;
+    std::vector<XmlObject**> targets;
 
     LinkList() {};
 
     template <typename T> void add(std::string source, T** target) {
         if (source == "") return;
 
-        XmlObjectNamed** targetxmlobj = reinterpret_cast <XmlObjectNamed**> (target);
+        XmlObject** targetxmlobj = reinterpret_cast <XmlObject**> (target);
 
         sources.push_back(source);
         targets.push_back(targetxmlobj);

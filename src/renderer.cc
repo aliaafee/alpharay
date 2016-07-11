@@ -5,8 +5,6 @@
 
 void Renderer::init()
 {
-    XmlObject::init();
-
     traceDepth_ = 10; 
         
     exposure_ = -1.0f;
@@ -118,7 +116,7 @@ void Renderer::renderCell
     //if (y1 > image->height()) return;
 
 	if (cancel_ == true) {
-		completed += 1;
+		completedCells += 1;
 		return;
 	}
 
@@ -144,20 +142,27 @@ void Renderer::renderCell
             color /= ts;
             image->setColor(point, color);
 			if (cancel_ == true) {
-				completed += 1;
+				completedCells += 1;
 				return;
 			}
 		}
 	}
 
-	completed += 1;
+	completedCells += 1;
 }
 
 
 bool Renderer::getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int height)
 {
-    if (curCell >= maxCell) return false;
+    if (currentCell >= cells_.size()) return false;
 
+	x0 = cells_[currentCell].x0;
+	y0 = cells_[currentCell].y0;
+
+	x1 = cells_[currentCell].x1;
+	y1 = cells_[currentCell].y1;
+
+	/*
     int cell = curCell;
 
     int ix = cell % cellCx;
@@ -177,8 +182,9 @@ bool Renderer::getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int he
 	} else {
 		y1 = y0 + cellH;
 	}
+	*/
 
-    curCell ++;
+    currentCell ++;
     return true;
 }
 
@@ -206,18 +212,16 @@ bool Renderer::statusDisplay()
 
     ss << "0%";
     std::cout << ss.str();
-    while (completed < maxCell) {
+    while (completedCells < cells_.size()) {
         for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << "\b";}
         ss.str("");
-        ss << int(float(completed) / float(maxCell) * 100.0) << "\% done, " << raysCast_ << " rays cast";
+        ss << int(float(completedCells) / float(cells_.size()) * 100.0) << "\% done, " << raysCast_ << " rays cast";
         std::cout << ss.str() << std::flush;
 		status_ = ss.str();
         usleep(10);
     }
 
     for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << "\b";}
-    //for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << " ";}
-    //for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << "\b";}
 
 	ss.str("");
 	ss << raysCast_ << " rays cast";
@@ -235,25 +239,42 @@ bool Renderer::statusDisplay()
 
 void Renderer::resetCells(Image* image)
 {
-	/*
-    curCell = 0;
-    maxCell = cellCx * cellCy;
-    cellW = image->width() / cellCx;
-    cellH = image->height() / cellCy;
-    completed = 0;
+	currentCell = 0;
+	completedCells = 0;
 
-	std::cout << cellCx << "," << cellCy << std::endl;
+	int width = image->width();
+	int height = image->height();
+    int maxCell = cellCx * cellCy;
+    int cellW = width / cellCx;
+    int cellH = height / cellCy;
+    
+	cells_.clear();
+
 	int x0, y0, x1, y1;
-	while (getNextCell(x0, y0, x1, y1, image->width(), image->height())) {
-		std::cout << "(" << x0 << "," << y0 << ") (" << x1 << "," << y1 << ")" << std::endl;
-    }
-	*/
+	for (int i = 0; i < maxCell; i++) {
+		int ix = i % cellCx;
+		int iy = (i - ix) / cellCx;
 
-	curCell = 0;
-    maxCell = cellCx * cellCy;
-    cellW = image->width() / cellCx;
-    cellH = image->height() / cellCy;
-    completed = 0;
+		x0 = cellW * ix;
+		y0 = cellH * iy;
+
+		if (ix == cellCx-1) {
+			x1 = width - 1;
+		} else {
+			x1 = x0 + cellW;
+		}
+
+		if (iy == cellCy-1) {
+			y1 = height - 1;
+		} else {
+			y1 = y0 + cellH;
+		}
+
+		cells_.push_back(RendererCell(x0, y0, x1, y1));
+	}
+
+	srand(unsigned(time(NULL)));
+	std::random_shuffle(cells_.begin(), cells_.end());
 }
 
 
@@ -262,11 +283,10 @@ void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneC
 }
 
 
-
 void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneCallback, bool join)
 {
 	if (rendering_) {
-		std::cout << "We are already rendering_ not stating yet" << std::endl;
+		std::cout << "We are already rendering, cannot start" << std::endl;
 		return;
 	}
 
@@ -297,7 +317,7 @@ void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneC
     for (int i = 0; i < threadCount_; i++) {
         renderThread[i].join();
     }
-    completed = (cellW * cellH);
+    //completed = (cellW * cellH);
 
     status.join();
 #else

@@ -231,7 +231,7 @@ TiXmlElement* Material::getXml()
 
 bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
-	XmlObjectNamed::loadXml <LinkList> (pElem, path, linkList);
+	XmlObjectNamed::loadXml(pElem, path, linkList);
 
     std::string rt="";
     pElem->QueryStringAttribute ("reflection", &rt);

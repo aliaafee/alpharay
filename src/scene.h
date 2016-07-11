@@ -9,6 +9,8 @@
 
 #include "linklist.h"
 
+#include "xmlobject-named.h"
+
 #include "vector.h"
 
 #include "camera.h"
@@ -36,7 +38,7 @@
 #include "group.h"
 
 
-class Scene : public XmlObject 
+class Scene : public XmlObjectNamed 
 {
     friend class Renderer;
     friend class Raytracer;
@@ -44,7 +46,7 @@ public:
     virtual void init();
     
 	Scene () 
-        : XmlObject("scene") 
+        : XmlObjectNamed("scene") 
         { init(); }
 	
     void transform();
@@ -85,7 +87,9 @@ public:
         {return getByName <Object> (name, objects);}
 
     virtual TiXmlElement* getXml();
-    virtual bool loadXml(TiXmlElement* pElem, std::string path);
+    virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
+	virtual bool loadXml(TiXmlElement* pElem, std::string path)
+		{ return loadXml(pElem, path, &linkList_); }
 
 protected:
     Camera* camera_;

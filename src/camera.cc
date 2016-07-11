@@ -93,11 +93,11 @@ void Camera::orbitZ(float angle)
 }
 
 
-bool Camera::loadXml(TiXmlElement* pElem, std::string path) 
+bool Camera::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) 
 {
     init();
 
-    XmlObjectNamed::loadXml(pElem, path);
+    XmlObjectNamed::loadXml(pElem, path, linkList);
 
     pElem->QueryValueAttribute <Vector> ("position", &position_);
     pElem->QueryValueAttribute <Vector> ("target", &target_);

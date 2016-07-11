@@ -68,7 +68,7 @@ bool Object2d::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList
 {
     init();
 
-    XmlObjectNamed::loadXml(pElem, path);
+    XmlObjectNamed::loadXml(pElem, path, linkList);
 
     pElem->QueryValueAttribute <Vector2> ("position", &position_);
     pElem->QueryFloatAttribute("rotation", &rotation_);

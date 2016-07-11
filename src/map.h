@@ -5,7 +5,7 @@
 
 #include "vector.h"
 #include "matrix4.h"
-#include "xmlobject.h"
+#include "xmlobject-named.h"
 #include "image.h"
 #include "linklist.h"
 
@@ -30,9 +30,6 @@ class Map : virtual public XmlObjectNamed
         virtual Color color(Vector  point, Vector2 point2) { return Color(0, 0, 0); }
 
 		virtual void getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent) {;}
-
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
-
 };
 
 

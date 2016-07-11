@@ -99,6 +99,12 @@ TiXmlElement* Mesh::getXml()
 {
     TiXmlElement* root = Object::getXml();
 
+	TiXmlElement* file_e = new TiXmlElement("file");
+	root->LinkEndChild(file_e);
+	
+	file_e->SetAttribute("type", "obj");
+	file_e->SetAttribute("filename", filename_);
+
     return root;
 }
 
@@ -115,9 +121,10 @@ bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
     TiXmlDocument doc;
     pElem = hRoot.FirstChild( "file" ).Element();
     if (pElem) {
-        std::string filename("");
-        pElem->QueryStringAttribute ("filename", &filename);
-        filename = pathJoin(path, filename);
+        //std::string filename("");
+		filename_ = "";
+        pElem->QueryStringAttribute ("filename", &filename_);
+        absfilename_ = pathJoin(path, filename_);
         std::string type("");
         pElem->QueryStringAttribute ("type", &type);
         if (type == "" || type == "xml") {
@@ -139,7 +146,7 @@ bool Mesh::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
             float scale=1;
             pElem->QueryValueAttribute <Vector> ("position", &position);
             pElem->QueryFloatAttribute("scale", &scale);
-            return loadWavefrontObj(filename, scale, position);
+            return loadWavefrontObj(absfilename_, scale, position);
         }
     }
 

@@ -2,14 +2,6 @@
 
 #include "map.h"
 
-
-bool Map::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
-{
-	XmlObjectNamed::loadXml <LinkList> (pElem, path, linkList);
-
-	return true;
-}
-
 void Map2d::init()
 {
 	addEditable(new Editable<Vector2>("imagescale", &imageScale_, Vector2(1, 1)));

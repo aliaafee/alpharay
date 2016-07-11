@@ -44,9 +44,6 @@ class Object : public BaseObject, virtual public XmlObjectNamed
 
 		virtual std::string str() { return name(); }
 
-        virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
-
     //protected:
         Vector position_;
     	Vector rotation_;

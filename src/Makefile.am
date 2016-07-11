@@ -5,6 +5,7 @@ alpharay_SOURCES =   main.cc \
                      vector.cc \
                      matrix4.cc \
                      xmlobject.cc \
+					 xmlobject-named.cc \
                      map.cc \
 					 sky-map.cc \
                      material.cc \

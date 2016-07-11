@@ -141,19 +141,6 @@ bool Bitmap::save(std::string filename)
 		outImage(x, y, 2) = image_[i+2] * 255.0;
 	}
 
-	/*
-	float col[3];
-	for (unsigned int x = 0; x < width_; x ++) {
-		for (unsigned int y = 0; y < height_; y ++) {
-			i = y * width_ * 3 + x * 3;
-			col[0] = image_[i] * 255.0f;
-			col[1] = image_[i+1] * 255.0f;
-			col[2] = image_[i+2] * 255.0f;
-			outImage.draw_point(x, y, col);
-		}
-	}
-	*/
-
 	outImage.save(filename.c_str());
 
 	return true;
@@ -264,39 +251,36 @@ void Bitmap::toneMap_exp(float exposure)
 void Bitmap::bloom(float radius, float highpass) 
 {
 	if (imageSize_ == 0) return;
-	//Do Bloom
-	
-	
-	/*
-    if (!image_) return;
-
-    CImg<float> blured = *image_;
-
-    highpass *= 255.0f;
-
-    //High pass filter
-    cimg_forXYZ(blured,x,y,z) {
-        if ( (( blured(x,y,z,0) + blured(x,y,z,1) + blured(x,y,z,2) ) / 3.0f) > highpass) {
-            blured(x,y,z,0) = blured(x,y,z,0);
-            blured(x,y,z,1) = blured(x,y,z,1);
-            blured(x,y,z,2) = blured(x,y,z,2);
-        } else {
-            blured(x,y,z,0) = 0.0;
-            blured(x,y,z,1) = 0.0;
-            blured(x,y,z,2) = 0.0;
-        }
-    }
+#ifdef CIMG	
+    //Creat a Copy and do a high pass filter
+	CImg<float> blured(width(), height(), 1, 3, 0);
+	unsigned int i;
+	cimg_forXY(blured, x, y) {
+		i = y * width_ * 3 + x * 3;
+		if ( (image_[i] + image_[i+1] + image_[i+2])/3.0f > highpass) {
+			blured(x, y, 0) = image_[i] * 255.0;
+			blured(x, y, 1) = image_[i+1] * 255.0;
+			blured(x, y, 2) = image_[i+2] * 255.0;
+		} else {
+			blured(x, y, 0) = 0;
+			blured(x, y, 1) = 0;
+			blured(x, y, 2) = 0;
+		}
+	}
 
     //Blur
     blured.blur(radius,radius,1);
 
     //Combine
-    cimg_forXYZC((*image_),x,y,z,k) {
-        (*image_)(x,y,z,k) += blured(x,y,z,k);
-    }
-
-    CopyDisplay()
-	*/
+	cimg_forXY(blured, x, y) {
+		i = y * width_ * 3 + x * 3;
+		image_[i] += blured(x, y, 0)/255.0;
+		image_[i+1] += blured(x, y, 1)/255.0;
+		image_[i+2] += blured(x, y, 2)/255.0;
+	}
+#else
+	std::cout << "Bloom not awailable without CImg library" << std::endl;
+#endif
 }
 
 

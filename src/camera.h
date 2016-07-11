@@ -5,7 +5,7 @@
 
 #include "vector.h"
 #include "ray.h"
-#include "xmlobject.h"
+#include "xmlobject-named.h"
 
 
 class Camera : virtual public XmlObjectNamed
@@ -31,7 +31,7 @@ class Camera : virtual public XmlObjectNamed
         virtual void orbitZ(float angle);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
 
     protected:
         Vector position_;

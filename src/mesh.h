@@ -37,6 +37,7 @@ class Mesh : virtual public Object, virtual public XmlObjectNamed
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
 
     protected:
+		std::string filename_, absfilename_;
         Octree octree_;
 		int octreeMaxDepth_; //Maximum depth of octree
 		int octreeMaxTrig_; //Maximum number of triangles per left of octree

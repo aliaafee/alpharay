@@ -9,6 +9,8 @@ void GLImage::init()
     
     glImage_ = NULL;
 	glImageSize_ = 0;
+
+	glExposure_ = -1.0f; 
 }
 
 
@@ -73,11 +75,15 @@ bool GLImage::setColor(Vector2 point, Color color)
 
 	int i = v * width_ * 3 + u * 3;
 	
+	color.x = 1.0f - expf(color.x * glExposure_);
+	color.y = 1.0f - expf(color.y * glExposure_);
+	color.z = 1.0f - expf(color.z * glExposure_);
+
 	color.capColor();
 
-	glImage_[i] = GLubyte(color.x*255.0f);
-    glImage_[i+1] = GLubyte(color.y*255.0f);
-    glImage_[i+2] = GLubyte(color.z*255.0f);
+	glImage_[i]   = GLubyte(color.x * 255.0f);
+    glImage_[i+1] = GLubyte(color.y * 255.0f);
+    glImage_[i+2] = GLubyte(color.z * 255.0f);
 
 	return true;
 }

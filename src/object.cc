@@ -127,16 +127,3 @@ Ray Object::transformRay(Ray ray) {
 
     return result;
 }
-
-
-bool Object::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-    XmlObjectNamed::loadXml <LinkList> (pElem, path, linkList);
-
-    return true;
-}
-
-TiXmlElement* Object::getXml() {
-    TiXmlElement* root = XmlObjectNamed::getXml();
-	
-    return root;
-}
