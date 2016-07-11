@@ -44,7 +44,7 @@ if THREADING
 endif
 
 if OPENGL
-    alpharay_SOURCES += gl-image.cc
+    alpharay_SOURCES += gl-image.cc gui.cc
     alpharay_LDFLAGS += -lgl -lglut -lX11 -lglu -lglui
 endif
 

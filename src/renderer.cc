@@ -16,7 +16,7 @@ void Renderer::init()
 
     statusOn_ = true;
 
-    threadCount_ = 4;
+    threadCount_ = 8;
 
     cellCx = 4;
     cellCy = 4;
@@ -112,10 +112,10 @@ void Renderer::correctExposure(Color &color) {
 void Renderer::renderCell
             (Scene &scene, Image *image, int x0, int y0, int x1, int y1)
 {
-    if (x0 < 1) return;
-    if (y0 < 1) return;
-    if (x1 > image->width()) return;
-    if (y1 > image->height()) return;
+    //if (x0 < 1) return;
+    //if (y0 < 1) return;
+    //if (x1 > image->width()) return;
+    //if (y1 > image->height()) return;
 
 	if (cancel_ == true) {
 		completed += 1;
@@ -160,14 +160,23 @@ bool Renderer::getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int he
 
     int cell = curCell;
 
-    x0 = cell % cellCx;
-    y0 = (cell - x0) / cellCx;
+    int ix = cell % cellCx;
+    int iy = (cell - ix) / cellCx;
 
-    x0 = ((x0 * width) / cellCx) + 1;
-    y0 = ((y0 * height) / cellCy) + 1;
+	x0 = cellW * ix;
+	y0 = cellH * iy;
 
-    x1 = x0 + (width / cellCx) - 1;
-    y1 = y0 + (height / cellCy) - 1;
+	if (ix == cellCx-1) {
+		x1 = width - 1;
+	} else {
+		x1 = x0 + cellW;
+	}
+
+	if (iy == cellCy-1) {
+		y1 = height - 1;
+	} else {
+		y1 = y0 + cellH;
+	}
 
     curCell ++;
     return true;
@@ -226,7 +235,21 @@ bool Renderer::statusDisplay()
 
 void Renderer::resetCells(Image* image)
 {
+	/*
     curCell = 0;
+    maxCell = cellCx * cellCy;
+    cellW = image->width() / cellCx;
+    cellH = image->height() / cellCy;
+    completed = 0;
+
+	std::cout << cellCx << "," << cellCy << std::endl;
+	int x0, y0, x1, y1;
+	while (getNextCell(x0, y0, x1, y1, image->width(), image->height())) {
+		std::cout << "(" << x0 << "," << y0 << ") (" << x1 << "," << y1 << ")" << std::endl;
+    }
+	*/
+
+	curCell = 0;
     maxCell = cellCx * cellCy;
     cellW = image->width() / cellCx;
     cellH = image->height() / cellCy;
@@ -262,7 +285,6 @@ void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneC
 
 #ifdef THREADING
     boost::thread *renderThread = new boost::thread[threadCount_];
-
     for (int i = 0; i < threadCount_; i++) {
         renderThread[i] = boost::thread(
                 &Renderer::renderAllCells, this, scene, image);

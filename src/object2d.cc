@@ -230,8 +230,8 @@ Color Picture::getColor(Vector2 &point)
     ut = u * float(image_->width());
     vt = v * float(image_->height());
 
-    newPoint.x = ut;
-    newPoint.y = vt;
+    newPoint.x = ut+1;
+    newPoint.y = vt+1;
 	
 	Color color = image_->getColor(newPoint);
 
@@ -239,8 +239,8 @@ Color Picture::getColor(Vector2 &point)
 		ut = u * float(mask_->width());
 		vt = v * float(mask_->height());
 
-		newPoint.x = ut;
-		newPoint.y = vt;
+		newPoint.x = ut+1;
+		newPoint.y = vt+1;
 
 		color.a = mask_->getColor(newPoint).intensity();
 	} else {
