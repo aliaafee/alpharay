@@ -3,9 +3,8 @@
 #include "scene.h"
 
 void Scene::init() {
-    envColor_ = Color(0, 0, 0);
-    envMap_ = NULL;
-
+	rayLog_ = false;
+	
 	addEditable(new Editable<Color>("skycolor", &envColor_, Vector(0, 0, 0)));
 	addEditableLink(new EditableLink<Map>("skymap", &envMap_));
 }
@@ -66,9 +65,9 @@ bool Scene::fromXml(TiXmlElement* pElem, Light** light, std::string path){
 
     if (*light) {
         (*light)->loadXml(pElem, path, &linkList_);
-        return true;
     }
-    return false;
+
+	return true;
 }
 
 
@@ -88,11 +87,10 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
 
     if (*image) {
         (*image)->loadXml(pElem, path, &linkList_);
-		(*image)->load();
-		return true;
+		return (*image)->load();
     }
 
-    return false;
+    return true;
 }
 
 
@@ -115,10 +113,9 @@ bool Scene::fromXml(TiXmlElement* pElem, Map** map, std::string path) {
 
     if (*map) {
         (*map)->loadXml(pElem, path, &linkList_);
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 
@@ -133,10 +130,9 @@ bool Scene::fromXml(TiXmlElement* pElem, Material** mat, std::string path) {
 
     if (*mat) {
         (*mat)->loadXml(pElem, path, &linkList_);
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 
@@ -159,23 +155,27 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
 	
     if (*object) {
         (*object)->loadXml(pElem, path, &linkList_);
-
-        return true;
     }
-    return false;
+    
+	return true;
 }
 
 
-template< typename T > void Scene::addFromXml(TiXmlElement* pElem, std::string path) {
+template< typename T > bool Scene::addFromXml(TiXmlElement* pElem, std::string path) {
     if (pElem) {
         for (; pElem; pElem = pElem->NextSiblingElement()) {
             T* newthing;
-            fromXml(pElem, &newthing, path);
+            bool result = fromXml(pElem, &newthing, path);
+			if (!result) {
+				return false;
+			}
             if (newthing) {
                 add(newthing);
             }
+			if (cancelLoad_) { return false; }
         }
     }
+	return true;
 }
 
 
@@ -183,7 +183,9 @@ TiXmlElement* Scene::getXml() {
     TiXmlElement* root = XmlObjectNamed::getXml();
 
     //camera
-    root->LinkEndChild(camera_->getXml());
+	if (camera_ != NULL) {
+		root->LinkEndChild(camera_->getXml());
+	}
 
     //lights
     TiXmlElement* lights_e = new TiXmlElement("lights");
@@ -230,6 +232,8 @@ TiXmlElement* Scene::getXml() {
 
 
 bool Scene::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
+	cancelLoad_ = false;
+
     XmlObjectNamed::loadXml(pElem, path, linkList);
 
     std::cout << " Loading Scene..." << std::endl;
@@ -253,30 +257,47 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
         camera_ = new Camera();
     }
 
+	bool result = true;
+
     //lights
     pElem = hRoot.FirstChild( "lights" ).FirstChild().Element();
-    addFromXml <Light> (pElem, path);
+    result = addFromXml <Light> (pElem, path);
+	if (!result) { return false; }
     std::cout << "  " << lights.size() << " lights" << std::endl; 
+
+	if (cancelLoad_) { return false; }
 
     //images
     pElem = hRoot.FirstChild( "images" ).FirstChild().Element();
-    addFromXml <Image> (pElem, path);
+    result = addFromXml <Image> (pElem, path);
+	if (!result) { return false; }
     std::cout << "  " << images.size() << " images" << std::endl;
+
+	if (cancelLoad_) { return false; }
 
     //maps
     pElem = hRoot.FirstChild( "maps" ).FirstChild().Element();
-    addFromXml <Map> (pElem, path);
+    result = addFromXml <Map> (pElem, path);
+	if (!result) { return false; }
     std::cout << "  " << maps.size() << " maps" << std::endl;
+
+	if (cancelLoad_) { return false; }
 
     //materials
     pElem = hRoot.FirstChild( "materials" ).FirstChild().Element();
-    addFromXml <Material> (pElem, path);
+    result = addFromXml <Material> (pElem, path);
+	if (!result) { return false; }
     std::cout << "  " << materials.size() << " materials" << std::endl;
+
+	if (cancelLoad_) { return false; }
 
     //objects
     pElem = hRoot.FirstChild( "objects" ).FirstChild().Element();
-    addFromXml <Object> (pElem, path);
+    result = addFromXml <Object> (pElem, path);
+	if (!result) { return false; }
     std::cout << "  " << objects.size() << " objects" << std::endl;
+
+	if (cancelLoad_) { return false; }
 
     //Linking
 	std::cout << "  Linking...";

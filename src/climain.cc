@@ -1,21 +1,31 @@
 /* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
 
+/*
+#ifdef WXWIDGETS
+
+#include "gui/app.h"
+
+int main (int argc, char **argv) {
+	appMain(argc, argv);
+
+	return 0;
+}
+
+#else
+*/
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <unistd.h>
 
-#include "project.h"
-#include "bitmap.h"
-
-#ifdef OPENGL
-#include "gui.h"
-#endif
+#include "libalpharay/project.h"
+#include "libalpharay/bitmap.h"
 
 using namespace std;
 
 Project project;
-Bitmap final("");
+Bitmap output("");
 
 string projectFile, outFile, projectSaveFile;
 
@@ -25,11 +35,7 @@ void usage(string name)
     cerr << "Usage: " << name << " <options(s)> PROJECT" << endl
          << "Options: " << endl
          << "\t-h\tDisplay this help message" << endl
-#ifdef OPENGL
-         << "\t-o\tOutput image filename (Optional)" << endl
-#else
-		 << "\t-o\tOutput image filename (Required)" << endl
-#endif
+         << "\t-o\tOutput image filename" << endl
 		 << "\t-s\tSave project to a new file" << endl
          << endl;
 }
@@ -63,13 +69,11 @@ int main (int argc, char **argv)
         return 1;
     }
 
-#ifndef OPENGL
-    if (outFile == "") {
-        usage(argv[0]);
-        cerr << "NOTE: Compile with freeglut to enable render preview" << endl;
-        return 1;
-    }
-#endif
+	if (projectSaveFile == "" && outFile == "") {
+		cout << "Not output set" << endl;
+		usage(argv[0]);
+		return 0;
+	}
 
     bool loaded = project.load(projectFile);
     if (!loaded) {
@@ -84,20 +88,16 @@ int main (int argc, char **argv)
 	}
 
     if (outFile != "") {
-		project.setOutFile(outFile);
-        project.setFinalImage(&final);
-        project.renderFinal();
-		//initGlut(argc, argv);
-		//glutMainLoop();
+        project.render(&output);
 
-        //cout << "Saving render result..." << outFile << endl;
-        //final.save(outFile);
-        return 0;
+		cout << "Saving output to..." << outFile << endl;
+		output.save(outFile);
+		cout << "Done" << endl;
+        
+		return 0;
     }
 
-#ifdef OPENGL
-	guiMain(&project, argc, argv);
-#endif
-    
     return 0;
 }
+
+//#endif

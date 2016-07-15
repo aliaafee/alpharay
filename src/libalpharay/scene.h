@@ -42,6 +42,8 @@ class Scene : public XmlObjectNamed
 {
     friend class Renderer;
     friend class Raytracer;
+	
+	friend class MainFrame;
 public:
     virtual void init();
     
@@ -91,11 +93,15 @@ public:
 	virtual bool loadXml(TiXmlElement* pElem, std::string path)
 		{ return loadXml(pElem, path, &linkList_); }
 
+	virtual void cancelLoad() { cancelLoad_ = true; }
+
 protected:
     Camera* camera_;
 
     Color envColor_;
     Map* envMap_;
+
+	bool cancelLoad_;
 
     std::vector<Light*> lights;
     std::vector<Image*> images;
@@ -143,7 +149,7 @@ private:
     bool fromXml(TiXmlElement* pElem, Material** mat, std::string path);
     bool fromXml(TiXmlElement* pElem, Object** object, std::string path);
 
-    template< typename T > void addFromXml(TiXmlElement* pElem, std::string path);
+    template< typename T > bool addFromXml(TiXmlElement* pElem, std::string path);
 
 };
 

@@ -47,19 +47,26 @@ bool Bitmap::load(std::string filename)
         delete[] image_;
     }
 #ifdef CIMG
-	CImg<float> loadedImage(filename.c_str());
+	CImg<float>* loadedImage;
+	cimg::exception_mode(0);
+	try {
+		loadedImage = new CImg<float>(filename.c_str());
+	} catch (cimg_library::CImgException& e) {
+		std::cerr << "Image file not found" << std::endl;
+		return false;
+	}
 
-	width_ = loadedImage.width();
-	height_ = loadedImage.height();
+	width_ = loadedImage->width();
+	height_ = loadedImage->height();
 	imageSize_ = width_ * height_ * 3;
 	image_ = new float[width_ * height_ * 3];
 
 	unsigned int i;
-	cimg_forXY(loadedImage, x, y) {
+	cimg_forXY(*loadedImage, x, y) {
 		i = y * width_ * 3 + x * 3;
-		image_[i] = loadedImage(x, y, 0) / 255.0;
-		image_[i+1] = loadedImage(x, y, 1) / 255.0;
-		image_[i+2] = loadedImage(x, y, 2) / 255.0;
+		image_[i] = (*loadedImage)(x, y, 0) / 255.0;
+		image_[i+1] = (*loadedImage)(x, y, 1) / 255.0;
+		image_[i+2] = (*loadedImage)(x, y, 2) / 255.0;
 	}
 
 	return true;

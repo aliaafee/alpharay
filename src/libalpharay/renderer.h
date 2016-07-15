@@ -36,8 +36,10 @@ class Renderer : public XmlObject
             : XmlObject("renderer") 
             { init(); }
 
-        virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback);
-		virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
+        //virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback);
+		//virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
+		virtual void render (Scene &scene, Image *image);
+		//virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
 		Color renderPixel (Scene& scene, Image* image, int x, int y);
         virtual void renderST (Scene &scene, Image *image);
 
@@ -46,8 +48,11 @@ class Renderer : public XmlObject
 
         float exposure_;
 
-		bool rendering() { return rendering_;}
-		std::string status() { return status_;}
+		bool rendering() 
+			{ return rendering_;}
+		
+		std::string status() 
+			{ return status_;}
 
 		void cancel();
 
@@ -87,18 +92,12 @@ class Renderer : public XmlObject
 
 		std::string status_;
 
-        virtual void renderCell
-            (Scene &scene, Image *image, int x0, int y0, int x1, int y1);
-
-        bool renderAllCells(Scene& scene, Image* image);
-
         bool statusDisplay();
 
+		bool renderAllCells(Scene& scene, Image* image);
+		virtual void renderCell(Scene &scene, Image *image, int x0, int y0, int x1, int y1);
         bool getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int height);
-
         void resetCells(Image* image);
-
-		std::function<void()> onDoneCallback_;
 };
 
 

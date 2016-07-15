@@ -10,21 +10,24 @@ std::string Project::pathBase(std::string path) {
     return path.substr(0, end);
 }
 
-
-void Project::renderPreview(std::function<void()> onDoneCallback) {
+/*
+//void Project::renderPreview(std::function<void()> onDoneCallback) {
+void Project::renderPreview() {
+	std::cout << "hi" << std::endl;
     if (renderer == NULL) return;
     if (preview == NULL) return;
 	if (renderer->rendering()) return;
 
-	onDonePreviewCallback_ = onDoneCallback;
+	//onDonePreviewCallback_ = onDoneCallback;
 
+	
     std::cout << "Preview " << preview->width() << "x" << preview->height() << std::endl;
 
 	timerStart_ = std::chrono::high_resolution_clock::now();
     
 	auto fp = std::bind(&Project::onDoneRenderPreview, this);
 	
-	renderer->render(scene, preview, fp);
+	renderer->render(scene, preview, fp, true);
 }
 
 void Project::onDoneRenderPreview() {
@@ -36,7 +39,7 @@ void Project::onDoneRenderPreview() {
 	
 	std::cout << "Render time: " << durationDisplay(std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - timerStart_ )) << std::endl;
 
-	onDonePreviewCallback_();
+	//onDonePreviewCallback_();
 }
 
 
@@ -86,6 +89,27 @@ void Project::onDoneRenderFinal() {
 
 	final->save(outFile_);
 }
+*/
+
+void Project::render(Bitmap* bitmap)
+{
+	if (renderer == NULL) {
+		std::cout << "No renderer set" << std::endl;
+		return;
+	}
+
+	std::cout << "Rendering " << outWidth_ << "x" << outHeight_ << std::endl;
+
+	std::cout << "Perparing bitmap..." << std::flush;
+	std::cout << "Done" << std::endl;
+
+	bitmap->create(outWidth_, outHeight_);
+
+	renderer->render(scene, bitmap);
+
+	//Post processing.
+	bitmap->toneMap_exp(renderer->exposure_);
+}
 
 
 bool Project::load(string filename)
@@ -94,9 +118,11 @@ bool Project::load(string filename)
 
     string filedir = pathBase(filename);
 
-    bool result = doc.LoadFile();
-    
+    bool result;
+	
+	result = doc.LoadFile();
     if (!result) {
+		std::cout << "bad file" << filename << std::endl;
         return false;
     }
     
@@ -133,11 +159,12 @@ bool Project::load(string filename)
     } else {
         renderer = new Raytracer();
     }
-
+	
+	/*
     //Preview and final
     int width, height;
-    width = 0;
-    height= 0;
+    width = 320;
+    height= 240;
     pElem = hRoot.FirstChild("preview").Element();
     if (pElem) {
         pElem->QueryIntAttribute("width", &width);
@@ -146,8 +173,8 @@ bool Project::load(string filename)
     if (width == 0 || height == 0) { width = 320; height = 240; }
     //preview = new GLImage(width, height);
     previewSize = Vector2(width, height);
-    width = 0;
-    height= 0;
+    width = 320;
+    height= 240;
     pElem = hRoot.FirstChild("final").Element();
     if (pElem) {
         pElem->QueryIntAttribute("width", &width);
@@ -156,11 +183,29 @@ bool Project::load(string filename)
     if (width == 0 || height == 0) { width = 320; height = 240; }
     //final = new CimgImage(width, height);
     finalSize = Vector2(width, height);
+	*/
+
+	pElem = hRoot.FirstChild("preview").Element();
+	if (pElem) {
+        pElem->QueryIntAttribute("width", &outWidth_);
+        pElem->QueryIntAttribute("height", &outHeight_);
+    }
+	if (outWidth_ == 0 || outHeight_ == 0) { outWidth_ = 320; outHeight_ = 240; }
+
+	pElem = hRoot.FirstChild("output").Element();
+	if (pElem) {
+        pElem->QueryIntAttribute("width", &outWidth_);
+        pElem->QueryIntAttribute("height", &outHeight_);
+    }
+	if (outWidth_ == 0 || outHeight_ == 0) { outWidth_ = 320; outHeight_ = 240; }
 
     //Scene
     pElem = hRoot.FirstChild("scene").Element();
     
-    scene.loadXml(pElem, filedir);
+    result = scene.loadXml(pElem, filedir);
+	if (!result) {
+		return false;
+	}
 
     cout << "Done" << endl;
     return true;
@@ -180,7 +225,9 @@ bool Project::save(string filename)
     doc.LinkEndChild(root);
 
     // Raytracer settings
-    root->LinkEndChild(renderer->getXml());
+	if (renderer != NULL) {
+		root->LinkEndChild(renderer->getXml());
+	}
 
     // scene
     root->LinkEndChild(scene.getXml());

@@ -25,7 +25,7 @@ class Bitmap : public Image, virtual public XmlObjectNamed
 
         Bitmap( int width, int height ) 
             : Image("unnamed"), XmlObjectNamed("bitmap", "unnamed")
-            { init(); create(width, height); }
+            { init(); }
         
         Bitmap( std::string name ) 
             : Image(name), XmlObjectNamed("bitmap", name)

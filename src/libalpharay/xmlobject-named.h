@@ -10,6 +10,7 @@
 
 class XmlObjectNamed : public XmlObject
 {
+	friend class MainFrame;
     public:
         virtual void init();
 
@@ -27,27 +28,7 @@ class XmlObjectNamed : public XmlObject
         ~XmlObjectNamed() { } ;
 
         virtual TiXmlElement* getXml();
-        //virtual bool loadXml(TiXmlElement* pElem, std::string path);
 		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
-
-		/*
-		template <typename T> bool loadXml(TiXmlElement* pElem, std::string path, T* linkList) {
-			loadXml(pElem, path);
-			
-			std::string sourceName;
-			int queryResult;
-			for (unsigned long i = 0; i < editableLinks.size(); i++) {
-				queryResult = pElem->QueryStringAttribute((editableLinks[i]->name()).c_str(), &sourceName);
-				if (queryResult == TIXML_SUCCESS) {
-					editableLinks[i]->setSource(sourceName);
-					EditableLink<XmlObjectNamed>* el = reinterpret_cast <EditableLink<XmlObjectNamed>*> (editableLinks[i]);
-					linkList->add(sourceName, el->target());
-				}
-			}
-			
-			return true;
-		};
-		*/
 
         std::string name() { return name_; }
 

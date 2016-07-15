@@ -14,7 +14,7 @@ void Renderer::init()
 
     statusOn_ = true;
 
-    threadCount_ = 8;
+    threadCount_ = 4;
 
     cellCx = 4;
     cellCy = 4;
@@ -110,11 +110,6 @@ void Renderer::correctExposure(Color &color) {
 void Renderer::renderCell
             (Scene &scene, Image *image, int x0, int y0, int x1, int y1)
 {
-    //if (x0 < 1) return;
-    //if (y0 < 1) return;
-    //if (x1 > image->width()) return;
-    //if (y1 > image->height()) return;
-
 	if (cancel_ == true) {
 		completedCells += 1;
 		return;
@@ -204,15 +199,13 @@ bool Renderer::renderAllCells(Scene& scene, Image* image)
 bool Renderer::statusDisplay()
 {
     std::stringstream ss;
-    float done = 0.0f;
-    float pdone = -1.0f;
 
     std::cout << "Rendering..." << std::endl;
     std::cout << " " ;
 
     ss << "0%";
     std::cout << ss.str();
-    while (completedCells < cells_.size()) {
+    while (rendering_) {
         for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << "\b";}
         ss.str("");
         ss << int(float(completedCells) / float(cells_.size()) * 100.0) << "\% done, " << raysCast_ << " rays cast";
@@ -222,17 +215,15 @@ bool Renderer::statusDisplay()
     }
 
     for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << "\b";}
-
+	for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << " ";}
+	for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << "\b";}
+	
 	ss.str("");
 	ss << raysCast_ << " rays cast";
 	status_ = ss.str();
     std::cout << status_ << std::endl;
     std::cout << "Done" << std::endl;
-	
-	rendering_ = false;
 
-	onDoneCallback_();
-	
 	return true;
 }
 
@@ -278,22 +269,13 @@ void Renderer::resetCells(Image* image)
 }
 
 
-void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneCallback) {
-	render(scene, image, onDoneCallback, false);
-}
-
-
-void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneCallback, bool join)
-{
+void Renderer::render (Scene& scene, Image* image) {
 	if (rendering_) {
 		std::cout << "We are already rendering, cannot start" << std::endl;
 		return;
 	}
-
 	rendering_ = true;
 	cancel_ = false;
-	
-	onDoneCallback_ = onDoneCallback;
 	
     //Setup the scene for render
     scene.transform();
@@ -312,14 +294,12 @@ void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneC
 
     boost::thread status = boost::thread( &Renderer::statusDisplay, this );
 
-	if (!join) return;
-
     for (int i = 0; i < threadCount_; i++) {
         renderThread[i].join();
     }
-    //completed = (cellW * cellH);
+	rendering_ = false;
 
-    status.join();
+	status.join();
 #else
     std::cout << "Rendering..." << std::flush;
 
@@ -328,7 +308,6 @@ void Renderer::render (Scene& scene, Image* image, std::function<void()> onDoneC
     std::cout << "Done" << std::endl;
 
 	rendering_ = false;
-	onDoneCallback_();
 #endif 
             
 }

@@ -1,53 +1,16 @@
-
 bin_PROGRAMS = alpharay
 
-alpharay_SOURCES =   main.cc \
-                     vector.cc \
-                     matrix4.cc \
-                     xmlobject.cc \
-					 xmlobject-named.cc \
-                     map.cc \
-					 sky-map.cc \
-                     material.cc \
-					 image.cc \
-                     bitmap.cc \
-					 object2d.cc \
-					 canvas.cc \
-                     ray.cc \
-                     camera.cc \
-                     light.cc \
-                     spot-light.cc \
-                     area-light.cc \
-                     sun-light.cc \
-                     sky-light.cc \
-                     triangle.cc \
-                     object.cc \
-                     sphere.cc \
-					 cone.cc \
-					 group.cc \
-                     scene.cc \
-                     plane.cc \
-                     mesh.cc \
-                     renderer.cc \
-                     raytracer.cc \
-                     pathtracer.cc \
-                     project.cc \
-                     bbox.cc \
-                     octree.cc \
-					 tinyfiledialogs.cc
-
-AM_CPPFLAGS = -std=c++11 -Wc++11-extensions -Wdeprecated-declarations
-
-alpharay_LDFLAGS =  -ltinyxml
-
-if THREADING
-    alpharay_LDFLAGS += -lboost_thread-mt -lboost_system-mt
+if WXWIDGETS
+alpharay_SOURCES = guimain.cc \
+                   mainframe.cc \
+                   projectloadingdialog.cc \
+                   renderframe.cc \
+                   wxalpharaybitmap.cc \
+                   wxalpharaycanvas.cc
+else
+alpharay_SOURCES = climain.cc
 endif
 
-if OPENGL
-    alpharay_SOURCES += gl-image.cc gui.cc
-    alpharay_LDFLAGS += -lgl -lglut -lX11 -lglu -lglui
-endif
+alpharay_LDADD = libalpharay/libalpharay.la
 
-alpharay_LDADD = 
-
+SUBDIRS = libalpharay

@@ -24,19 +24,25 @@ class Project {
     public:
         Scene scene;
         Renderer* renderer;
-        Bitmap* preview;
-        Bitmap* final;
-        Vector2 previewSize;
-        Vector2 finalSize;
+        Bitmap* out;
+		int outWidth_;
+		int outHeight_;
+        //Bitmap* final;
+        //Vector2 previewSize;
+        //Vector2 finalSize;
 
-        Project () { renderer = NULL; preview = NULL; final = NULL; }
+        Project () { renderer = NULL; outWidth_ = 320; outHeight_ = 240; }
+
+		/*
 
         void setPreviewImage(Bitmap* image) 
-            { preview = image; preview->create(previewSize.x, previewSize.y); }
+            { preview = image; std::cout << previewSize << std::endl; preview->create(previewSize.x, previewSize.y); }
         void setFinalImage(Bitmap* image) 
             { final = image; final->create(finalSize.x, finalSize.y); }
 
-        void renderPreview(std::function<void()> onDoneCallback);
+        //void renderPreview(std::function<void()> onDoneCallback);
+		void renderPreview();
+		
 		void onDoneRenderPreview();
 
 		Color renderPreviewPixel(int x, int y);
@@ -44,10 +50,22 @@ class Project {
 		void setOutFile(std::string filename) { outFile_ = filename; };
         void renderFinal();
 		void onDoneRenderFinal();
+		*/
+
+		//void setOutBitmap(Bitmap* bitmap);
+
+		void render(Bitmap* bitmap);
         
         bool load(string filename);
         bool save(string filename);
 
+		int outWidth() 
+			{ return outWidth_; }
+		int outHeight()
+			{ return outHeight_; }
+
+		void cancelLoad() 
+			{ scene.cancelLoad(); }
     private:
         std::string pathBase(std::string path);
 
