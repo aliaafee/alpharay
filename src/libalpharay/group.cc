@@ -3,13 +3,7 @@
 #include "group.h"
 
 void Group::init() {
-	Object::init();
-	for (unsigned long i = 0; i < lights.size(); i++) {
-		(lights[i])->init();
-	}
-	for (unsigned long i = 0; i < objects.size(); i++) {
-		(objects[i])->init();
-	}
+	;
 }
 
 void Group::transform() {

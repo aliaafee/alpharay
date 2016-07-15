@@ -9,7 +9,7 @@
 class Plane : virtual public Object, virtual public XmlObjectNamed
 {
     public:
-        void init() { Object::init(); normal_ = Vector(0, 0, 1);}
+        void init() { normal_ = Vector(0, 0, 1);}
 
         Plane(std::string name, BaseObject* parent=NULL) 
             : XmlObjectNamed ("plane", name) 

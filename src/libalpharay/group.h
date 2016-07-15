@@ -37,10 +37,6 @@ class Group : virtual public Object, virtual public XmlObjectNamed
 		
 		virtual void transform();
 
-		//virtual void genBounds();
-
-        //virtual Bounds bounds();
-
         virtual BaseObject* intersection(Ray &ray, float *t, float limit);
 
 		Light* add(Light *light) 
