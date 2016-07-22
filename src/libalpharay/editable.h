@@ -5,6 +5,9 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
+
+#include "vector.h"
 
 class BaseEditable
 {
@@ -44,6 +47,10 @@ class BaseEditable
 
 		virtual std::string getMin() {
 			return std::string("");
+		}
+
+		virtual std::string type() {
+			return "string";
 		}
 
 		bool noMax() { return noMax_; }
@@ -110,8 +117,16 @@ template<typename T> class Editable : public BaseEditable
 			return toStr(min_);
 		}
 
+		virtual std::string type() {
+			return "string";
+		}
+
 		virtual void reset() {
 			*value_ = defaultValue_;
+		}
+
+		virtual T getValue() {
+			return *value_;
 		}
 
 	private:
@@ -155,14 +170,46 @@ template<typename T> class Editable : public BaseEditable
 
 
 template <> inline std::string Editable<bool>::toStr(bool value) {
-	//std::stringstream ss (std::stringstream::in | std::stringstream::out);
-	//ss << value;
 	if (value) {
 		return "true";
 	}
 	return "false";
 }
 
+template <> inline bool Editable<bool>::fromStr(std::string value) {
+	if (value == "true") {
+		return true;
+	}
+	return false;
+}
+
+template <> inline std::string Editable<bool>::type() {
+	return "bool";
+}
+
+template <> inline std::string Editable<std::string>::type() {
+	return "string";
+}
+
+template <> inline std::string Editable<int>::type() {
+	return "int";
+}
+
+template <> inline std::string Editable<float>::type() {
+	return "float";
+}
+
+template <> inline std::string Editable<Vector>::type() {
+	return "vector";
+}
+
+template <> inline std::string Editable<Color>::type() {
+	return "color";
+}
+
+template <> inline std::string Editable<Vector2>::type() {
+	return "vector2";
+}
 
 
 class BaseEditableLink
@@ -185,7 +232,11 @@ class BaseEditableLink
 			return name_;
 		}
 
-	private:
+		virtual std::string type() {
+			return "";
+		}
+
+	protected:
 		std::string name_;
 		std::string source_;
 };
@@ -200,10 +251,7 @@ class EditableLink : public BaseEditableLink
 			name_ = name;
 			target_ = target;
 			*target_ = NULL;
-		}
-
-		void setSource(std::string source) {
-			source_ = source;
+			source_ = "";
 		}
 
 		std::string str() {
@@ -214,17 +262,37 @@ class EditableLink : public BaseEditableLink
 			}
 		}
 
-		std::string name() {
-			return name_;
-		}
-
 		T** target() {
 			return target_;
 		}
 
+		std::string type() {
+			return "";
+		}
+
+		bool updateLinkFromList(std::vector<T*>* list) {
+			*target_ = NULL;
+			
+			if (source_ == "") {
+				std::cout << "source is empty string" << std::endl;
+				return true;
+			}
+
+			for (auto it = list->begin(); it != list->end(); ++it) {
+				T* object = *it;
+				std::cout << object->name() << "-" << source_ << std::endl;
+				if (object->name() == source_) {
+					*target_ = object;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		
+
 	//private:
-		std::string name_;
-		std::string source_;
 		T **target_;
 };
 

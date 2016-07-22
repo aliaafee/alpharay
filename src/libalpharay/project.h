@@ -11,6 +11,9 @@
 
 using namespace std;
 
+
+#include "xmlobject-named.h"
+
 #include "scene.h"
 
 #include "renderer.h"
@@ -20,7 +23,7 @@ using namespace std;
 
 #include "bitmap.h"
 
-class Project {
+class Project : public XmlObjectNamed {
     public:
         Scene scene;
         Renderer* renderer;
@@ -31,7 +34,13 @@ class Project {
         //Vector2 previewSize;
         //Vector2 finalSize;
 
-        Project () { renderer = NULL; outWidth_ = 320; outHeight_ = 240; }
+        Project () : XmlObjectNamed("project") { 
+			renderer = NULL; 
+			//outWidth_ = 320; 
+			//outHeight_ = 240;
+			addEditable(new Editable<int>("out-width", &outWidth_, 320));
+			addEditable(new Editable<int>("out-height", &outHeight_, 240));
+		}
 
 		/*
 
@@ -54,10 +63,13 @@ class Project {
 
 		//void setOutBitmap(Bitmap* bitmap);
 
-		void render(Bitmap* bitmap);
+		void render(Bitmap* bitmap, RenderStatus* renderStatus=NULL);
         
         bool load(string filename);
         bool save(string filename);
+
+		TiXmlElement* getXml();
+		bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
 
 		int outWidth() 
 			{ return outWidth_; }
@@ -66,6 +78,12 @@ class Project {
 
 		void cancelLoad() 
 			{ scene.cancelLoad(); }
+
+		void cancelRender()
+			{ if (renderer == NULL) return; renderer->cancel(); }
+
+		std::string status()
+			{ if (renderer == NULL) return ""; return renderer->status(); }
     private:
         std::string pathBase(std::string path);
 

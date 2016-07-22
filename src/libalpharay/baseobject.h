@@ -13,9 +13,9 @@
 class BaseObject
 {
     public:
-        virtual void init();
+        void init();
         BaseObject() { init(); }
-        ~BaseObject() { } ;
+        virtual ~BaseObject() { } ;
 
         //Basic setup operations for the object
         virtual void transform() {}; 
@@ -55,7 +55,7 @@ class BaseObject
 
 		virtual std::string str() { return "baseobject"; }
 
-    protected:
+    //protected:
         Material *material_;
 
         BaseObject *parent_;

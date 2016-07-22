@@ -5,6 +5,8 @@
 
 void Object::init()
 {
+	type_ = "object";
+	
 	addEditable(new Editable<Vector>("position", &position_, Vector(0, 0, 0)));
 	addEditable(new Editable<Vector>("rotation", &rotation_, Vector(0, 0, 0)));
 	addEditable(new Editable<Vector>("scale", &scale_, Vector(1, 1, 1)));

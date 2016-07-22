@@ -20,8 +20,9 @@
         <lights>
             <arealight name="bulb" 
                 position="0,0,9.6"
-                target="0,0,0"
-                intensity="5,5,5" 
+				target="0,0,0"
+				color="1,1,1"
+				power="5"
                 angle="3.14" 
                 anglefalloff="3.14" 
                 lightradius="1"
@@ -45,7 +46,7 @@
 
         <materials>
             <material name="lightmat" 
-                diffusecolor="1,1,1"
+                diffuse-color="1,1,1"
                 emission="50,50,50" />
 
             <material name="glass" 
@@ -55,20 +56,20 @@
                 reflection="specular" />
 
             <material name="greenmat" 
-                diffusecolor="0,1,0"
+                diffuse-color="0,1,0"
                 ks="0"/>
 
             <material name="redmat" 
-                diffusecolor="1,0,0"
+                diffuse-color="1,0,0"
                 ks="0"/>
 
             <material name="bluemat" 
-                diffusecolor="0,0,1"
+                diffuse-color="0,0,1"
                 ks="0"
-                diffusemap="earthmap"/>
+                diffuse-map="earthmap"/>
 
             <material name="whitemat" 
-                diffusecolor="1.0,1.0,1.0" 
+                diffuse-color="1.0,1.0,1.0" 
                 ks="0"/>
         </materials>
 
@@ -121,11 +122,6 @@
                 position="0,0,0.75"
                 scale="0.75,0.75,0.75"
                 material="redmat" /> 
-
-            <mesh0 name="chalice" position="0,0,0" rotation="0,0,1.5" scale="1,1,1" material="glass">
-                <file type="obj" scale="1.0" position="0,0,0" filename="obj/glass.obj" />
-            </mesh0>
-
         </objects>
 
     </scene>

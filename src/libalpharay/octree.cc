@@ -85,8 +85,10 @@ BaseObject* Octree::intersection(Ray &ray, float *t, float limitMax) {
 
         clot = BIG_NUM;
 
-        for (unsigned long i=0; i < triangles->size(); i++) {
-            currentTrig = (*triangles)[i]->intersection(ray, &curt, limitMax); 
+        //for (unsigned long i=0; i < triangles->size(); i++) {
+		for (auto trig = triangles->begin(); trig != triangles->end(); ++trig) {
+            //currentTrig = (*triangles)[i]->intersection(ray, &curt, limitMax); 
+			currentTrig = (*trig)->intersection(ray, &curt, limitMax);
             if (currentTrig != NULL) {
                 if (curt > 0.0001 && curt < clot) {
                     if (curt < limitMax) {

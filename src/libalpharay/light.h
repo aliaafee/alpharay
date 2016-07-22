@@ -22,20 +22,25 @@ class Light : virtual public Object, virtual public XmlObjectNamed
             :Object(name, NULL), XmlObjectNamed("pointlight", name)
             { init(); }
 
-        ~Light() { } ;
+        virtual ~Light() { } ;
 
 		virtual void transform();
 
         //Adds this light to the material
         virtual void set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
 
-    protected:
+    
         float kIntensity_;
 		Vector tposition_; //Position of the light when the transformations have been applied
-    	Color intensity_;
+
+
+		Color color_;
+		float power_;
+		
+    	Vector intensity_;
 
         bool shadowsOn_;
-
+	protected:
         virtual Color getIntensityByDistance(Color intensity, float &distance);
         virtual BaseObject* getFirstIntersection(std::vector<Object*>* objects, Ray &ray, float rayLimit);
 };

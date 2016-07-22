@@ -7,7 +7,42 @@ void Scene::init() {
 	
 	addEditable(new Editable<Color>("skycolor", &envColor_, Vector(0, 0, 0)));
 	addEditableLink(new EditableLink<Map>("skymap", &envMap_));
+
+	camera_ = NULL;
 }
+
+
+Scene::~Scene() {
+	if (camera_) {
+		delete camera_;
+	}
+
+	for (auto it = lights.begin(); it != lights.end(); ++it) {
+		delete *it;
+	}
+	lights.clear();
+
+	for (auto it = images.begin(); it != images.end(); ++it) {
+		delete *it;
+	}
+	images.clear();
+
+	for (auto it = maps.begin(); it != maps.end(); ++it) {
+		delete *it;
+	}
+	maps.clear();
+
+	for (auto it = materials.begin(); it != materials.end(); ++it) {
+		delete *it;
+	}
+	materials.clear();
+}
+
+
+void Scene::createMinimalScene() {
+	camera_ = new Camera();
+}
+
 
 Color Scene::envColor(const Ray &ray) {
     if (envMap_ == NULL) {
@@ -164,7 +199,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
 template< typename T > bool Scene::addFromXml(TiXmlElement* pElem, std::string path) {
     if (pElem) {
         for (; pElem; pElem = pElem->NextSiblingElement()) {
-            T* newthing;
+            T* newthing = NULL;
             bool result = fromXml(pElem, &newthing, path);
 			if (!result) {
 				return false;

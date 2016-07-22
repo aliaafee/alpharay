@@ -6,15 +6,15 @@ AC_INIT([Alpharay], [0.1], [ali.aafee@gmail.com])
 
 
 AM_INIT_AUTOMAKE([])
+AC_CONFIG_MACRO_DIRS([m4])
 
 AC_CONFIG_SRCDIR([src])
-
-AC_CONFIG_MACRO_DIRS([m4])
 
 AC_PROG_CXX
 AC_LANG(C++)
 
-CXXFLAGS="$CXXFLAGS -std=c++11 -Wc++11-extensions"
+#CXXFLAGS="$CXXFLAGS -std=c++11 -Wc++11-extensions"
+AX_CXX_COMPILE_STDCXX_11
 
 LT_INIT
 
@@ -38,16 +38,15 @@ havethread=1
 AC_CHECK_HEADER(boost/thread.hpp, [], [havethread=0] )
 if test $havethread == 1
 then
+	AC_MSG_NOTICE([Multi threading enabled with boost])
 	AC_DEFINE(THREADING, true)
-    AM_CONDITIONAL(THREADING, true)
-    AC_MSG_NOTICE([Multi threading enabled with boost])
 	LIBS="$LIBS -lboost_thread-mt -lboost_system-mt"
 else
-    AM_CONDITIONAL(THREADING, false)
     AC_MSG_NOTICE([Boost not available, multi threading disabled])
 fi
 
 # Check for wxWidgets
+AM_CONDITIONAL(WXWIDGETS, false)
 AM_OPTIONS_WXCONFIG
 reqwx=2.4.0
 AM_PATH_WXCONFIG($reqwx, wxWin=1)
@@ -65,7 +64,6 @@ then
 	AM_CONDITIONAL(WXWIDGETS, false)
 	else
 	AC_MSG_NOTICE([Gui enabled with WxWidgets])
-	AC_DEFINE(WXWIDGETS, true)
 	AM_CONDITIONAL(WXWIDGETS, true)
 	CPPFLAGS="$CPPFLAGS $WX_CPPFLAGS"
 	CXXFLAGS="$CXXFLAGS $WX_CXXFLAGS_ONLY"
@@ -79,11 +77,9 @@ havecimg=1
 AC_CHECK_HEADER(CImg.h, [], [havecimg=0] )
 if test $havecimg == 1
 then
-    AC_DEFINE(CIMG, true)
-    AM_CONDITIONAL(CIMG, true)
     AC_MSG_NOTICE([Using CImg for image load/save])
+	AC_DEFINE(CIMG, true)
 else
-    AM_CONDITIONAL(CIMG, false)
     AC_MSG_NOTICE([CImg not available])
 fi
 

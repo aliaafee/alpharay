@@ -57,8 +57,6 @@ TiXmlElement* Canvas::getXml()
 
 bool Canvas::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 {
-	init();
-
     Image::loadXml(pElem, path, linkList);
 	
 	pElem = pElem->FirstChildElement();

@@ -11,6 +11,7 @@
 class XmlObjectNamed : public XmlObject
 {
 	friend class MainFrame;
+	friend class PropertyEditor;
     public:
         virtual void init();
 
@@ -25,12 +26,13 @@ class XmlObjectNamed : public XmlObject
 		XmlObjectNamed()
 			{;}
 
-        ~XmlObjectNamed() { } ;
+        virtual ~XmlObjectNamed() {};
 
         virtual TiXmlElement* getXml();
 		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
 
         std::string name() { return name_; }
+		std::string type() { return type_; }
 
 		virtual void addEditable(BaseEditable* editable) {
 			editables.push_back(editable);
@@ -44,6 +46,8 @@ class XmlObjectNamed : public XmlObject
         std::string name_;
 		std::vector<BaseEditable*> editables;
 		std::vector<BaseEditableLink*> editableLinks;
+
+		std::string type_;
 };
 
 

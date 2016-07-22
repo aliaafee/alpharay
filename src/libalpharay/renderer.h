@@ -26,6 +26,25 @@ class RendererCell {
 };
 
 
+class RenderStatus {
+	friend class Renderer;
+	friend class Project;
+	public:
+		int progress()
+			{ return progress_; }
+		int raysCast()
+			{ return raysCast_; }
+		std::string message()
+			{ return message_; }
+		long renderTime()
+			{ return renderTime_; }
+	protected:
+		int progress_;
+		int raysCast_;
+		std::string message_;
+		long renderTime_;
+};
+
 
 class Renderer : public XmlObject 
 {
@@ -38,37 +57,37 @@ class Renderer : public XmlObject
 
         //virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback);
 		//virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
-		virtual void render (Scene &scene, Image *image);
+		
 		//virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
-		Color renderPixel (Scene& scene, Image* image, int x, int y);
-        virtual void renderST (Scene &scene, Image *image);
+		
+		virtual void render (Scene* scene, Image* image, RenderStatus* renderStatus=NULL);
+		Color renderPixel (Scene* scene, Image* image, int x, int y);
+        virtual void renderST (Scene* scene, Image *image);
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
         float exposure_;
-
-		bool rendering() 
-			{ return rendering_;}
 		
 		std::string status() 
 			{ return status_;}
 
 		void cancel();
 
-    protected:
-        int traceDepth_;  
-
-        int subSamplesX_;
+		int threadCount_;
+		int cellCx, cellCy;
+		int subSamplesX_;
         int subSamplesY_;
-
+		int traceDepth_;
+    protected:
+		
         bool statusOn_;
 
         unsigned long raysCast_;
 
-        virtual Color trace(Scene &scene ,Ray ray, int depth);
+        virtual Color trace(Scene* scene ,Ray ray, int depth);
 
-        BaseObject* closestIntersection(Scene &scene, Ray &ray, float *closest);
+        BaseObject* closestIntersection(Scene* scene, Ray &ray, float *closest);
         
         void getFresnelValues(Vector Vincident, Vector normal,
                             float n1, float n2,
@@ -78,12 +97,9 @@ class Renderer : public XmlObject
 
         void toneMap_exp(Color *color);
     private:
-		bool rendering_;
+		RenderStatus* renderStatus_;
 		bool cancel_;
-		
-        int threadCount_;
-
-        int cellCx, cellCy;
+		bool running_;
 
 		std::vector<RendererCell> cells_;
 
@@ -94,8 +110,8 @@ class Renderer : public XmlObject
 
         bool statusDisplay();
 
-		bool renderAllCells(Scene& scene, Image* image);
-		virtual void renderCell(Scene &scene, Image *image, int x0, int y0, int x1, int y1);
+		bool renderAllCells(Scene* scene, Image* image);
+		virtual void renderCell(Scene* scene, Image *image, int x0, int y0, int x1, int y1);
         bool getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int height);
         void resetCells(Image* image);
 };

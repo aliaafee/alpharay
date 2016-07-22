@@ -15,7 +15,7 @@ class XmlObject
         XmlObject( std::string xmlTag ) { init(); xmlTag_ = xmlTag; }
 		XmlObject() {;}
 		
-        ~XmlObject() { } ;
+        virtual ~XmlObject() { } ;
 
         std::string xmlTag() { return xmlTag_; }
 
@@ -37,7 +37,7 @@ class XmlObjectIndexed : public XmlObject
             :XmlObject(xmlTag)
             { init(); index_ = index; }
 
-        ~XmlObjectIndexed() { } ;
+        virtual ~XmlObjectIndexed() { } ;
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path);

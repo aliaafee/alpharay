@@ -11,13 +11,13 @@
 class Image : virtual public XmlObjectNamed
 {
     public:
-        virtual void init() { width_ = 0; height_ = 0; }
+        virtual void init() { type_ = "image"; width_ = 0; height_ = 0; }
         
         Image( std::string name ) 
             : XmlObjectNamed("image", name)
             { init(); }
 
-        ~Image() { } ;
+        virtual ~Image() {} ;
 
         virtual bool create(int width, int height) { return true; }
         virtual bool load(std::string filename) { return true; }
@@ -38,6 +38,11 @@ class Image : virtual public XmlObjectNamed
         int width_;
         int height_;
 };
+
+
+template <> inline std::string EditableLink<Image>::type() {
+	return "image";
+}
 
 
 class Checker2d : public Image, virtual public XmlObjectNamed

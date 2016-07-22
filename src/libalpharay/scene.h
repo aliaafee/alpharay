@@ -42,14 +42,19 @@ class Scene : public XmlObjectNamed
 {
     friend class Renderer;
     friend class Raytracer;
-	
+	friend class Project;
 	friend class MainFrame;
+	friend class PreviewPanel;
 public:
     virtual void init();
     
 	Scene () 
         : XmlObjectNamed("scene") 
         { init(); }
+
+	~Scene ();
+
+	void createMinimalScene();
 	
     void transform();
 
@@ -95,7 +100,7 @@ public:
 
 	virtual void cancelLoad() { cancelLoad_ = true; }
 
-protected:
+//protected:
     Camera* camera_;
 
     Color envColor_;
@@ -111,8 +116,9 @@ protected:
 
 	bool rayLog_;
 
-private:
-    LinkList linkList_;
+	LinkList linkList_;
+
+private: 
 
     template <typename T> T* getByName(std::string name, std::vector<T*> &list) {
         for (unsigned long i = 0; i < list.size(); i++) {

@@ -3,10 +3,15 @@
 #include "light.h"
 
 
-void Light::init() { 
+void Light::init() {
+	type_ = "light";
+	
     kIntensity_ = 5.0f;
 
-	addEditable(new Editable<Color>("intensity", &intensity_, Color(100, 100, 100)));
+	//addEditable(new Editable<Color>("intensity", &intensity_, Color(100, 100, 100)));
+	addEditable(new Editable<Color>("color", &color_, Color(1,1,1)));
+	addEditable(new Editable<float>("power", &power_, 100));
+	
 	addEditable(new Editable<bool>("shadow", &shadowsOn_, true));
 }
 
@@ -17,6 +22,8 @@ void Light::transform()
 	Vector zero(0,0,0);
 	
 	tposition_ = transformPoint(zero);
+
+	intensity_ = color_ * power_;
 }
 
 void Light::set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection)
@@ -60,8 +67,8 @@ BaseObject* Light::getFirstIntersection(std::vector<Object*>* objects, Ray &ray,
 
     ray.shadowRay_ = true;
 
-    for (int i=0; i < (*objects).size(); i++) {
-            currentObject = ((*objects)[i])->intersection(ray, &distance, rayLimit);
+	for (auto obj = objects->begin(); obj != objects->end(); ++obj) {
+			currentObject = (*obj)->intersection(ray, &distance, rayLimit);
             if (currentObject != NULL) {
                 if (distance < rayLimit) {
                     if (distance > SMALL_NUM) {

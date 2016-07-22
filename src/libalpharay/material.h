@@ -28,7 +28,7 @@ class Material : public XmlObjectNamed
 		Material()
 			{;}
 
-        ~Material() { } ;
+        virtual ~Material() { } ;
 
         virtual void transform();
 
@@ -107,6 +107,11 @@ class Material : public XmlObjectNamed
 		//float distributionTerm_;
 		//float geometryTerm_;
 };
+
+
+template <> inline std::string EditableLink<Material>::type() {
+	return "material";
+}
 
 
 /*

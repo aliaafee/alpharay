@@ -52,7 +52,7 @@ bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path, LinkList* li
 		queryResult = pElem->QueryStringAttribute((editableLinks[i]->name()).c_str(), &sourceName);
 		if (queryResult == TIXML_SUCCESS) {
 			editableLinks[i]->setSource(sourceName);
-			EditableLink<XmlObjectNamed>* el = reinterpret_cast <EditableLink<XmlObjectNamed>*> (editableLinks[i]);
+			EditableLink<XmlObjectNamed>* el = static_cast <EditableLink<XmlObjectNamed>*> (editableLinks[i]);
 			linkList->add(sourceName, el->target());
 		}
 	}

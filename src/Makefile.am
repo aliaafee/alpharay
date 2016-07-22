@@ -6,7 +6,9 @@ alpharay_SOURCES = guimain.cc \
                    projectloadingdialog.cc \
                    renderframe.cc \
                    wxalpharaybitmap.cc \
-                   wxalpharaycanvas.cc
+                   wxalpharaycanvas.cc \
+				   previewpanel.cc \
+				   propertyeditor.cc
 else
 alpharay_SOURCES = climain.cc
 endif

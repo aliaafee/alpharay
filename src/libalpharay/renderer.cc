@@ -14,16 +14,16 @@ void Renderer::init()
 
     statusOn_ = true;
 
-    threadCount_ = 4;
+    threadCount_ = 8;
 
     cellCx = 4;
     cellCy = 4;
 
-	rendering_ = false;
+	running_ = false;
 }
 
 
-BaseObject* Renderer::closestIntersection(Scene &scene, Ray &ray, float *closest) 
+BaseObject* Renderer::closestIntersection(Scene* scene, Ray &ray, float *closest) 
 {
 	float distance;
 	*closest = BIG_NUM;
@@ -31,8 +31,8 @@ BaseObject* Renderer::closestIntersection(Scene &scene, Ray &ray, float *closest
 	BaseObject *currentObject = NULL;
 	BaseObject *closestObject = NULL;
 	
-	for (unsigned long i=0; i < scene.objects.size(); i++) {
-			currentObject = scene.objects[i]->intersection(ray, &distance, BIG_NUM);   
+	for (auto obj = scene->objects.begin(); obj != scene->objects.end(); ++obj) {
+			currentObject = (*obj)->intersection(ray, &distance, BIG_NUM);
 
 			if (currentObject != NULL) {
                 if (distance > SMALL_NUM) {
@@ -92,7 +92,7 @@ void Renderer::getFresnelValues(Vector Vincident, Vector normal,
 }
 
 
-Color Renderer::trace(Scene &scene ,Ray ray, int depth)
+Color Renderer::trace(Scene* scene ,Ray ray, int depth)
 {
     return Color(randf(0,1), randf(0,1), randf(0,1));
 }
@@ -108,7 +108,7 @@ void Renderer::correctExposure(Color &color) {
 */
 
 void Renderer::renderCell
-            (Scene &scene, Image *image, int x0, int y0, int x1, int y1)
+            (Scene* scene, Image *image, int x0, int y0, int x1, int y1)
 {
 	if (cancel_ == true) {
 		completedCells += 1;
@@ -130,7 +130,7 @@ void Renderer::renderCell
                 for (float ssy=0; ssy < tsy; ssy++) {
                     float sy = point.y + (ssy/tsy);
                     
-                    color += trace(scene, scene.ray(sx,sy), 0);
+                    color += trace(scene, scene->ray(sx,sy), 0);
                 }
             }
             
@@ -157,34 +157,12 @@ bool Renderer::getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int he
 	x1 = cells_[currentCell].x1;
 	y1 = cells_[currentCell].y1;
 
-	/*
-    int cell = curCell;
-
-    int ix = cell % cellCx;
-    int iy = (cell - ix) / cellCx;
-
-	x0 = cellW * ix;
-	y0 = cellH * iy;
-
-	if (ix == cellCx-1) {
-		x1 = width - 1;
-	} else {
-		x1 = x0 + cellW;
-	}
-
-	if (iy == cellCy-1) {
-		y1 = height - 1;
-	} else {
-		y1 = y0 + cellH;
-	}
-	*/
-
     currentCell ++;
     return true;
 }
 
 
-bool Renderer::renderAllCells(Scene& scene, Image* image)
+bool Renderer::renderAllCells(Scene* scene, Image* image)
 {
     int x0, y0, x1, y1;
 
@@ -205,12 +183,17 @@ bool Renderer::statusDisplay()
 
     ss << "0%";
     std::cout << ss.str();
-    while (rendering_) {
+    while (running_) {
         for (unsigned long w = 0; w < ss.str().size(); w ++) { std::cout << "\b";}
         ss.str("");
         ss << int(float(completedCells) / float(cells_.size()) * 100.0) << "\% done, " << raysCast_ << " rays cast";
         std::cout << ss.str() << std::flush;
 		status_ = ss.str();
+		if (renderStatus_) {
+			renderStatus_->message_ = ss.str();
+			renderStatus_->progress_ = int(float(completedCells) / float(cells_.size()) * 100.0);
+			renderStatus_->raysCast_ = raysCast_;
+		}
         usleep(10);
     }
 
@@ -223,6 +206,12 @@ bool Renderer::statusDisplay()
 	status_ = ss.str();
     std::cout << status_ << std::endl;
     std::cout << "Done" << std::endl;
+
+	if (renderStatus_) {
+		renderStatus_->message_ = "Render Complete";
+		renderStatus_->progress_ = 100;
+		renderStatus_->raysCast_ = raysCast_;
+	}
 
 	return true;
 }
@@ -269,17 +258,19 @@ void Renderer::resetCells(Image* image)
 }
 
 
-void Renderer::render (Scene& scene, Image* image) {
-	if (rendering_) {
-		std::cout << "We are already rendering, cannot start" << std::endl;
-		return;
+void Renderer::render (Scene* scene, Image* image, RenderStatus* renderStatus) {
+	if (running_) { 
+		std::cout << "Cannot start, we are rendering" << std::endl;
+		return; 
 	}
-	rendering_ = true;
+
+	renderStatus_ = renderStatus;
 	cancel_ = false;
-	
+	running_ = true;
+
     //Setup the scene for render
-    scene.transform();
-    scene.setScreen(image->width(), image->height());
+    scene->transform();
+    scene->setScreen(image->width(), image->height());
 
     raysCast_ = 0;
     
@@ -292,22 +283,32 @@ void Renderer::render (Scene& scene, Image* image) {
                 &Renderer::renderAllCells, this, scene, image);
     }
 
-    boost::thread status = boost::thread( &Renderer::statusDisplay, this );
+	if (renderStatus) {
+		boost::thread status = boost::thread( &Renderer::statusDisplay, this );
 
-    for (int i = 0; i < threadCount_; i++) {
-        renderThread[i].join();
-    }
-	rendering_ = false;
+		for (int i = 0; i < threadCount_; i++) {
+			renderThread[i].join();
+		}
 
-	status.join();
+		running_ = false;
+
+		status.join();
+	} else {
+		for (int i = 0; i < threadCount_; i++) {
+			renderThread[i].join();
+		}
+		
+		running_ = false;
+	}
+
 #else
-    std::cout << "Rendering..." << std::flush;
+    std::cout << "Rendering(Single Thread)..." << std::flush;
 
     renderAllCells(scene, image);
 
     std::cout << "Done" << std::endl;
 
-	rendering_ = false;
+	running_ = false;
 #endif 
             
 }
@@ -325,11 +326,11 @@ void Renderer::toneMap_exp(Color* color) {
 }
 
 
-void Renderer::renderST (Scene &scene, Image *image)
+void Renderer::renderST (Scene* scene, Image *image)
 {
     //Setup the scene for render
-    scene.transform();
-    scene.setScreen(image->width(), image->height());
+    scene->transform();
+    scene->setScreen(image->width(), image->height());
     
     raysCast_ = 0;
     
@@ -343,18 +344,18 @@ void Renderer::renderST (Scene &scene, Image *image)
 }
 
 
-Color Renderer::renderPixel (Scene& scene, Image* image, int x, int y)
+Color Renderer::renderPixel (Scene* scene, Image* image, int x, int y)
 {
 	//Setup the scene for render
-    scene.transform();
-    scene.setScreen(image->width(), image->height());
+    scene->transform();
+    scene->setScreen(image->width(), image->height());
 
 	float sx,sy;
 
 	sx = x;
 	sy = y;
 
-	return trace(scene, scene.ray(sx,sy), 0);
+	return trace(scene, scene->ray(sx,sy), 0);
 }
 
 

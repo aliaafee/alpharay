@@ -29,6 +29,7 @@ void wxAlpharayCanvas::OnPaint(wxPaintEvent& event) {
 
 	int vbX,vbY;
 	GetViewStart(&vbX,&vbY);
+	vbX *= 10; vbY *= 10;
 
 	wxRect area;
 
@@ -38,6 +39,7 @@ void wxAlpharayCanvas::OnPaint(wxPaintEvent& event) {
 		area = upd.GetRect();
 		area.x += vbX;
 		area.y += vbY;
+	
 		
 		bitmap_->RefreshArea(area);
 

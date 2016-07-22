@@ -19,19 +19,19 @@ class Raytracer : public Renderer
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
     protected:
-        virtual Color trace(Scene &scene ,Ray ray, int depth);
+        virtual Color trace(Scene* scene ,Ray ray, int depth);
 
     private:
-        void setLighting(Scene &scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
-        void traceFresnel(Scene &scene, Ray ray, 
+        void setLighting(Scene* scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection);
+        void traceFresnel(Scene* scene, Ray ray, 
                             Vector intersectionPoint, Vector intersectionNormal,
                             Material &material,
                             int depth);
-        void traceReflection(Scene &scene, Ray ray, 
+        void traceReflection(Scene* scene, Ray ray, 
                             Vector intersectionPoint, Vector intersectionNormal,
                             Material &material,
                             int depth);
-        Vector raytraceDistributed(Scene &scene, Ray ray, int depth, 
+        Vector raytraceDistributed(Scene* scene, Ray ray, int depth, 
                                         float scatterFactor, int scatterSamples);
 
 

@@ -40,6 +40,7 @@ inline std::string durationDisplay(std::chrono::nanoseconds ns)
 #define TIMER_START std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now()
 #define TIMER_RESET t1 = std::chrono::high_resolution_clock::now()
 #define TIMER_ELAPSED durationDisplay(std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - t1 ))
+#define TIMER_ELAPSED_NS (std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now() - t1 )).count()
 
 #include "matrix4.h"
 

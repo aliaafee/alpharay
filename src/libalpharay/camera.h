@@ -32,8 +32,7 @@ class Camera : virtual public XmlObjectNamed
 
         virtual TiXmlElement* getXml();
         virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
-
-    protected:
+ 
         Vector position_;
         Vector target_;
         float tilt_;

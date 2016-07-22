@@ -3,25 +3,27 @@
 #include "material.h"
 
 
-void Material::init() { 
-	addEditable(new Editable<Color>("diffusecolor", &diffuseColor_, Color(1,1,1)));
-	addEditable(new Editable<Color>("highlightcolor", &highlightColor_, Color(1,1,1)));
+void Material::init() {
+	type_ = "material";
+	
+	addEditable(new Editable<Color>("diffuse-color", &diffuseColor_, Color(1,1,1)));
+	addEditable(new Editable<Color>("highlight-color", &highlightColor_, Color(1,1,1)));
 
 	addEditable(new Editable<float>("reflectivity", &reflectivity_, 1.0));
-	addEditable(new Editable<float>("opticdensity", &opticDensity_, 1.0));
+	addEditable(new Editable<float>("optic-density", &opticDensity_, 1.0));
 	addEditable(new Editable<bool>("dielectric", &dielectric_, false));
-	addEditable(new Editable<float>("scatterfactor", &scatterFactor_, 0));
-	addEditable(new Editable<int>("scattersamples", &scatterSamples_, 1));
+	addEditable(new Editable<float>("scatter-factor", &scatterFactor_, 0));
+	addEditable(new Editable<int>("scatter-samples", &scatterSamples_, 1));
 	addEditable(new Editable<float>("ambient", &ka_, 0.1));
-	addEditable(new Editable<float>("roughness_", &roughness_, 0.1));
+	addEditable(new Editable<float>("roughness", &roughness_, 0.1));
 	addEditable(new Editable<float>("refractive-index", &refractiveIndex_, 3));
-	addEditable(new Editable<bool>("flatshading", &flatShading_, false));
+	addEditable(new Editable<bool>("flat-shading", &flatShading_, false));
 	addEditable(new Editable<Vector>("emission", &emission_, Color(0,0,0)));
 	addEditable(new Editable<Vector>("reflectance", &reflectance_, Color(0.5,0.5,0.5)));
 
-	addEditableLink(new EditableLink<Map>("diffusemap", &diffuseMap_));
-	addEditableLink(new EditableLink<Map>("reflectivitymap", &reflectivityMap_));
-	addEditableLink(new EditableLink<Map>("normalmap", &normalMap_));
+	addEditableLink(new EditableLink<Map>("diffuse-map", &diffuseMap_));
+	addEditableLink(new EditableLink<Map>("reflectivity-map", &reflectivityMap_));
+	addEditableLink(new EditableLink<Map>("normal-map", &normalMap_));
 
 	//Fix this
 	//addEditable(new Editable<Vector>("reflectionType_", &reflectionType_, DIFF));

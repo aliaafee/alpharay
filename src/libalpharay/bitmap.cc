@@ -31,6 +31,10 @@ bool Bitmap::create(int width, int height)
 	imageSize_ = width_ * height_ * 3;
 	image_ = new float[width_ * height_ * 3];
 
+	for (unsigned int i = 0; i < imageSize_; i++) {
+		image_[i] = 0.0f;
+	}
+
     return true;
 }
 
@@ -224,8 +228,6 @@ void Bitmap::toneMap_simple()
 	for (unsigned int i = 0; i < imageSize_; i++) {
 		image_[i] = image_[i] / (image_[i] + 1.0f);
 	}
-	
-	refresh();
 }
 
 void Bitmap::toneMap_gamma(float a, float gamma)
@@ -238,8 +240,6 @@ void Bitmap::toneMap_gamma(float a, float gamma)
 	for (unsigned int i = 0; i < imageSize_; i++) {
 		image_[i] = a * pow(image_[i], gamma);
 	}
-
-	refresh();
 }
 
 void Bitmap::toneMap_exp(float exposure)
@@ -249,8 +249,6 @@ void Bitmap::toneMap_exp(float exposure)
 	for (unsigned int i = 0; i < imageSize_; i++) {
 		image_[i] = 1.0f - expf(image_[i] * exposure);
 	}
-
-	refresh();
 }
 
 

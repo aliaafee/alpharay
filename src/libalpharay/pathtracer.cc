@@ -11,7 +11,7 @@ void Pathtracer::init()
 }
 
 
-Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
+Color Pathtracer::pathTrace(Scene* scene ,Ray &ray, int depth)
 {
     float t;
     raysCast_ += 1;
@@ -19,7 +19,7 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
 	BaseObject *closestObject = closestIntersection(scene, ray, &t);
 
     if (closestObject == NULL)
-        return scene.envColor(ray);
+        return scene->envColor(ray);
 
 	Material material;	
 	closestObject->copyMaterial(&material);
@@ -101,7 +101,7 @@ Color Pathtracer::pathTrace(Scene &scene ,Ray &ray, int depth)
 }
 
 
-Color Pathtracer::trace(Scene &scene ,Ray ray, int depth)
+Color Pathtracer::trace(Scene* scene ,Ray ray, int depth)
 {
     Color color;
     

@@ -22,7 +22,7 @@ class Object : public BaseObject, virtual public XmlObjectNamed
             : XmlObjectNamed ("object", name) 
             { init(); parent_ = parent; }
 
-        ~Object() {};
+        virtual ~Object() {};
 
         virtual void transform();
 

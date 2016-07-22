@@ -9,7 +9,7 @@ void Raytracer::init()
 }
 
 
-void Raytracer::traceFresnel(Scene &scene, Ray ray, 
+void Raytracer::traceFresnel(Scene* scene, Ray ray, 
                         Vector intersectionPoint, Vector intersectionNormal,
                         Material &material, int depth)
 {
@@ -81,7 +81,7 @@ void Raytracer::traceFresnel(Scene &scene, Ray ray,
 }
 
 
-void Raytracer::traceReflection(Scene &scene, Ray ray, 
+void Raytracer::traceReflection(Scene* scene, Ray ray, 
                         Vector intersectionPoint, Vector intersectionNormal,
                         Material &material, int depth)
 {
@@ -107,7 +107,7 @@ void Raytracer::traceReflection(Scene &scene, Ray ray,
     material.addReflection(reflection);
 }
 
-Vector Raytracer::raytraceDistributed(Scene &scene, Ray ray, int depth, 
+Vector Raytracer::raytraceDistributed(Scene* scene, Ray ray, int depth, 
                                         float scatterFactor, int scatterSamples) {
     Vector color;
     Ray newray;
@@ -122,43 +122,43 @@ Vector Raytracer::raytraceDistributed(Scene &scene, Ray ray, int depth,
 
 
 void Raytracer::setLighting
-            (Scene &scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection) 
+            (Scene* scene, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection) 
 {
-    for (int l=0; l < scene.lights.size(); l++) {
-        scene.lights[l]->set(&(scene.objects), material, point, pointNormal, viewDirection);
+	for (auto light = scene->lights.begin(); light != scene->lights.end(); ++light) {
+		(*light)->set(&(scene->objects), material, point, pointNormal, viewDirection);
     }
 }
 
 
-Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
+Color Raytracer::trace(Scene* scene ,Ray ray, int depth)
 {
     depth += 1;
 
     if (depth > traceDepth_)
-        return scene.envColor(ray);
+        return scene->envColor(ray);
 
     float t;
     raysCast_ += 1;
 
-	if (scene.rayLog()) {
+	if (scene->rayLog()) {
 		ray.log_ = true;
 		std::cout << "d" << depth << ": int test [" << std::endl;
 	}
 
 	BaseObject *closestObject = closestIntersection(scene, ray, &t);
 	
-	if (scene.rayLog()) {
+	if (scene->rayLog()) {
 		std::cout << "]" << std::endl;
 	}
 
     if (closestObject == NULL)
-        return scene.envColor(ray);
+        return scene->envColor(ray);
 
     //TODO: Optimize
     Material material;	
 	closestObject->copyMaterial(&material);
 
-	if (scene.rayLog()) {
+	if (scene->rayLog()) {
 		material.log_ = true;
 	}
 
@@ -170,7 +170,7 @@ Color Raytracer::trace(Scene &scene ,Ray ray, int depth)
 	Vector intNormal = closestObject->normal(intPointLocal, &material);
     intNormal.normalize();
 
-	if (scene.rayLog()) {
+	if (scene->rayLog()) {
 		std::cout << "d" << depth << ": int -> " << closestObject->str() << " @ " << intPoint << " n:" << intNormal << std::endl;
 	}
     

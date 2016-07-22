@@ -17,7 +17,8 @@ MainFrame::MainFrame(const wxString& title, Project* project, const wxPoint& pos
 {	
 	project_ = project;
 
-	renderFrame_ = new RenderFrame(this, ID_RenderFrame,"Render");
+	//renderFrame_ = new RenderFrame(this, ID_RenderFrame,"Render");
+	renderFrame_ = NULL;
 	
 	//Menu Bar
     wxMenu *menuFile = new wxMenu;
@@ -29,7 +30,7 @@ MainFrame::MainFrame(const wxString& title, Project* project, const wxPoint& pos
     menuFile->Append(wxID_EXIT);
 	
 	wxMenu *menuRender = new wxMenu;
-	menuRender->Append(ID_Render, "Render");
+	menuRender->Append(ID_Render, "Render\tCtrl-R");
 	/*
 	menuRender->Append(ID_RenderFinal, "Render &Final");
 	*/
@@ -47,54 +48,68 @@ MainFrame::MainFrame(const wxString& title, Project* project, const wxPoint& pos
     CreateStatusBar();
     SetStatusText( "" );
 	
-	wxBoxSizer* sizer = new wxBoxSizer( wxHORIZONTAL);
+	sizer_ = new wxBoxSizer( wxHORIZONTAL);
 	
 	//Project Tree
-	projectTree_ = new wxTreeCtrl(this, ID_ProjectTree,  wxDefaultPosition, wxSize(200,200));
-	sizer->Add(projectTree_, 0, wxEXPAND|wxALL,2);
-
-	//Object Props List 
-	objectProps_ = new wxListCtrl(this, ID_ObjectProps, wxDefaultPosition, wxSize(200,200), wxLC_REPORT);
-	sizer->Add(objectProps_, 1, wxEXPAND|wxALL, 2);
-	objectProps_->AppendColumn("Property", wxLIST_FORMAT_LEFT,80);
-	objectProps_->AppendColumn("Value", wxLIST_FORMAT_RIGHT,150);
+	projectTree_ = new wxTreeCtrl(this, ID_ProjectTree,  wxDefaultPosition);
+	sizer_->Add(projectTree_, 1, wxEXPAND|wxALL,2);
 
 	//Sizer
-	SetSizer(sizer);
+	SetSizer(sizer_);
 	
-	genProjectTree();
+	genProjectTree();	
+}
+
+
+void MainFrame::ResetFrame() {
+	//Cancel any active renders
+	wxWindow* prevRenderFrame = FindWindowById(renderFrameID_);
+	if (prevRenderFrame) {
+		prevRenderFrame->Close();
+	}
+
+	//Close any project related windows
+	wxWindow* prevPropEditor = FindWindowById(propEditorID_);
+	if (prevPropEditor) {
+		prevPropEditor->Close();
+		prevPropEditor->Destroy();
+	}
+
+	sizer_->Layout();
 }
 
 
 void MainFrame::genProjectTree() {
 	projectTree_->DeleteAllItems();
-	wxTreeItemId root;
-	root = projectTree_->AddRoot("Project");
+	wxTreeItemId prjroot;
+	prjroot = projectTree_->AddRoot("Project", -1, -1, new XmlObjectTreeData(project_));
 	
-	root = projectTree_->AppendItem(root, "Scene");
+	wxTreeItemId root;
+	root = projectTree_->AppendItem(prjroot, "Scene", -1, -1, new XmlObjectTreeData(&(project_->scene)));
 	addTreeList <Image> (root, "Images", project_->scene.images);
 	addTreeList <Map> (root, "Maps", project_->scene.maps);
 	addTreeList <Material> (root, "Materials", project_->scene.materials);
 	addTreeList <Light> (root, "Lights", project_->scene.lights);
 	addTreeList <Object> (root, "Objects", project_->scene.objects);
 
-	//projectTree_->Expand(root);
 	projectTree_->ExpandAll(); 
-	objectProps_->DeleteAllItems();
+	projectTree_->SelectItem(prjroot);
+	displayPropertyEditor(project_);
 }
 
 
-void MainFrame::showObjectProps(XmlObjectNamed* object) {
-	objectProps_->DeleteAllItems();
-	
-	for (unsigned int i = 0; i < object->editables.size(); i++) {
-		BaseEditable* editable = object->editables[i];
-		wxListItem item;
-        item.SetId(i);
-        item.SetText( editable->name() );
-		objectProps_->InsertItem( item );
-		objectProps_->SetItem(i, 1, editable->str());		
+void MainFrame::displayPropertyEditor(XmlObjectNamed* object) {
+	wxWindow* prevPropEditor = FindWindowById(propEditorID_);
+	if (prevPropEditor) {
+		prevPropEditor->Close();
+		prevPropEditor->Destroy();
 	}
+	
+	propEditorID_ = wxWindow::NewControlId();
+	propEditor_ = new PropertyEditor(&(project_->scene),object, this, propEditorID_, wxDefaultPosition, wxSize(280,200));
+	sizer_->Add(propEditor_, 0, wxEXPAND|wxALL,0);
+	
+	sizer_->Layout();
 }
 
 
@@ -103,10 +118,10 @@ void MainFrame::OnTreeSelect(wxTreeEvent& event) {
 	
 	if (!treeData) return;
 	
-	XmlObjectTreeData* data = reinterpret_cast <XmlObjectTreeData*> (treeData);
+	XmlObjectTreeData* data = static_cast <XmlObjectTreeData*> (treeData);
 	XmlObjectNamed* obj = data->GetObject();
 	
-	showObjectProps(obj);
+	displayPropertyEditor(obj);
 }
 
 
@@ -118,6 +133,8 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 	
 	if (openFileDialog.ShowModal() == wxID_CANCEL)
 		return;
+
+	ResetFrame();
 
 	delete project_;
 	project_ = new Project();
@@ -157,8 +174,18 @@ void MainFrame::OnSave(wxCommandEvent& event)
 
 void MainFrame::OnRender(wxCommandEvent& event)
 {
+	wxWindow* prevRenderFrame = FindWindowById(renderFrameID_);
+	if (prevRenderFrame) {
+		//wxCloseEvent event( wxEVT_CLOSE_WINDOW, ID_CloseRenderFrame );
+		//wxQueueEvent( prevRenderFrame, event.Clone() );
+		//wxSleep(100);
+		prevRenderFrame->Close();
+	}
+
+	renderFrameID_ = wxWindow::NewControlId();
+	renderFrame_ = new RenderFrame(project_, this, renderFrameID_,"Render");
+	
 	renderFrame_->Show();
-	renderFrame_->Render(project_);
 }
 
 
@@ -170,7 +197,11 @@ void MainFrame::OnExit(wxCommandEvent& event)
 
 void MainFrame::OnClose(wxCloseEvent& event)
 {
-	renderFrame_->Close(true);
+	wxWindow* prevRenderFrame = FindWindowById(renderFrameID_);
+	if (prevRenderFrame) {
+		prevRenderFrame->Close();
+	}
+	
 	event.Skip();
 }
 

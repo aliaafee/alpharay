@@ -9,12 +9,15 @@
 #endif
 #include <wx/treectrl.h>
 #include <wx/listctrl.h>
+#include <wx/utils.h> 
 
 #include "libalpharay/project.h"
 
 #include "xmlobjecttreedata.h"
 #include "projectloadingdialog.h"
 #include "renderframe.h"
+#include "previewpanel.h"
+#include "propertyeditor.h"
 
 
 class MainFrame: public wxFrame
@@ -22,26 +25,38 @@ class MainFrame: public wxFrame
 public:
     MainFrame(const wxString& title, Project* project, const wxPoint& pos, const wxSize& size);
 private:
+	wxBoxSizer* sizer_;
 	Project* project_;
 	RenderFrame* renderFrame_;
+	wxWindowIDRef renderFrameID_;
 
 	wxTreeCtrl* projectTree_;
-	wxListCtrl* objectProps_;
-
+	
 	template <typename T> 
-	void addTreeList(wxTreeItemId root, wxString lable, std::vector<T*> &list) {
+	void addTreeList(wxTreeItemId root, 
+					 wxString lable, 
+					 std::vector<T*> &list)
+	{
 		root = projectTree_->AppendItem(root, lable);
 
 		for (unsigned int i = 0; i < list.size(); i ++) {
 			T* obj = list[i];
-			XmlObjectNamed *xmlobj = reinterpret_cast <T*> (obj);
+			XmlObjectNamed *xmlobj = static_cast <T*> (obj);
 			projectTree_->AppendItem(root, xmlobj->name(), -1, -1, new XmlObjectTreeData(obj));
 		}
 	};
 
 	void genProjectTree();
-	void showObjectProps(XmlObjectNamed* object);
 	void OnTreeSelect(wxTreeEvent& event);
+	void displayPropertyEditor(XmlObjectNamed* object);
+
+	void ResetFrame();
+
+	//PreviewPanel* preview_;
+	//wxWindowIDRef previewID_;
+
+	PropertyEditor* propEditor_;
+	wxWindowIDRef propEditorID_;
 
 	void OnOpen(wxCommandEvent& event);
 	void OnSave(wxCommandEvent& event);
@@ -62,7 +77,8 @@ enum {
 	ID_Render,
 	ID_ProjectTree,
 	ID_ObjectProps,
-	ID_RenderFrame
+	ID_RenderFrame,
+	ID_CloseRenderFrame
 };
 
 

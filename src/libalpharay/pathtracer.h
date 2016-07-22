@@ -21,8 +21,8 @@ class Pathtracer : public Renderer
     protected:
         int samples_;
 
-        virtual Color trace(Scene &scene ,Ray ray, int depth);
-        virtual Color pathTrace(Scene &scene ,Ray &ray, int depth);
+        virtual Color trace(Scene* scene ,Ray ray, int depth);
+        virtual Color pathTrace(Scene* scene ,Ray &ray, int depth);
 
 };
 

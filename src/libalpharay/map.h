@@ -13,7 +13,7 @@
 class Map : virtual public XmlObjectNamed
 {
     public:
-        virtual void init() { ; }
+        virtual void init() { type_	= "map"; }
         
         Map() 
             :XmlObjectNamed("map", "")
@@ -23,7 +23,7 @@ class Map : virtual public XmlObjectNamed
             :XmlObjectNamed("map", name)
             { init(); }
 
-        ~Map() { } ;
+        virtual ~Map() { } ;
 
         virtual void transform() {};
 
@@ -31,6 +31,11 @@ class Map : virtual public XmlObjectNamed
 
 		virtual void getTangents(Vector& point, Vector* os_tangent, Vector* os_bitangent) {;}
 };
+
+
+template <> inline std::string EditableLink<Map>::type() {
+	return "map";
+}
 
 
 class Map2d : public Map, virtual public XmlObjectNamed
@@ -48,7 +53,7 @@ class Map2d : public Map, virtual public XmlObjectNamed
 
         virtual Color color(Vector  point, Vector2 point2);
 
-    protected:
+    //protected:
         Image* image_;
         Vector2 imageScale_;
 

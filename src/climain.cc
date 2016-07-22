@@ -1,19 +1,5 @@
 /* vim: set ts=4 ss=4 sw=4 noet ai cindent : */
 
-/*
-#ifdef WXWIDGETS
-
-#include "gui/app.h"
-
-int main (int argc, char **argv) {
-	appMain(argc, argv);
-
-	return 0;
-}
-
-#else
-*/
-
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -99,5 +85,3 @@ int main (int argc, char **argv)
 
     return 0;
 }
-
-//#endif
