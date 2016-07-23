@@ -1,15 +1,12 @@
 <?xml version="1.0" ?>
-<project>
-    <preview width="320"  height="320" />
-    <final   width="320" height="320" />
-
-    <renderer type="pathtracer" 
+<project out-width="320" out-height="320">
+    <renderer0 type="pathtracer" 
         samples="500" 
         reflectiondepth="4" 
         subsamplesx="3" subsamplesy="3" 
         exposure="-1" />
 
-    <renderer0 type="raytracer" 
+    <renderer type="raytracer" 
         subsamplesx="3" subsamplesy="3" 
         exposure="-1" />
 

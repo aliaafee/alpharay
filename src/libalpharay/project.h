@@ -69,7 +69,7 @@ class Project : public XmlObjectNamed {
         bool save(string filename);
 
 		TiXmlElement* getXml();
-		bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
+		bool loadXml(TiXmlElement* pElem, std::string path);
 
 		int outWidth() 
 			{ return outWidth_; }

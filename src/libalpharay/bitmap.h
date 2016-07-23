@@ -53,7 +53,7 @@ class Bitmap : public Image, virtual public XmlObjectNamed
         void bloom(float size, float highpass);
 
         //virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
     protected:
         std::string filename_;

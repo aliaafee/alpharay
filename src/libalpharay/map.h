@@ -7,7 +7,6 @@
 #include "matrix4.h"
 #include "xmlobject-named.h"
 #include "image.h"
-#include "linklist.h"
 
 
 class Map : virtual public XmlObjectNamed

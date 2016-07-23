@@ -104,8 +104,6 @@ template<typename T> class Editable : public BaseEditable
 		}
 
 		virtual std::string str() { 
-			//std::stringstream ss (std::stringstream::in | std::stringstream::out);
-			//ss << *value_;
 			return toStr(*value_);
 		}
 		
@@ -138,7 +136,7 @@ template<typename T> class Editable : public BaseEditable
 		bool noMin_;
 
 		virtual T fromStr(std::string value) {
-			std::stringstream ss (std::stringstream::in | std::stringstream::out);
+			std::stringstream ss;
 			ss << value;
 			T result;
 			ss >> result;
@@ -146,7 +144,7 @@ template<typename T> class Editable : public BaseEditable
 		}
 
 		virtual std::string toStr(T value) {
-			std::stringstream ss (std::stringstream::in | std::stringstream::out);
+			std::stringstream ss;
 			ss << value;
 			return ss.str();
 		}
@@ -274,13 +272,11 @@ class EditableLink : public BaseEditableLink
 			*target_ = NULL;
 			
 			if (source_ == "") {
-				std::cout << "source is empty string" << std::endl;
 				return true;
 			}
 
 			for (auto it = list->begin(); it != list->end(); ++it) {
 				T* object = *it;
-				std::cout << object->name() << "-" << source_ << std::endl;
 				if (object->name() == source_) {
 					*target_ = object;
 					return true;
@@ -296,46 +292,4 @@ class EditableLink : public BaseEditableLink
 		T **target_;
 };
 
-
-/*
-template<typename T, typename L> class EditableLink : public BaseEditable
-{
-	public:
-		EditableLink(std::string name, T **target) : BaseEditable(name) {
-			(*target_) = (*target); 
-			//defaultTarget_ = NULL;
-			
-			//noMin_ = true;
-			//noMax_ = true;
-
-			//reset();
-		}
-
-		~EditableLink() {};
-
-		virtual bool set(std::string targetname, L *linkList) {
-
-			//linkList->template add<T>(targetname, &(*target_));
-			return true; 
-		}
-
-		virtual std::string str() { 
-			//std::stringstream ss (std::stringstream::in | std::stringstream::out);
-			//ss << *value_;
-			//return (target_)->name();
-			return "x";
-		}
-		
-		virtual void reset() {
-			*(*target_) = *defaultTarget_;
-		}
-
-	private:
-		T *(*target_);
-		T *defaultTarget_;
-
-		bool noMax_;
-		bool noMin_;
-};
-*/
 #endif // _EDITABLE_H_

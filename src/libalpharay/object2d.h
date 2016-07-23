@@ -6,7 +6,6 @@
 #include <sstream>
 
 #include "vector.h"
-#include "linklist.h"
 #include "xmlobject.h"
 #include "image.h"
 
@@ -35,8 +34,8 @@ class Object2d : virtual public XmlObjectNamed
 		virtual bool isInside(Vector2 &point) { return false; }
 		virtual Color getColor(Vector2 &point) { return Color(fillColor_.x, fillColor_.y, fillColor_.z, opacity_); }
 
-		virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+		//virtual TiXmlElement* getXml();
+        //virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
 	protected:
 		Vector2 position_;
@@ -57,7 +56,7 @@ class Object2d : virtual public XmlObjectNamed
 class Circle : virtual public Object2d, virtual public XmlObjectNamed
 {
 	public:
-        void init() { Object2d::init(); }
+        void init() { ; }
 
         Circle(std::string name) 
             : XmlObjectNamed ("circle", name) 
@@ -72,7 +71,7 @@ class Circle : virtual public Object2d, virtual public XmlObjectNamed
 class Square : virtual public Object2d, virtual public XmlObjectNamed
 {
 	public:
-        void init() { Object2d::init(); }
+        void init() { ; }
 
         Square(std::string name) 
             : XmlObjectNamed ("square", name) 
@@ -87,7 +86,7 @@ class Square : virtual public Object2d, virtual public XmlObjectNamed
 class Polygon : virtual public Object2d, virtual public XmlObjectNamed
 {
 	public:
-        void init() { Object2d::init(); }
+        void init();
 
         Polygon(std::string name) 
             : XmlObjectNamed ("polygon", name) 
@@ -97,10 +96,11 @@ class Polygon : virtual public Object2d, virtual public XmlObjectNamed
 
 		virtual bool isInside(Vector2 &point);
 
-		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+		virtual bool loadXml(TiXmlElement* pElem, std::string path);
 		virtual TiXmlElement* getXml();
-
+		
 	private:
+		std::string strPoints_;
 		std::vector<Vector2> points_;
 };
 
@@ -108,7 +108,7 @@ class Polygon : virtual public Object2d, virtual public XmlObjectNamed
 class Picture : virtual public Object2d, virtual public XmlObjectNamed
 {
 	public:
-        void init() { Object2d::init(); image_ = NULL; mask_ = NULL; tile_ = Vector2(1,1); }
+        void init();
 
         Picture(std::string name) 
             : XmlObjectNamed ("picture", name) 
@@ -118,9 +118,6 @@ class Picture : virtual public Object2d, virtual public XmlObjectNamed
 
 		virtual bool isInside(Vector2 &point);
 		virtual Color getColor(Vector2 &point);
-
-		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
-		virtual TiXmlElement* getXml();
 
 	private:
 		Image* image_;

@@ -8,7 +8,7 @@
 #include "vector.h"
 #include "xmlobject.h"
 #include "map.h"
-#include "linklist.h"
+
 
 enum ReflectionType { 
     DIFF, 
@@ -51,7 +51,7 @@ class Material : public XmlObjectNamed
 		virtual Vector normalObjectSpace(Vector& os_normal, Vector& os_tangent, Vector& os_bitangent);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
 		virtual void setLog(bool log) { log_ = log; }
 		virtual bool log() { return log_; }

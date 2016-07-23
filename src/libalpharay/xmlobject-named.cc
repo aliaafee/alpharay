@@ -34,7 +34,7 @@ TiXmlElement* XmlObjectNamed::getXml() {
 
 
 //bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path) {
-bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
+bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path) {
     XmlObject::loadXml(pElem, path);
 
 	int queryResult;
@@ -53,7 +53,6 @@ bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path, LinkList* li
 		if (queryResult == TIXML_SUCCESS) {
 			editableLinks[i]->setSource(sourceName);
 			EditableLink<XmlObjectNamed>* el = static_cast <EditableLink<XmlObjectNamed>*> (editableLinks[i]);
-			linkList->add(sourceName, el->target());
 		}
 	}
 	

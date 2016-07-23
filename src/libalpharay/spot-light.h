@@ -25,6 +25,7 @@ class SpotLight : public Light, virtual public XmlObjectNamed
         float angleFalloff_;
 
         Color getIntensityByAngle(Color intensity, Vector PO, Vector TO);
+		float getEnergyByAngle(const float &totalEnergy, const Ray &lightRay);
 };
 
 

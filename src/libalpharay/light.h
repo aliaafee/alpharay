@@ -35,13 +35,14 @@ class Light : virtual public Object, virtual public XmlObjectNamed
 
 
 		Color color_;
-		float power_;
+		float energy_;
 		
-    	Vector intensity_;
+    	//Vector intensity_;
 
         bool shadowsOn_;
 	protected:
         virtual Color getIntensityByDistance(Color intensity, float &distance);
+		virtual float getEnergyAtDistance(const float &totalEnergy, const float &distance);
         virtual BaseObject* getFirstIntersection(std::vector<Object*>* objects, Ray &ray, float rayLimit);
 };
 

@@ -99,7 +99,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Light** light, std::string path){
     }
 
     if (*light) {
-        (*light)->loadXml(pElem, path, &linkList_);
+        (*light)->loadXml(pElem, path);
     }
 
 	return true;
@@ -121,7 +121,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Image** image, std::string path) {
 
 
     if (*image) {
-        (*image)->loadXml(pElem, path, &linkList_);
+        (*image)->loadXml(pElem, path);
 		return (*image)->load();
     }
 
@@ -147,7 +147,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Map** map, std::string path) {
     }
 
     if (*map) {
-        (*map)->loadXml(pElem, path, &linkList_);
+        (*map)->loadXml(pElem, path);
     }
 
     return true;
@@ -164,7 +164,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Material** mat, std::string path) {
     }
 
     if (*mat) {
-        (*mat)->loadXml(pElem, path, &linkList_);
+        (*mat)->loadXml(pElem, path);
     }
 
     return true;
@@ -189,7 +189,7 @@ bool Scene::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
     }
 	
     if (*object) {
-        (*object)->loadXml(pElem, path, &linkList_);
+        (*object)->loadXml(pElem, path);
     }
     
 	return true;
@@ -211,6 +211,43 @@ template< typename T > bool Scene::addFromXml(TiXmlElement* pElem, std::string p
         }
     }
 	return true;
+}
+
+
+void Scene::updateLinksIn(XmlObjectNamed* object) {
+	std::vector<BaseEditableLink*>* links = object->getEditableLinksList();
+
+	for (auto it = links->begin(); it != links->end(); ++it) {
+		BaseEditableLink* editableLink = *it;
+		if (editableLink->type() == "image") {
+			EditableLink<Image>* imageLink = static_cast <EditableLink<Image>*> (editableLink);
+			imageLink->updateLinkFromList( &images );
+		} else if (editableLink->type() == "map") {
+			EditableLink<Map>* mapLink = static_cast <EditableLink<Map>*> (editableLink);
+			mapLink->updateLinkFromList( &maps );
+		} else if (editableLink->type() == "material") {
+			EditableLink<Material>* materialLink = static_cast <EditableLink<Material>*> (editableLink);
+			materialLink->updateLinkFromList( &materials );
+		}
+	}
+}
+
+
+template <typename T> void Scene::updateLinks (std::vector<T*> *list) {
+	for (auto it = list->begin(); it != list->end(); ++it) {
+		updateLinksIn(*it);
+	}
+}
+
+
+void Scene::updateLinks() {
+	updateLinksIn(this);
+	
+	updateLinks <Image> (&images);
+	updateLinks <Map> (&maps);
+	updateLinks <Material> (&materials);
+	updateLinks <Light> (&lights);
+	updateLinks <Object> (&objects);
 }
 
 
@@ -266,10 +303,10 @@ TiXmlElement* Scene::getXml() {
 }
 
 
-bool Scene::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
+bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
 	cancelLoad_ = false;
 
-    XmlObjectNamed::loadXml(pElem, path, linkList);
+    XmlObjectNamed::loadXml(pElem, path);
 
     std::cout << " Loading Scene..." << std::endl;
 
@@ -287,7 +324,7 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
         } else {
             camera_ = new Camera();
         }
-        camera_->loadXml(pElem, path, &linkList_);
+        camera_->loadXml(pElem, path);
     } else {
         camera_ = new Camera();
     }
@@ -336,7 +373,8 @@ bool Scene::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
 
     //Linking
 	std::cout << "  Linking...";
-    linkAll();
+    //linkAll();
+	updateLinks();
 	std::cout << "Done" << std::endl;
 
     std::cout << " Done" << std::endl;

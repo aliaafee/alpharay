@@ -10,7 +10,7 @@ void Light::init() {
 
 	//addEditable(new Editable<Color>("intensity", &intensity_, Color(100, 100, 100)));
 	addEditable(new Editable<Color>("color", &color_, Color(1,1,1)));
-	addEditable(new Editable<float>("power", &power_, 100));
+	addEditable(new Editable<float>("energy", &energy_, 100));
 	
 	addEditable(new Editable<bool>("shadow", &shadowsOn_, true));
 }
@@ -22,8 +22,6 @@ void Light::transform()
 	Vector zero(0,0,0);
 	
 	tposition_ = transformPoint(zero);
-
-	intensity_ = color_ * power_;
 }
 
 void Light::set(std::vector<Object*>* objects, Material &material, Vector &point, Vector &pointNormal, Vector &viewDirection)
@@ -41,7 +39,8 @@ void Light::set(std::vector<Object*>* objects, Material &material, Vector &point
         return;
     }
 
-    Color intensity = getIntensityByDistance(intensity_ , distance) ;
+	Color intensity = color_;
+	intensity *= getEnergyAtDistance(energy_, distance);
 
     material.addLight(intensity,
                         tposition_,
@@ -51,8 +50,20 @@ void Light::set(std::vector<Object*>* objects, Material &material, Vector &point
 }
 
 
+float Light::getEnergyAtDistance(const float &totalEnergy, const float &distance) {
+	if (distance == 0) {
+		return totalEnergy;
+	}
+	return totalEnergy/ (4 * M_PI * distance * distance);
+}
+
+
 Color Light::getIntensityByDistance(Color intensity, float &distance) {
-    return (intensity / (distance * distance)) * kIntensity_;
+	float d2 = distance * distance * 10 * 10;
+	if (d2 < 1.0f) {
+		return intensity;
+	}
+    return (intensity / (distance * distance));
 }
 
 

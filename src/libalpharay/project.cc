@@ -57,8 +57,8 @@ TiXmlElement* Project::getXml() {
 }
 
 
-bool Project::loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList) {
-	XmlObjectNamed::loadXml(pElem, path, linkList);
+bool Project::loadXml(TiXmlElement* pElem, std::string path) {
+	XmlObjectNamed::loadXml(pElem, path);
 
 	TiXmlHandle hRoot = TiXmlHandle(pElem);
 
@@ -121,7 +121,7 @@ bool Project::load(string filename)
         return false;
     }
 
-	return loadXml(pElem, path, &(scene.linkList_));
+	return loadXml(pElem, path);
 }
 
 

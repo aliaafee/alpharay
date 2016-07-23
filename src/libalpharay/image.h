@@ -4,7 +4,6 @@
 #define _IMAGE_H_
 
 #include "vector.h"
-#include "linklist.h"
 #include "xmlobject-named.h"
 
 

@@ -14,18 +14,18 @@ void AreaLight::set(std::vector<Object*>* objects, Material &material, Vector &p
 {
     Ray lightRay(point, position_, true);
 
-    Color intensity = intensity_;
-    
-    intensity = getIntensityByAngle(intensity, lightRay.direction_*-1, target_ - position_);
+	float energy = getEnergyByAngle(energy_, lightRay);
 
-    /*
-    if ((intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1)) {
+	if (energy_ < 0.1) {
         return;
     }
-    */
 
     float distance = point.distanceTo(position_);
-    intensity = getIntensityByDistance(intensity , distance) ;
+
+	energy = getEnergyAtDistance(energy, distance);
+
+	Color intensity = color_;
+	intensity *= energy;
 
     Vector ldir = lightRay.direction_ * -1;
     Vector dist;

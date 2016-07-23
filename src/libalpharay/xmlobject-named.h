@@ -5,7 +5,6 @@
 
 #include "xmlobject.h"
 #include "editable.h"
-#include "linklist.h"
 
 
 class XmlObjectNamed : public XmlObject
@@ -29,17 +28,21 @@ class XmlObjectNamed : public XmlObject
         virtual ~XmlObjectNamed() {};
 
         virtual TiXmlElement* getXml();
-		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
+		virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
         std::string name() { return name_; }
 		std::string type() { return type_; }
 
-		virtual void addEditable(BaseEditable* editable) {
+		void addEditable(BaseEditable* editable) {
 			editables.push_back(editable);
 		}
 
-		virtual void addEditableLink(BaseEditableLink* editableLink) {
+		void addEditableLink(BaseEditableLink* editableLink) {
 			editableLinks.push_back(editableLink);
+		}
+
+		virtual std::vector<BaseEditableLink*>* getEditableLinksList() {
+			return &editableLinks;
 		}
 		
     protected:

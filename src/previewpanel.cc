@@ -21,8 +21,8 @@ void PreviewPanel::init()
 	scene_.camera_ = camera;
 
 	renderer_.threadCount_ = 1;
-	renderer_.subSamplesX_ = 2;
-	renderer_.subSamplesY_ = 2;
+	renderer_.subSamplesX_ = 1;
+	renderer_.subSamplesY_ = 1;
 	renderer_.cellCx = 1;
 	renderer_.cellCy = 1;
 }
@@ -58,6 +58,7 @@ void PreviewPanel::Set(Material* material)
 	
 	Light* light = scene_.add(new Light(""));
 	light->position_ = Vector(-6,10,6);
+	light->energy_ = 1000;
 	light->shadowsOn_ = false;
 }
 
@@ -69,7 +70,7 @@ void PreviewPanel::Render()
 	if (image_) image_->transform(); 
 	
 	renderer_.render(&scene_, &bitmap_);
-	bitmap_.toneMap_exp(-1.0);
+	bitmap_.toneMap_exp(-2.0);
 }
 
 

@@ -36,7 +36,7 @@ class SkyMap : public Map, virtual public XmlObjectNamed
         virtual Color color(Vector  point, Vector2 point2);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
 		float azimuth;
 		float inclination;

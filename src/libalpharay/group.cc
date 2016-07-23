@@ -3,7 +3,8 @@
 #include "group.h"
 
 void Group::init() {
-	;
+	combinedEditableLinks_.reserve(editableLinks.size());
+	combinedEditableLinks_.insert(combinedEditableLinks_.end(), editableLinks.begin(), editableLinks.end());
 }
 
 void Group::transform() {
@@ -11,14 +12,7 @@ void Group::transform() {
 	
 	for (unsigned long i = 0; i < lights.size(); i++) {
 		(lights[i])->transform();
-		/*
-		(lights[i])->transMatrix = transMatrix * (lights[i])->transMatrix;
-		(lights[i])->transMatrixInv = transMatrixInv * (lights[i])->transMatrixInv;
-		(lights[i])->transMatrixNDInv = transMatrixNDInv * (lights[i])->transMatrixNDInv;
-		(lights[i])->transMatrixND = transMatrixND * (lights[i])->transMatrixND;
-		(lights[i])->transMatrixNormalInv = transMatrixNormalInv * (lights[i])->transMatrixNormalInv;
-		(lights[i])->transMatrixNormal = transMatrixNormal * (lights[i])->transMatrixNormal;
-		*/
+		
 		(lights[i])->transMatrix =  (lights[i])->transMatrix * transMatrix;
 		(lights[i])->transMatrixInv =  (lights[i])->transMatrixInv * transMatrixInv;
 		(lights[i])->transMatrixNDInv =  (lights[i])->transMatrixNDInv * transMatrixNDInv;
@@ -29,15 +23,7 @@ void Group::transform() {
 	
     for (unsigned long i = 0; i < objects.size(); i++) {
 		(objects[i])->transform();
-		/*
-		(objects[i])->transMatrix = transMatrix * (objects[i])->transMatrix;
-		(objects[i])->transMatrixInv = transMatrixInv * (objects[i])->transMatrixInv;
-		(objects[i])->transMatrixNDInv = transMatrixNDInv * (objects[i])->transMatrixNDInv;
-		(objects[i])->transMatrixND = transMatrixND * (objects[i])->transMatrixND;
-		(objects[i])->transMatrixNormalInv = transMatrixNormalInv * (objects[i])->transMatrixNormalInv;
-		(objects[i])->transMatrixNormal = transMatrixNormal * (objects[i])->transMatrixNormal;
-		*/
-		
+				
 		(objects[i])->transMatrix =  (objects[i])->transMatrix * transMatrix;
 		(objects[i])->transMatrixInv =  (objects[i])->transMatrixInv * transMatrixInv;
 		(objects[i])->transMatrixNDInv =  (objects[i])->transMatrixNDInv * transMatrixNDInv;
@@ -51,51 +37,13 @@ void Group::transform() {
 
 BaseObject* Group::intersection(Ray &ray, float *distance, float limit)
 {
-	
-	/*
-	//if triangles list available, then process as leaf
-
-	BaseObject *currentTrig = NULL;
-
-	BaseObject *closestTrig = NULL;
-
-	float curt = 0;
-	float clot = BIG_NUM;
-
-	for (unsigned long i=0; i < objects.size(); i++) {
-		currentTrig = objects[i]->intersection(ray, &curt, BIG_NUM); 
-		if (currentTrig != NULL) {
-			if (curt > 0.0001 && curt < clot) {
-				//if (curt < limitMax) {
-					closestTrig = currentTrig;
-					clot = curt;
-					
-					if (ray.shadowRay_) {
-						*distance = clot;
-						return closestTrig;
-					}
-				//}
-			}
-		}
-	}
-
-	*distance = clot;
-
-	return closestTrig;
-	*/
 	float d;
 	float closest = BIG_NUM;
 
 	Ray rayt = ray;
-
-	/*
-	Ray rayt = transformRay(ray);
-	rayt.calculateInverse();
-	*/
 	
 	BaseObject *currentObject = NULL;
 	BaseObject *closestObject = NULL;
-	//std::cout << "M1" << std::endl;
 	for (unsigned long i=0; i < objects.size(); i++) {
 			currentObject = objects[i]->intersection(rayt, &d, BIG_NUM);   
 			
@@ -119,8 +67,31 @@ BaseObject* Group::intersection(Ray &ray, float *distance, float limit)
 }
 
 
+Light* Group::add(Light *light) 
+{
+	lights.push_back(light);
+	
+	std::vector<BaseEditableLink*>* editableLinks = light->getEditableLinksList();
+	combinedEditableLinks_.reserve(editableLinks->size());
+	combinedEditableLinks_.insert(combinedEditableLinks_.end(), editableLinks->begin(), editableLinks->end());
+
+	return light;
+}
+
+
+Object* Group::add(Object *object) 
+{
+	objects.push_back(object); 
+
+	std::vector<BaseEditableLink*>* editableLinks = object->getEditableLinksList();
+	combinedEditableLinks_.reserve(editableLinks->size());
+	combinedEditableLinks_.insert(combinedEditableLinks_.end(), editableLinks->begin(), editableLinks->end());
+
+	return object;
+}
+
+
 bool Group::fromXml(TiXmlElement* pElem, Light** light, std::string path) {
-    //std::cout << "light " << pElem->Value() << std::endl;
     std::string name(pElem->Value());
     *light = NULL;
 
@@ -137,9 +108,7 @@ bool Group::fromXml(TiXmlElement* pElem, Light** light, std::string path) {
     }
 
     if (*light) {
-        (*light)->loadXml(pElem, path, &linkList_);
-		//std::cout << *((*light)->getXml()) << std::endl;
-		
+        (*light)->loadXml(pElem, path);		
         return true;
     }
     return false;
@@ -147,7 +116,6 @@ bool Group::fromXml(TiXmlElement* pElem, Light** light, std::string path) {
 
 
 bool Group::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
-    //std::cout << "object " << pElem->Value() << std::endl;
     std::string name(pElem->Value());
     *object = NULL;
 
@@ -164,9 +132,7 @@ bool Group::fromXml(TiXmlElement* pElem, Object** object, std::string path) {
     }
 
     if (*object) {
-        (*object)->loadXml(pElem, path, &linkList_);
-		//std::cout << *((*object)->getXml()) << std::endl;
-
+        (*object)->loadXml(pElem, path);
         return true;
     }
     return false;
@@ -209,10 +175,8 @@ TiXmlElement* Group::getXml() {
 }
 
 
-bool Group::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
-	init();
-
-    Object::loadXml(pElem, path, linkList);
+bool Group::loadXml(TiXmlElement* pElem, std::string path) {
+    Object::loadXml(pElem, path);
 
     std::cout << "  Loading Group..." << std::endl;
 
@@ -228,8 +192,6 @@ bool Group::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) {
     pElem = hRoot.FirstChild( "objects" ).FirstChild().Element();
     addFromXml <Object> (pElem, path);
     std::cout << "   " << objects.size() << " objects" << std::endl;
-
-	linkList->append(linkList_);
 
     std::cout << "  Done" << std::endl;	
 

@@ -31,7 +31,7 @@ class Camera : virtual public XmlObjectNamed
         virtual void orbitZ(float angle);
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
  
         Vector position_;
         Vector target_;

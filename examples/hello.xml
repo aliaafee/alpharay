@@ -29,11 +29,11 @@
             <pointlight name="light" 
 				position="2,2,2" 
 				color="1,1,1"
-				power="5"  />
+				energy="100" />
 			<pointlight name="light2" 
 				position="-3,-1,6"
 				color="1,1,1"
-				power="5" /> 
+				energy="100" /> 
         </lights>
 
         <objects>

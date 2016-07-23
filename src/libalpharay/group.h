@@ -7,8 +7,6 @@
 #include <tinyxml.h>
 #include <string>
 
-#include "linklist.h"
-
 #include "vector.h"
 
 #include "light.h"
@@ -39,13 +37,11 @@ class Group : virtual public Object, virtual public XmlObjectNamed
 
         virtual BaseObject* intersection(Ray &ray, float *t, float limit);
 
-		Light* add(Light *light) 
-			{lights.push_back(light); return light;}
+		Light* add(Light *light);
 		Light* getLight(std::string name)
 			{return getByName <Light> (name, lights);}
 
-		Object* add(Object *object) 
-			{objects.push_back(object); return object;}
+		Object* add(Object *object);	
 		Object* getObject(std::string name)
 			{return getByName <Object> (name, objects);}
 
@@ -53,14 +49,18 @@ class Group : virtual public Object, virtual public XmlObjectNamed
 		//virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
 		virtual TiXmlElement* getXml();
-		virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+		virtual bool loadXml(TiXmlElement* pElem, std::string path);
+
+		virtual std::vector<BaseEditableLink*>* getEditableLinksList() {
+			return &combinedEditableLinks_;
+		}
 
 	protected:
 		std::vector<Light*> lights;
 		std::vector<Object*> objects;
 
 	private:
-		LinkList linkList_;
+		std::vector<BaseEditableLink*> combinedEditableLinks_;
 		
 		template <typename T> T* getByName(std::string name, std::vector<T*> &list) {
 			for (unsigned long i = 0; i < list.size(); i++) {

@@ -7,8 +7,6 @@
 #include <tinyxml.h>
 #include <string>
 
-#include "linklist.h"
-
 #include "xmlobject-named.h"
 
 #include "vector.h"
@@ -94,9 +92,9 @@ public:
         {return getByName <Object> (name, objects);}
 
     virtual TiXmlElement* getXml();
-    virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList* linkList);
-	virtual bool loadXml(TiXmlElement* pElem, std::string path)
-		{ return loadXml(pElem, path, &linkList_); }
+    virtual bool loadXml(TiXmlElement* pElem, std::string path);
+	//virtual bool loadXml(TiXmlElement* pElem, std::string path)
+	//	{ return loadXml(pElem, path); }
 
 	virtual void cancelLoad() { cancelLoad_ = true; }
 
@@ -116,10 +114,8 @@ public:
 
 	bool rayLog_;
 
-	LinkList linkList_;
-
 private: 
-
+	
     template <typename T> T* getByName(std::string name, std::vector<T*> &list) {
         for (unsigned long i = 0; i < list.size(); i++) {
             if (list[i]->name() == name) {
@@ -128,7 +124,7 @@ private:
         }
         return NULL;
     }
-    
+    /*
     template <typename T> void linkList ( std::vector<T*> &things) {
         for (unsigned long i = 0; i < linkList_.size(); i++) {
             std::string source;
@@ -148,7 +144,10 @@ private:
         linkList <Material> (materials);
         linkList <Object> (objects);
     }
+	*/
 
+	//*********************************
+	
     bool fromXml(TiXmlElement* pElem, Light** light, std::string path);
     bool fromXml(TiXmlElement* pElem, Image** image, std::string path);
     bool fromXml(TiXmlElement* pElem, Map** map, std::string path);
@@ -156,6 +155,10 @@ private:
     bool fromXml(TiXmlElement* pElem, Object** object, std::string path);
 
     template< typename T > bool addFromXml(TiXmlElement* pElem, std::string path);
+
+	void updateLinksIn(XmlObjectNamed* object);
+	template <typename T> void updateLinks (std::vector<T*> *list);
+	void updateLinks();
 
 };
 

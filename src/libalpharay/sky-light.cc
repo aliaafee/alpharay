@@ -15,7 +15,8 @@ void SkyLight::set(std::vector<Object*>* objects, Material &material, Vector &po
     Ray lightRay;
 
     Vector quantaOrigin;
-    Color quantaIntensity = intensity_ / (float(samples_));
+	Color quantaIntensity = color_;
+	quantaIntensity *= energy_ / (float(samples_));
 
     for (int i = 0; i < samples_; i++) {
         lightRay = lightRay.getRamdomRayInHemisphere(point, pointNormal, 1.0);

@@ -10,7 +10,7 @@ void Material::init() {
 	addEditable(new Editable<Color>("highlight-color", &highlightColor_, Color(1,1,1)));
 
 	addEditable(new Editable<float>("reflectivity", &reflectivity_, 1.0));
-	addEditable(new Editable<float>("optic-density", &opticDensity_, 1.0));
+	addEditable(new Editable<float>("optic-density", &opticDensity_, 1.33));
 	addEditable(new Editable<bool>("dielectric", &dielectric_, false));
 	addEditable(new Editable<float>("scatter-factor", &scatterFactor_, 0));
 	addEditable(new Editable<int>("scatter-samples", &scatterSamples_, 1));
@@ -231,9 +231,9 @@ TiXmlElement* Material::getXml()
 }
 
 
-bool Material::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
+bool Material::loadXml(TiXmlElement* pElem, std::string path)
 {
-	XmlObjectNamed::loadXml(pElem, path, linkList);
+	XmlObjectNamed::loadXml(pElem, path);
 
     std::string rt="";
     pElem->QueryStringAttribute ("reflection", &rt);

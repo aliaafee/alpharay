@@ -4,7 +4,7 @@
 
 
 void SpotLight::init() { 
-	addEditable(new Editable<Vector>("target", &target_, Vector(0, 0, 1)));
+	addEditable(new Editable<Vector>("target", &target_, Vector(0, 0, 0)));
 	addEditable(new Editable<float>("angle", &angle_, M_PI / 5));
 	addEditable(new Editable<float>("anglefalloff", &angleFalloff_, M_PI / 5));
 }
@@ -14,11 +14,9 @@ void SpotLight::set(std::vector<Object*>* objects, Material &material, Vector &p
 {
     Ray lightRay(point, position_, true);
 
-    Color intensity = intensity_;
-    
-    intensity = getIntensityByAngle(intensity, lightRay.direction_*-1, target_ - position_);
+	float energy = getEnergyByAngle(energy_, lightRay);
 
-    if (intensity.x < 0.1 && intensity.y < 0.1 && intensity.z < 0.1) {
+	if (energy_ < 0.1) {
         return;
     }
 
@@ -30,7 +28,11 @@ void SpotLight::set(std::vector<Object*>* objects, Material &material, Vector &p
         return;
     }
 
-    intensity = getIntensityByDistance(intensity , distance) ;
+    //intensity = getIntensityByDistance(intensity , distance) ;
+	energy = getEnergyAtDistance(energy, distance);
+
+	Color intensity = color_;
+	intensity *= energy;
 
     material.addLight(intensity,
                         position_,
@@ -39,6 +41,29 @@ void SpotLight::set(std::vector<Object*>* objects, Material &material, Vector &p
                         pointNormal );
 }
 
+
+float SpotLight::getEnergyByAngle(const float &totalEnergy, const Ray &lightRay)
+{
+	Vector PO = lightRay.direction_;
+	PO *= -1;
+	PO.normalize();
+	Vector TO = target_ - position_;
+	TO.normalize();
+
+	float angle = acos(V_DOT(PO, TO));
+
+	if (angle > angle_) {
+        return 0;
+    }
+
+	float energy = totalEnergy;
+
+	if (angle > (angle_ - angleFalloff_)) {
+        energy = energy * ((angle_-angle)/angleFalloff_);
+    }
+
+	return energy;
+}
 
 
 Color SpotLight::getIntensityByAngle(Color intensity, Vector PO, Vector TO)

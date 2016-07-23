@@ -12,7 +12,7 @@ class AreaLight : public SpotLight, virtual public XmlObjectNamed
         virtual void init();
 
         AreaLight( std::string name ) 
-            : SpotLight(name), XmlObjectNamed("spotlight", name)
+            : SpotLight(name), XmlObjectNamed("arealight", name)
             { init(); }
 
         ~AreaLight() { } ;

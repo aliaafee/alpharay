@@ -289,9 +289,9 @@ void Bitmap::bloom(float radius, float highpass)
 }
 
 
-bool Bitmap::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
+bool Bitmap::loadXml(TiXmlElement* pElem, std::string path)
 {
-    Image::loadXml(pElem, path, linkList);
+    Image::loadXml(pElem, path);
 
     if (filename_ != "") {
         absfilename_ = pathJoin(path, filename_);

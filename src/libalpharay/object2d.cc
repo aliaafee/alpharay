@@ -5,13 +5,13 @@
 
 void Object2d::init()
 { 
-	XmlObjectNamed::init(); 
-	
-	position_ = Vector2(0,0); 
-	rotation_ = 0; 
-	scale_ = Vector2(1,1); 
+	addEditable(new Editable<Vector2>("position", &position_, Vector2(0, 0)));
+	addEditable(new Editable<float>("rotation", &rotation_, 0));
+	addEditable(new Editable<Vector2>("scale", &scale_, Vector2(1, 1)));
 
-	opacity_ = 1;
+	addEditable(new Editable<Color>("fillcolor", &fillColor_, Color(0,0,0)));
+	addEditable(new Editable<Color>("strokecolor", &strokeColor_, Color(0,0,0)));
+	addEditable(new Editable<float>("opacity", &opacity_, 1));
 }
 
 
@@ -64,41 +64,6 @@ Vector2 Object2d::transformPointInv(Vector2 &point)
 }
 
 
-bool Object2d::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
-{
-    init();
-
-    XmlObjectNamed::loadXml(pElem, path, linkList);
-
-    pElem->QueryValueAttribute <Vector2> ("position", &position_);
-    pElem->QueryFloatAttribute("rotation", &rotation_);
-    pElem->QueryValueAttribute <Vector2> ("scale", &scale_);
-
-	pElem->QueryValueAttribute <Vector> ("fillcolor", &fillColor_);
-	pElem->QueryValueAttribute <Vector> ("strokecolor", &strokeColor_);
-	pElem->QueryFloatAttribute("opacity", &opacity_);
-
-
-    return true;
-}
-
-
-TiXmlElement* Object2d::getXml() 
-{
-    TiXmlElement* root = XmlObjectNamed::getXml();
-
-    root->SetAttribute("position", position_.str());
-    root->SetAttribute("rotation", ftos(rotation_));
-    root->SetAttribute("scale", scale_.str());
-
-	root->SetAttribute("fillcolor", fillColor_.str());
-	root->SetAttribute("strokecolor", strokeColor_.str());
-	root->SetAttribute("opacity", ftos(opacity_));
-
-    return root;
-}
-
-
 bool Circle::isInside(Vector2 &point) 
 { 
 	Vector2 newPoint = transformPointInv(point);
@@ -128,6 +93,12 @@ bool Square::isInside(Vector2 &point)
 }
 
 
+void Polygon::init()
+{
+	addEditable(new BaseEditable("points", &strPoints_, ""));
+}
+
+
 bool Polygon::isInside(Vector2 &point) 
 {
 	/* from http://alienryderflex.com/polygon/
@@ -151,19 +122,16 @@ bool Polygon::isInside(Vector2 &point)
 }
 
 
-bool Polygon::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
+bool Polygon::loadXml(TiXmlElement* pElem, std::string path) 
 {
-	init();
+	Object2d::loadXml(pElem, path);
 
-    Object2d::loadXml(pElem, path, linkList);
-
-	std::string points;
-	pElem->QueryStringAttribute ("points", &points);
-
-	std::stringstream ss(points);
-    std::string token, p1, p2;	
+	std::stringstream ss;
+	ss << strPoints_;
+    std::string token;	
 	while(std::getline(ss, token, ' ')) {
-		std::stringstream ss2(token);
+		std::stringstream ss2;
+		ss2 << token;
 		Vector2 point;
 		ss2 >> point;
 		points_.push_back(point);
@@ -176,14 +144,12 @@ bool Polygon::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 
 TiXmlElement* Polygon::getXml() 
 {
-    TiXmlElement* root = Object2d::getXml();
-
-	std::string points;
+	strPoints_ = "";
 	for (unsigned long i = 0; i < points_.size(); i++) {
-		points += points_[i].str() + " ";
+		strPoints_ += points_[i].str() + " ";
 	}
 
-	root->SetAttribute("points", points);
+    TiXmlElement* root = Object2d::getXml();
 	
     return root;
 }
@@ -200,6 +166,14 @@ bool Picture::isInside(Vector2 &point)
 	}
 
 	return false;
+}
+
+
+void Picture::init()
+{
+	addEditable(new Editable<Vector2>("tile", &tile_, Vector2(1, 1)));
+	addEditableLink(new EditableLink<Image>("image", &image_));
+	addEditableLink(new EditableLink<Image>("mask", &mask_));
 }
 
 
@@ -249,51 +223,3 @@ Color Picture::getColor(Vector2 &point)
             
     return color;
 }
-
-
-bool Picture::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
-{
-	init();
-
-    Object2d::loadXml(pElem, path, linkList);
-
-	pElem->QueryValueAttribute <Vector2> ("tile", &tile_);
-
-	std::string imagename;
-
-	imagename = "";
-    pElem->QueryStringAttribute ("image", &imagename);
-    linkList->add(imagename, &image_);
-
-	imagename = "";
-	pElem->QueryStringAttribute ("mask", &imagename);
-    linkList->add(imagename, &mask_);
-
-    return true;
-	
-}
-
-
-TiXmlElement* Picture::getXml() 
-{
-    TiXmlElement* root = Object2d::getXml();
-
-	root->SetAttribute("tile", tile_.str());
-	
-	if (image_ == NULL) {
-        root->SetAttribute("image", "");
-    } else {
-        root->SetAttribute("image", image_->name());
-    }
-
-	if (mask_ == NULL) {
-        root->SetAttribute("mask", "");
-    } else {
-        root->SetAttribute("mask", mask_->name());
-    }
-
-	
-    return root;
-}
-
-

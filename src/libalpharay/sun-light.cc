@@ -17,7 +17,8 @@ void SunLight::set(std::vector<Object*>* objects, Material &material, Vector &po
     Ray lightRay(point, point+position_, true);
 
     Vector quantaOrigin, lightDirection;
-    Color quantaIntensity = intensity_ / (float(samples_));
+    Color quantaIntensity = color_;
+	quantaIntensity *= energy_ / (float(samples_));
 
     lightDirection = lightRay.direction_;
 

@@ -55,9 +55,9 @@ TiXmlElement* Canvas::getXml()
 }
 
 
-bool Canvas::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
+bool Canvas::loadXml(TiXmlElement* pElem, std::string path)
 {
-    Image::loadXml(pElem, path, linkList);
+    Image::loadXml(pElem, path);
 	
 	pElem = pElem->FirstChildElement();
 
@@ -77,8 +77,12 @@ bool Canvas::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList)
 		}
 
 		if (object) {
-			object->loadXml(pElem, path, linkList);
+			object->loadXml(pElem, path);
 			objects.push_back(object);
+
+			std::vector<BaseEditableLink*>* editableLinks = object->getEditableLinksList();
+			combinedEditableLinks_.reserve(editableLinks->size());
+			combinedEditableLinks_.insert(combinedEditableLinks_.end(), editableLinks->begin(), editableLinks->end());
 		}
     }
 

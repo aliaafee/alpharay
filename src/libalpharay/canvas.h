@@ -29,11 +29,17 @@ class Canvas : public Image, virtual public XmlObjectNamed
 		virtual void transform();
 
         virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList);
+        virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
+		virtual std::vector<BaseEditableLink*>* getEditableLinksList() {
+			return &combinedEditableLinks_;
+		}
+		
 	protected:
 		Color backgroundColor_;
 		std::vector<Object2d*> objects;
+
+		std::vector<BaseEditableLink*> combinedEditableLinks_;
 };
 
 

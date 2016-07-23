@@ -141,11 +141,11 @@ TiXmlElement* SkyMap::getXml()
 }
 
 
-bool SkyMap::loadXml(TiXmlElement* pElem, std::string path, LinkList *linkList) 
+bool SkyMap::loadXml(TiXmlElement* pElem, std::string path) 
 {
     init();
 
-    Map::loadXml(pElem, path, linkList);
+    Map::loadXml(pElem, path);
 
 	
     pElem->QueryFloatAttribute ("azimuth", &azimuth);
