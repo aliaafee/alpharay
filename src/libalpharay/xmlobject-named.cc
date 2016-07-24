@@ -4,14 +4,13 @@
 
 
 void XmlObjectNamed::init()  { 
-	//XmlObject::init();
-
 	addEditable(new Editable<std::string>("name", &name_, "noname"));
 }
 
-
+/*
 TiXmlElement* XmlObjectNamed::getXml() {
     TiXmlElement* root = XmlObject::getXml();
+
 
 	std::string value;
 
@@ -28,12 +27,12 @@ TiXmlElement* XmlObjectNamed::getXml() {
 			root->SetAttribute(editableLinks[i]->name(), value);
 		}
 	}
+	
 
     return root;
 }
 
 
-//bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path) {
 bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path) {
     XmlObject::loadXml(pElem, path);
 
@@ -57,6 +56,4 @@ bool XmlObjectNamed::loadXml(TiXmlElement* pElem, std::string path) {
 	}
 	
 	return true;
-
-	return true;
-}
+}*/

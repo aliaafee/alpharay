@@ -13,7 +13,7 @@
 
 #include "xmlobject.h"
 #include "scene.h"
-#include "image.h"
+#include "bitmap.h"
 
 
 class RendererCell {
@@ -46,7 +46,7 @@ class RenderStatus {
 };
 
 
-class Renderer : public XmlObject 
+class Renderer : public XmlObject
 {
     public:
         virtual void init();
@@ -55,17 +55,12 @@ class Renderer : public XmlObject
             : XmlObject("renderer") 
             { init(); }
 
-        //virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback);
-		//virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
-		
-		//virtual void render (Scene &scene, Image *image, std::function<void()> onDoneCallback, bool join);
-		
-		virtual void render (Scene* scene, Image* image, RenderStatus* renderStatus=NULL);
-		Color renderPixel (Scene* scene, Image* image, int x, int y);
-        virtual void renderST (Scene* scene, Image *image);
+		virtual void render (Scene* scene, Bitmap* bitmap, RenderStatus* renderStatus=NULL);
+		Color renderPixel (Scene* scene, Bitmap* bitmap, int x, int y);
+        virtual void renderST (Scene* scene, Bitmap *bitmap);
 
-        virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+        //virtual TiXmlElement* getXml();
+        //virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
         float exposure_;
 		
@@ -74,12 +69,20 @@ class Renderer : public XmlObject
 
 		void cancel();
 
+		int outWidth() 
+			{ return outWidth_; }
+		int outHeight()
+			{ return outHeight_; }
+
+	
 		int threadCount_;
 		int cellCx, cellCy;
 		int subSamplesX_;
         int subSamplesY_;
 		int traceDepth_;
-    protected:
+		int outWidth_;
+		int outHeight_;
+	protected:
 		
         bool statusOn_;
 
@@ -110,10 +113,10 @@ class Renderer : public XmlObject
 
         bool statusDisplay();
 
-		bool renderAllCells(Scene* scene, Image* image);
-		virtual void renderCell(Scene* scene, Image *image, int x0, int y0, int x1, int y1);
+		bool renderAllCells(Scene* scene, Bitmap* bitmap);
+		virtual void renderCell(Scene* scene, Bitmap *bitmap, int x0, int y0, int x1, int y1);
         bool getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int height);
-        void resetCells(Image* image);
+        void resetCells(Bitmap* bitmap);
 };
 
 

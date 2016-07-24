@@ -37,9 +37,10 @@ bool Alpharay::OnInit()
 {
 	processArgs();
 
-	project_ = new Project();
+	project_ = NULL;//new Project();
 
 	if (projectFilename_ != "") {
+		project_ = new Project();
 		if (project_->load(projectFilename_.ToStdString())) {
 			if (benchmarkSamples_ > 0) {
 				RunBenchmark(benchmarkSamples_);

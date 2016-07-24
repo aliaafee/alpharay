@@ -12,7 +12,7 @@
 using namespace std;
 
 
-#include "xmlobject-named.h"
+#include "xmlobject.h"
 
 #include "scene.h"
 
@@ -23,24 +23,17 @@ using namespace std;
 
 #include "bitmap.h"
 
-class Project : public XmlObjectNamed {
+class Project : public XmlObject {
     public:
         Scene scene;
         Renderer* renderer;
         Bitmap* out;
-		int outWidth_;
-		int outHeight_;
         //Bitmap* final;
         //Vector2 previewSize;
         //Vector2 finalSize;
 
-        Project () : XmlObjectNamed("project") { 
-			renderer = NULL; 
-			//outWidth_ = 320; 
-			//outHeight_ = 240;
-			addEditable(new Editable<int>("out-width", &outWidth_, 320));
-			addEditable(new Editable<int>("out-height", &outHeight_, 240));
-		}
+        Project () : XmlObject("project") { 
+			renderer = NULL; }
 
 		/*
 
@@ -70,11 +63,6 @@ class Project : public XmlObjectNamed {
 
 		TiXmlElement* getXml();
 		bool loadXml(TiXmlElement* pElem, std::string path);
-
-		int outWidth() 
-			{ return outWidth_; }
-		int outHeight()
-			{ return outHeight_; }
 
 		void cancelLoad() 
 			{ scene.cancelLoad(); }

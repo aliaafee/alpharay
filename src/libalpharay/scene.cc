@@ -214,7 +214,7 @@ template< typename T > bool Scene::addFromXml(TiXmlElement* pElem, std::string p
 }
 
 
-void Scene::updateLinksIn(XmlObjectNamed* object) {
+void Scene::updateLinksIn(XmlObject* object) {
 	std::vector<BaseEditableLink*>* links = object->getEditableLinksList();
 
 	for (auto it = links->begin(); it != links->end(); ++it) {
@@ -252,7 +252,7 @@ void Scene::updateLinks() {
 
 
 TiXmlElement* Scene::getXml() {
-    TiXmlElement* root = XmlObjectNamed::getXml();
+    TiXmlElement* root = XmlObject::getXml();
 
     //camera
 	if (camera_ != NULL) {
@@ -306,7 +306,7 @@ TiXmlElement* Scene::getXml() {
 bool Scene::loadXml(TiXmlElement* pElem, std::string path) {
 	cancelLoad_ = false;
 
-    XmlObjectNamed::loadXml(pElem, path);
+    XmlObject::loadXml(pElem, path);
 
     std::cout << " Loading Scene..." << std::endl;
 

@@ -48,7 +48,7 @@ private:
 
 	void genProjectTree();
 	void OnTreeSelect(wxTreeEvent& event);
-	void displayPropertyEditor(XmlObjectNamed* object);
+	void displayPropertyEditor(XmlObject* object);
 
 	void ResetFrame();
 

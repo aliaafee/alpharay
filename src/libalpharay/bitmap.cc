@@ -8,7 +8,7 @@ void Bitmap::init()
     image_ = NULL;
 	imageSize_ = 0;
 
-	addEditable(new Editable<std::string>("filename", &filename_, ""));
+	addEditable(new Editable<FileName>("filename", &filename_, FileName("")));
 }
 
 
@@ -41,13 +41,14 @@ bool Bitmap::create(int width, int height)
 
 bool Bitmap::load()
 {
-	return load(absfilename_);
+	return load(filename_.absPath());
 }
 
 
 bool Bitmap::load(std::string filename)
 {
     if (imageSize_ != 0) {
+		imageSize_ = 0;
         delete[] image_;
     }
 #ifdef CIMG
@@ -292,10 +293,6 @@ void Bitmap::bloom(float radius, float highpass)
 bool Bitmap::loadXml(TiXmlElement* pElem, std::string path)
 {
     Image::loadXml(pElem, path);
-
-    if (filename_ != "") {
-        absfilename_ = pathJoin(path, filename_);
-    }
 
     return false;
 }

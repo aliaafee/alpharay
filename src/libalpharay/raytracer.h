@@ -6,13 +6,13 @@
 #include "renderer.h"
 
 
-class Raytracer : public Renderer 
+class Raytracer : public Renderer
 {
     public:
         virtual void init();
         
         Raytracer () 
-            : Renderer() 
+            : Renderer()
             { init(); }
 
         virtual TiXmlElement* getXml();

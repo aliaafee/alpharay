@@ -18,11 +18,11 @@ void Project::render(Bitmap* bitmap, RenderStatus* renderStatus)
 		return;
 	}
 
-	std::cout << "Rendering " << outWidth_ << "x" << outHeight_ << std::endl;
-
-	std::cout << "Perparing bitmap..." << std::flush;
-	bitmap->create(outWidth_, outHeight_);
+	//Prepare the bitmap
+	std::cout << "Perparing bitmap " << renderer->outWidth() << "x" << renderer->outWidth() << "..." << std::flush;
+	bitmap->create(renderer->outWidth(), renderer->outHeight());
 	std::cout << "Done" << std::endl;
+
 	
 	TIMER_START;
 
@@ -43,7 +43,7 @@ void Project::render(Bitmap* bitmap, RenderStatus* renderStatus)
 
 
 TiXmlElement* Project::getXml() {
-    TiXmlElement* root = XmlObjectNamed::getXml();
+    TiXmlElement* root = XmlObject::getXml();
 
 	// Raytracer settings
 	if (renderer != NULL) {
@@ -58,7 +58,7 @@ TiXmlElement* Project::getXml() {
 
 
 bool Project::loadXml(TiXmlElement* pElem, std::string path) {
-	XmlObjectNamed::loadXml(pElem, path);
+	XmlObject::loadXml(pElem, path);
 
 	TiXmlHandle hRoot = TiXmlHandle(pElem);
 

@@ -3,13 +3,11 @@
 #include "camera.h"
 
 void Camera::init() 
-{
-    XmlObjectNamed::init();
-
-    position_ = Vector(0, 0, 0);
-	target_ = Vector(0, 1, 0);
-	fOV_ = M_PI/4.0f;
-	tilt_ = 0.0f; 
+{	
+	addEditable(new Editable<Vector>("position", &position_, Vector(0, 0, 0)));
+	addEditable(new Editable<Vector>("target", &target_, Vector(0, 1, 0)));
+	addEditable(new Editable<float>("fov", &fOV_, M_PI/4.0f));
+	addEditable(new Editable<float>("tilt", &tilt_, 0.0f));
 }
 
 
@@ -92,11 +90,9 @@ void Camera::orbitZ(float angle)
 	position_ = v + target_;
 }
 
-
+/*
 bool Camera::loadXml(TiXmlElement* pElem, std::string path) 
 {
-    init();
-
     XmlObjectNamed::loadXml(pElem, path);
 
     pElem->QueryValueAttribute <Vector> ("position", &position_);
@@ -119,7 +115,7 @@ TiXmlElement* Camera::getXml()
 
     return root;
 }
-
+*/
 
 void CameraPano::setScreen(float screenWidth, float screenHeight) 
 {

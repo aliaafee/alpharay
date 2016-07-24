@@ -56,7 +56,8 @@ class Bitmap : public Image, virtual public XmlObjectNamed
         virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
     protected:
-        std::string filename_;
+        //std::string filename_;
+		FileName filename_;
 		std::string absfilename_;
 		
 		float *image_;

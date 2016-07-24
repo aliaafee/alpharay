@@ -4,13 +4,10 @@
 #define _XML_OBJECT_NAMED_H_
 
 #include "xmlobject.h"
-#include "editable.h"
 
 
 class XmlObjectNamed : public XmlObject
 {
-	friend class MainFrame;
-	friend class PropertyEditor;
     public:
         virtual void init();
 
@@ -27,10 +24,11 @@ class XmlObjectNamed : public XmlObject
 
         virtual ~XmlObjectNamed() {};
 
-        virtual TiXmlElement* getXml();
-		virtual bool loadXml(TiXmlElement* pElem, std::string path);
+        //virtual TiXmlElement* getXml();
+		//virtual bool loadXml(TiXmlElement* pElem, std::string path);
 
         std::string name() { return name_; }
+		/*
 		std::string type() { return type_; }
 
 		void addEditable(BaseEditable* editable) {
@@ -43,14 +41,15 @@ class XmlObjectNamed : public XmlObject
 
 		virtual std::vector<BaseEditableLink*>* getEditableLinksList() {
 			return &editableLinks;
-		}
+		}*/
 		
     protected:
         std::string name_;
+		/*
 		std::vector<BaseEditable*> editables;
 		std::vector<BaseEditableLink*> editableLinks;
 
-		std::string type_;
+		std::string type_;*/
 };
 
 

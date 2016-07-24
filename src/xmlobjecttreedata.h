@@ -9,22 +9,24 @@
 #endif
 #include <wx/treectrl.h>
 
+#include "libalpharay/xmlobject.h"
+
 
 class XmlObjectTreeData : public wxTreeItemData
 {
 public:
-	XmlObjectTreeData(XmlObjectNamed* object) 
+	XmlObjectTreeData(XmlObject* object) 
 		: wxTreeItemData() 
 		{ object_ = object; }
 
-	XmlObjectNamed* GetObject()
+	XmlObject* GetObject()
 		{ return object_; }
 
 	//template <typename T>
 	//T* GetAs ()
 	//	{ return object_; }
 private:
-	XmlObjectNamed* object_;
+	XmlObject* object_;
 };
 
 #endif //_XML_OBJECT_TREE_DATA_H_

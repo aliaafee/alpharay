@@ -55,14 +55,14 @@ RenderFrame::RenderFrame(Project* project, wxWindow *parent, wxWindowID id, cons
 
 	project_ = project;
 	
-	SetClientSize(project->outWidth(), project->outHeight() + (progressBar_->GetSize()).GetHeight());
+	SetClientSize(project->renderer->outWidth(), project->renderer->outHeight() + (progressBar_->GetSize()).GetHeight());
 	
 	wxRect windowRect = GetScreenRect();
 	wxRect screeRect(0, 0, wxSystemSettings::GetMetric( wxSYS_SCREEN_X ), wxSystemSettings::GetMetric( wxSYS_SCREEN_Y ));
 	windowRect = screeRect.Intersect(windowRect);
 	SetSize(windowRect);
 
-	canvas_->Setup(&bitmap_, project->outWidth(), project->outHeight());
+	canvas_->Setup(&bitmap_, project->renderer->outWidth(), project->renderer->outHeight());
 
 	if ( renderThread_.Create() != wxTHREAD_NO_ERROR ||
          renderThread_.Run() != wxTHREAD_NO_ERROR )

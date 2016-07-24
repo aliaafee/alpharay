@@ -49,15 +49,15 @@ def cameraXml(camera):
 def lampXml(lamp):
     name = lamp.name
     position = vecToStr(lamp.location)
-    intensity = "{0},{1},{2}".format(
-                    lamp.data.energy * lamp.data.color.r * 10.0,
-                    lamp.data.energy * lamp.data.color.g * 10.0,
-                    lamp.data.energy * lamp.data.color.b * 10.0);
+    color = "{0},{1},{2}".format(
+                    lamp.data.color.r,
+                    lamp.data.color.g,
+                    lamp.data.color.b);
 
     if lamp.data.type == "POINT":
-        return '<pointlight name="{0}" position="{1}" intensity="{2}" />'.format(name, position, intensity)
+        return '<pointlight name="{0}" position="{1}" energy="{2}" color="{3}" />'.format(name, position, lamp.data.energy, color)
     else:
-        return '<pointlight name="{0} position="{1}" intensity="{2}" />'.format(name, position, intensity)
+        return '<pointlight name="{0}" position="{1}" energy="{2}" color="{3}" />'.format(name, position, lamp.data.energy, color)
 
 
 def uniqueFileName(folderpath, filename, extension):

@@ -14,7 +14,7 @@ class Camera : virtual public XmlObjectNamed
         void init();
 
         Camera() 
-            : XmlObjectNamed ("camera", "unnamed") 
+            : XmlObjectNamed ("camera", "") 
             { init(); }
 
         Camera(std::string name) 
@@ -30,8 +30,8 @@ class Camera : virtual public XmlObjectNamed
         virtual void orbitY(float angle);
         virtual void orbitZ(float angle);
 
-        virtual TiXmlElement* getXml();
-        virtual bool loadXml(TiXmlElement* pElem, std::string path);
+        //virtual TiXmlElement* getXml();
+        //virtual bool loadXml(TiXmlElement* pElem, std::string path);
  
         Vector position_;
         Vector target_;
@@ -51,7 +51,7 @@ class CameraPano : public Camera, virtual public XmlObjectNamed
 
         CameraPano() 
             : XmlObjectNamed ("camera", "unnamed") 
-            { init(); }
+           { init(); }
 
         CameraPano(std::string name) 
             : XmlObjectNamed ("camera", name) 

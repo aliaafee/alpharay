@@ -127,12 +127,8 @@ void Triangle::setPoint(Vector point, Material* material)
         float w0, w1, w2;
         calculateWeights(point, &w0, &w1, &w2);
 
-        //std::cout << w0 << "," << w1 << "," << w2 << std::endl;
-
         point2d.x = ((*m[0]).x * w0) + ((*m[1]).x * w1) + ((*m[2]).x * w2);
         point2d.y = ((*m[0]).y * w0) + ((*m[1]).y * w1) + ((*m[2]).y * w2);
-
-        //std::cout << point2d << std::endl;
     }
 
     material->setPoint(point, point2d);
@@ -198,11 +194,6 @@ void Triangle::calculateWeights(Vector point, float *w0, float *w1, float *w2) {
     (Need to explain this a bit more)
 
     */
-    //Vector e0;
-    //V_SUB(e0, (*v[0]), (*v[1]));
-
-    //Vector e1;
-    //V_SUB(e1, (*v[0]), (*v[2]));
     
     Vector f0;
     V_SUB(f0, (*v[0]), point);
@@ -230,25 +221,3 @@ void Triangle::calculateWeights(Vector point, float *w0, float *w1, float *w2) {
     *w1 = sqrt(xa1.magnitude2() / a);
     *w2 = sqrt(xa2.magnitude2() / a);
 }
-
-
-inline TiXmlElement* Triangle::getXml() {
-    TiXmlElement* root = XmlObjectIndexed::getXml();
-
-    root->SetAttribute("i", index_);
-
-    root->SetAttribute("v0", v[0]->i());
-    root->SetAttribute("v1", v[1]->i());
-    root->SetAttribute("v2", v[2]->i());
-
-    root->SetAttribute("m0", m[0]->i());
-    root->SetAttribute("m1", m[1]->i());
-    root->SetAttribute("m2", m[2]->i());
-
-    root->SetAttribute("n0", n[0]->i());
-    root->SetAttribute("n1", n[1]->i());
-    root->SetAttribute("n2", n[2]->i());
-
-    return root;
-}
-

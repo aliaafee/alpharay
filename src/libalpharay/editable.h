@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "vector.h"
+#include "filename.h"
 
 class BaseEditable
 {
@@ -28,7 +29,7 @@ class BaseEditable
 
 		~BaseEditable() {};
 
-		virtual bool set(std::string &value) {
+		virtual bool set(const std::string &value) {
 			if (!isValid(value)) return false;
 			*value_ = value; return true; 
 		}
@@ -37,7 +38,7 @@ class BaseEditable
 			return *value_; 
 		}
 
-		virtual bool isValid(std::string &value) { 
+		virtual bool isValid(const std::string &value) { 
 			return true; 
 		}
 
@@ -94,7 +95,7 @@ template<typename T> class Editable : public BaseEditable
 
 		~Editable() {};
 
-		virtual bool set(std::string &value) {
+		virtual bool set(const std::string &value) {
 			T newValue = fromStr(value);
 	
 			if (!isValid(newValue)) return false;
@@ -125,6 +126,10 @@ template<typename T> class Editable : public BaseEditable
 
 		virtual T getValue() {
 			return *value_;
+		}
+
+		virtual T* getPointerToValue() {
+			return value_;
 		}
 
 	private:
@@ -207,6 +212,25 @@ template <> inline std::string Editable<Color>::type() {
 
 template <> inline std::string Editable<Vector2>::type() {
 	return "vector2";
+}
+
+
+template <> inline std::string Editable<FileName>::type() {
+	return "filename";
+}
+
+
+template <> inline std::string Editable<FileName>::toStr(FileName value) {
+	return value.relPath();
+}
+
+
+template <> inline FileName Editable<FileName>::fromStr(std::string strValue) {
+	if (value_) {
+		value_->set(strValue);
+		return (*value_);
+	}
+	return FileName(strValue);
 }
 
 

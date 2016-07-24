@@ -31,10 +31,8 @@ MainFrame::MainFrame(const wxString& title, Project* project, const wxPoint& pos
 	
 	wxMenu *menuRender = new wxMenu;
 	menuRender->Append(ID_Render, "Render\tCtrl-R");
-	/*
-	menuRender->Append(ID_RenderFinal, "Render &Final");
-	*/
-    wxMenu *menuHelp = new wxMenu;
+    
+	wxMenu *menuHelp = new wxMenu;
     menuHelp->Append(wxID_ABOUT);
     
 	wxMenuBar *menuBar = new wxMenuBar;
@@ -81,11 +79,23 @@ void MainFrame::ResetFrame() {
 
 void MainFrame::genProjectTree() {
 	projectTree_->DeleteAllItems();
+
+	if (!project_) return;
+
 	wxTreeItemId prjroot;
 	prjroot = projectTree_->AddRoot("Project", -1, -1, new XmlObjectTreeData(project_));
+
+	if (project_->renderer != NULL) {
+		projectTree_->AppendItem(prjroot, "Render Settings", -1, -1, new XmlObjectTreeData(project_->renderer));
+	}
 	
 	wxTreeItemId root;
 	root = projectTree_->AppendItem(prjroot, "Scene", -1, -1, new XmlObjectTreeData(&(project_->scene)));
+
+	if ( (project_->scene).camera_ != NULL ) {
+		projectTree_->AppendItem(root, "Camera", -1, -1, new XmlObjectTreeData((project_->scene).camera_));
+	}
+
 	addTreeList <Image> (root, "Images", project_->scene.images);
 	addTreeList <Map> (root, "Maps", project_->scene.maps);
 	addTreeList <Material> (root, "Materials", project_->scene.materials);
@@ -98,7 +108,7 @@ void MainFrame::genProjectTree() {
 }
 
 
-void MainFrame::displayPropertyEditor(XmlObjectNamed* object) {
+void MainFrame::displayPropertyEditor(XmlObject* object) {
 	wxWindow* prevPropEditor = FindWindowById(propEditorID_);
 	if (prevPropEditor) {
 		prevPropEditor->Close();
@@ -119,7 +129,7 @@ void MainFrame::OnTreeSelect(wxTreeEvent& event) {
 	if (!treeData) return;
 	
 	XmlObjectTreeData* data = static_cast <XmlObjectTreeData*> (treeData);
-	XmlObjectNamed* obj = data->GetObject();
+	XmlObject* obj = data->GetObject();
 	
 	displayPropertyEditor(obj);
 }
@@ -136,7 +146,8 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 
 	ResetFrame();
 
-	delete project_;
+	if (project_) delete project_;
+	
 	project_ = new Project();
 
 	wxString path = openFileDialog.GetPath();
@@ -150,18 +161,25 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 			wxMessageBox( "The project file appears to be invalid, or resource files not found",
                   "Project not loaded", wxOK | wxICON_ERROR );
 		case LOADING_CANCEL:
+			SetStatusText("Project Load Cancelled");
 			delete project_;
-			project_ = new Project();
+			project_ = NULL;
+			genProjectTree();
+			break;
+		default:
+			genProjectTree();
+			SetStatusText("Project Opened");
 	}
-
-	genProjectTree();
-
-	SetStatusText("Project Opened");
 }
 
 
 void MainFrame::OnSave(wxCommandEvent& event)
 {
+	if (!project_) {
+		wxMessageBox( "Cannot save, current project is empty",
+                  "Project Save", wxOK | wxICON_ERROR );
+		return;
+	}
 	wxFileDialog saveFileDialog(this, _("Save Project file"), "", "",
                        "Alpharay Project files (*.xml)|*.xml", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 
@@ -174,11 +192,14 @@ void MainFrame::OnSave(wxCommandEvent& event)
 
 void MainFrame::OnRender(wxCommandEvent& event)
 {
+	if (!project_) {
+		wxMessageBox( "Cannot render, current project is empty",
+                  "Render", wxOK | wxICON_ERROR );
+		return;
+	}
+
 	wxWindow* prevRenderFrame = FindWindowById(renderFrameID_);
 	if (prevRenderFrame) {
-		//wxCloseEvent event( wxEVT_CLOSE_WINDOW, ID_CloseRenderFrame );
-		//wxQueueEvent( prevRenderFrame, event.Clone() );
-		//wxSleep(100);
 		prevRenderFrame->Close();
 	}
 
@@ -209,7 +230,7 @@ void MainFrame::OnClose(wxCloseEvent& event)
 
 void MainFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox( "This is a wxWidgets' Hello world sample",
-                  "About Hello World", wxOK | wxICON_INFORMATION );
+    wxMessageBox( "Distributed Raytracer",
+                  "Alpharay", wxOK | wxICON_INFORMATION );
 }
 

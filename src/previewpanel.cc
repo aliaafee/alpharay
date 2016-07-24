@@ -20,6 +20,8 @@ void PreviewPanel::init()
 	camera->target_ = Vector(0, 0, 0);
 	scene_.camera_ = camera;
 
+	renderer_.outWidth_ = 100;
+	renderer_.outHeight_ = 100;
 	renderer_.threadCount_ = 1;
 	renderer_.subSamplesX_ = 1;
 	renderer_.subSamplesY_ = 1;

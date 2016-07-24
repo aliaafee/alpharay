@@ -5,21 +5,18 @@
 
 void Renderer::init()
 {
-    traceDepth_ = 10; 
-        
-    exposure_ = -1.0f;
-
-    subSamplesX_ = 4;
-    subSamplesY_ = 4;
-
-    statusOn_ = true;
-
-    threadCount_ = 8;
-
-    cellCx = 4;
-    cellCy = 4;
-
+	statusOn_ = true;
 	running_ = false;
+
+	addEditable(new Editable<int>("out-width", &outWidth_, 320));
+	addEditable(new Editable<int>("out-height", &outHeight_, 240));
+	addEditable(new Editable<float>("exposure", &exposure_, -1.0f));
+	addEditable(new Editable<int>("reflection-depth", &traceDepth_, 5));
+	addEditable(new Editable<int>("subsamplesx", &subSamplesX_, 2));
+	addEditable(new Editable<int>("subsamplesy", &subSamplesY_, 2));
+	addEditable(new Editable<int>("subcellsx", &cellCx, 4));
+	addEditable(new Editable<int>("subcellsy", &cellCy, 4));
+	addEditable(new Editable<int>("thread-count", &threadCount_, 4));
 }
 
 
@@ -97,18 +94,9 @@ Color Renderer::trace(Scene* scene ,Ray ray, int depth)
     return Color(randf(0,1), randf(0,1), randf(0,1));
 }
 
-/*
-void Renderer::correctExposure(Color &color) {
-    if (exposure_ != 0) {
-        color.x = 1.0f - expf(color.x * exposure_);
-        color.y = 1.0f - expf(color.y * exposure_);
-        color.z = 1.0f - expf(color.z * exposure_);
-    }
-}
-*/
 
 void Renderer::renderCell
-            (Scene* scene, Image *image, int x0, int y0, int x1, int y1)
+            (Scene* scene, Bitmap *bitmap, int x0, int y0, int x1, int y1)
 {
 	if (cancel_ == true) {
 		completedCells += 1;
@@ -135,7 +123,7 @@ void Renderer::renderCell
             }
             
             color /= ts;
-            image->setColor(point, color);
+            bitmap->setColor(point, color);
 			if (cancel_ == true) {
 				completedCells += 1;
 				return;
@@ -162,12 +150,12 @@ bool Renderer::getNextCell(int &x0, int &y0, int &x1, int &y1, int width, int he
 }
 
 
-bool Renderer::renderAllCells(Scene* scene, Image* image)
+bool Renderer::renderAllCells(Scene* scene, Bitmap* bitmap)
 {
     int x0, y0, x1, y1;
 
-    while (getNextCell(x0, y0, x1, y1, image->width(), image->height())) {
-        renderCell(scene, image, x0, y0, x1, y1);
+    while (getNextCell(x0, y0, x1, y1, bitmap->width(), bitmap->height())) {
+        renderCell(scene, bitmap, x0, y0, x1, y1);
     } 
 
     return true;
@@ -217,13 +205,13 @@ bool Renderer::statusDisplay()
 }
 
 
-void Renderer::resetCells(Image* image)
+void Renderer::resetCells(Bitmap* bitmap)
 {
 	currentCell = 0;
 	completedCells = 0;
 
-	int width = image->width();
-	int height = image->height();
+	int width = bitmap->width();
+	int height = bitmap->height();
     int maxCell = cellCx * cellCy;
     int cellW = width / cellCx;
     int cellH = height / cellCy;
@@ -258,7 +246,7 @@ void Renderer::resetCells(Image* image)
 }
 
 
-void Renderer::render (Scene* scene, Image* image, RenderStatus* renderStatus) {
+void Renderer::render (Scene* scene, Bitmap* bitmap, RenderStatus* renderStatus) {
 	if (running_) { 
 		std::cout << "Cannot start, we are rendering" << std::endl;
 		return; 
@@ -270,17 +258,17 @@ void Renderer::render (Scene* scene, Image* image, RenderStatus* renderStatus) {
 
     //Setup the scene for render
     scene->transform();
-    scene->setScreen(image->width(), image->height());
+    scene->setScreen(bitmap->width(), bitmap->height());
 
     raysCast_ = 0;
     
-    resetCells(image);
+    resetCells(bitmap);
 
 #ifdef THREADING
     boost::thread *renderThread = new boost::thread[threadCount_];
     for (int i = 0; i < threadCount_; i++) {
         renderThread[i] = boost::thread(
-                &Renderer::renderAllCells, this, scene, image);
+                &Renderer::renderAllCells, this, scene, bitmap);
     }
 
 	if (renderStatus) {
@@ -304,7 +292,7 @@ void Renderer::render (Scene* scene, Image* image, RenderStatus* renderStatus) {
 #else
     std::cout << "Rendering(Single Thread)..." << std::flush;
 
-    renderAllCells(scene, image);
+    renderAllCells(scene, bitmap);
 
     std::cout << "Done" << std::endl;
 
@@ -326,29 +314,29 @@ void Renderer::toneMap_exp(Color* color) {
 }
 
 
-void Renderer::renderST (Scene* scene, Image *image)
+void Renderer::renderST (Scene* scene, Bitmap *bitmap)
 {
     //Setup the scene for render
     scene->transform();
-    scene->setScreen(image->width(), image->height());
+    scene->setScreen(bitmap->width(), bitmap->height());
     
     raysCast_ = 0;
     
-    resetCells(image);
+    resetCells(bitmap);
 
     std::cout << "Rendering..." << std::flush;
 
-    renderAllCells(scene, image);
+    renderAllCells(scene, bitmap);
 
     std::cout << "Done" << std::endl;
 }
 
 
-Color Renderer::renderPixel (Scene* scene, Image* image, int x, int y)
+Color Renderer::renderPixel (Scene* scene, Bitmap* bitmap, int x, int y)
 {
 	//Setup the scene for render
     scene->transform();
-    scene->setScreen(image->width(), image->height());
+    scene->setScreen(bitmap->width(), bitmap->height());
 
 	float sx,sy;
 
@@ -357,37 +345,3 @@ Color Renderer::renderPixel (Scene* scene, Image* image, int x, int y)
 
 	return trace(scene, scene->ray(sx,sy), 0);
 }
-
-
-bool Renderer::loadXml(TiXmlElement* pElem, std::string path) 
-{
-    init();
-
-    XmlObject::loadXml(pElem, path);
-
-    pElem->QueryIntAttribute("reflectiondepth", &traceDepth_);
-    pElem->QueryFloatAttribute("exposure", &exposure_);
-    pElem->QueryIntAttribute("subsamplesx", &subSamplesX_);
-    pElem->QueryIntAttribute("subsamplesy", &subSamplesY_);
-    pElem->QueryIntAttribute("subcellsx", &cellCx);
-    pElem->QueryIntAttribute("subcellsy", &cellCy);
-
-    return true;
-}
-
-
-TiXmlElement* Renderer::getXml() 
-{
-    TiXmlElement* root = XmlObject::getXml();
-
-    root->SetAttribute("reflectiondepth", traceDepth_);
-    root->SetDoubleAttribute("exposure", exposure_);
-    root->SetAttribute("subsamplesx", subSamplesX_);
-    root->SetAttribute("subsamplesy", subSamplesY_);
-    root->SetAttribute("subcellsx", cellCx);
-    root->SetAttribute("subcellsy", cellCy);
-
-
-    return root;
-}
-

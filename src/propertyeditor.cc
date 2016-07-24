@@ -121,7 +121,7 @@ wxBEGIN_EVENT_TABLE(PropertyEditor, wxScrolledWindow)
 wxEND_EVENT_TABLE()
 
 
-PropertyEditor::PropertyEditor(Scene* scene, XmlObjectNamed* object, wxWindow *parent, wxWindowID id,const wxPoint &pos,const wxSize &size)
+PropertyEditor::PropertyEditor(Scene* scene, XmlObject* object, wxWindow *parent, wxWindowID id,const wxPoint &pos,const wxSize &size)
 	: wxScrolledWindow(parent, id, pos, size, wxVSCROLL)
 {
 	scene_ = scene;
@@ -240,6 +240,11 @@ PropertyEditor::PropertyEditor(Scene* scene, XmlObjectNamed* object, wxWindow *p
 					unsigned (char (col.z * 255)) );
 			wxColourPickerCtrl* colpicker = new wxColourPickerCtrl(this, i, newcol);
 			ctrl = colpicker;
+		} else if (editable->type() == "filename") {
+			Editable<FileName>* editableFilename = static_cast <Editable<FileName>*> (editable);
+			FileName filename = editableFilename->getValue();
+			wxFilePickerCtrl* filePicker = new wxFilePickerCtrl(this, i, filename.absPath());
+			ctrl = filePicker;
 		} else {
 			wxTextCtrl* txt = new wxTextCtrl(this, i);
 			txt->SetValue(wxString(editable->str()));
@@ -346,6 +351,24 @@ void PropertyEditor::Update() {
 				   << float(col.Blue()) / 255.0;
 				std::string strValue = ss.str();
 				editable->set(strValue);
+			} else if (editable->type() == "filename") {
+				Editable<FileName>* editableFilename = static_cast <Editable<FileName>*> (editable);
+				FileName prevFilename = editableFilename->getValue();
+				wxFilePickerCtrl* filePicker = static_cast <wxFilePickerCtrl*> (ctrl);
+				std::string strValue = (filePicker->GetPath()).ToStdString();
+				editable->set(strValue);
+				if (object_->type() == "image") {
+					Image* image = dynamic_cast <Image*> (object_);
+					if (image->load()) {
+						std::cout << "Image loaded" << std::endl;
+					} else {
+						wxMessageBox( "The image file could not be loaded",
+										"Failed to load image", wxOK | wxICON_ERROR );
+						editable->set(prevFilename.relPath());
+						filePicker->SetPath(prevFilename.absPath());
+						image->load();
+					}
+				}
 			} else {
 				wxTextCtrl* txt = static_cast <wxTextCtrl*> (ctrl);
 				std::string strValue = (txt->GetValue()).ToStdString();

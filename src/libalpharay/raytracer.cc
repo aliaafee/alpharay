@@ -197,8 +197,6 @@ Color Raytracer::trace(Scene* scene ,Ray ray, int depth)
 
 bool Raytracer::loadXml(TiXmlElement* pElem, std::string path) 
 {
-    init();
-
     Renderer::loadXml(pElem, path);
 
     return true;

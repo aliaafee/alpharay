@@ -9,13 +9,14 @@
 #endif
 #include <wx/spinctrl.h>
 #include <wx/clrpicker.h>
+#include <wx/filepicker.h>
 
 #include <string>
 #include <sstream>
 
 #include "libalpharay/vector.h"
 #include "libalpharay/scene.h"
-#include "libalpharay/xmlobject-named.h"
+#include "libalpharay/xmlobject.h"
 
 #include "previewpanel.h"
 
@@ -113,11 +114,11 @@ template <> inline void LinkComboBox<Material>::getList() {
 class PropertyEditor : public wxScrolledWindow
 {
 	public:
-		PropertyEditor(Scene* scene, XmlObjectNamed* object, wxWindow *parent, wxWindowID id=wxID_ANY, const wxPoint &pos=wxDefaultPosition, const wxSize &size=wxDefaultSize);
+		PropertyEditor(Scene* scene, XmlObject* object, wxWindow *parent, wxWindowID id=wxID_ANY, const wxPoint &pos=wxDefaultPosition, const wxSize &size=wxDefaultSize);
 		void Update();
 	private:
 		PreviewPanel* preview_;
-		XmlObjectNamed* object_;
+		XmlObject* object_;
 		Scene* scene_;
 		void OnUpdate(wxCommandEvent& event);
 

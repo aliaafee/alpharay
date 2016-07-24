@@ -117,8 +117,6 @@ Color Pathtracer::trace(Scene* scene ,Ray ray, int depth)
 
 bool Pathtracer::loadXml(TiXmlElement* pElem, std::string path) 
 {
-    init();
-
     Renderer::loadXml(pElem, path);
 
     pElem->QueryIntAttribute("samples", &samples_);
