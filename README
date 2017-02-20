@@ -1,11 +1,9 @@
-alpharay. Ray tracer
-===================
+# alpharay
 
-A raytracer, using an XML scene description language.
+A raytracer, using an XML scene description language, and optional wxWidgets UI.
 
 
-Basic Installation
-==================
+## Basic Installation
 
 alpharay uses the standard procedure for compilation and installation:
 
@@ -17,33 +15,26 @@ To generate a "./configure" file run "autoreconf", this requires
 autoconf and automake.
 
 
-Required Dependencies
-=====================
+## Required Dependencies
 
-The required dependencies are:
-    * tinyxml
+tinyxml is the only required dependencies.
 
 Install it in the standard manner for your system or get it from:
-    * http://sourceforge.net/projects/tinyxml/
+	
+	http://sourceforge.net/projects/tinyxml/
 	
 
-Optional Dependencies
-=====================
+## Optional Dependencies
 
 The following optional dependencies are supported:
+* CImg for handling more image file types 
+* boost for multi threading
+* wxWidgets for UI
 
-	* CImg for handling more image file types 
-    * boost for multi threading
-    * freeglut to display preview of render
 
-
-Usage
-=====
+## Usage
 
 To render the project examples/hello.xml and save the render result
 to hello.png:
 
-    alpharay -o hello.bmp examples/hello.xml
-
-  
-
+    alpharay -o hello.pmb examples/hello.xml
