@@ -1,0 +1,27 @@
+
+# /
+/Makefile
+/Makefile.in
+/aclocal.m4
+/autom4te.cache
+/config.log
+/config.status
+/configure
+/old
+/build
+/res
+/.swp
+
+# /examples/
+/examples/obj
+/examples/src
+/examples/img
+/examples/project.xml
+/examples/planets.xml
+
+# /src/
+/src/.vimrc
+/src/Makefile.in
+
+# /src/libalpharay/
+/src/libalpharay/Makefile.in
