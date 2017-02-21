@@ -38,7 +38,7 @@ public:
 		bitmap_ = bitmap;
     }
 
-    virtual ExitCode Entry() wxOVERRIDE;
+    virtual ExitCode Entry();// wxOVERRIDE;
 
 	void CancelRender();
 

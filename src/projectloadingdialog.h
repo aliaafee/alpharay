@@ -36,7 +36,7 @@ public:
 		filename_ = filename;
     }
 
-    virtual ExitCode Entry() wxOVERRIDE;
+    virtual ExitCode Entry();// wxOVERRIDE;
 
 private:
     ProjectLoadingDialog *m_dlg;
