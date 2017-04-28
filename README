@@ -27,7 +27,7 @@ Install it in the standard manner for your system or get it from:
 ## Optional Dependencies
 
 The following optional dependencies are supported:
-* CImg for handling more image file types 
+* CImg for handling more image file types, natively supports portable bitmap(pmb) format.
 * boost for multi threading
 * wxWidgets for UI
 
@@ -35,6 +35,6 @@ The following optional dependencies are supported:
 ## Usage
 
 To render the project examples/hello.xml and save the render result
-to hello.png:
+to hello.pmb:
 
     alpharay -o hello.pmb examples/hello.xml
