@@ -28,6 +28,7 @@ class wxAlpharayBitmap : public Bitmap, public wxBitmap
 
 	private:
 		float exposure_;
+		void fallbackRefreshArea_(const wxRect& fixedRect);
 };
 
 #endif // WX_ALPHARAY_BITMAP_H

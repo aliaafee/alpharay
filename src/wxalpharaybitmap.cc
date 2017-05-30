@@ -54,20 +54,63 @@ void wxAlpharayBitmap::refresh() {
 }
 
 
+void wxAlpharayBitmap::fallbackRefreshArea_(const wxRect& fixedRect) {
+	std::cout << "wxAlpharayBitmap: Fallback Bitmap Draw" << std::endl;
+
+	wxMemoryDC temp_dc;
+	temp_dc.SelectObject(*this);
+	wxPen temp_pen;
+
+	temp_dc.SetBackground(*wxWHITE_BRUSH);
+	temp_dc.Clear();
+	
+	unsigned int ix, iy, i;
+	int r, g, b;
+	for (unsigned int y = 0; y < fixedRect.height; ++y )
+	{
+		iy = y + fixedRect.y;
+		for (unsigned int x = 0; x < fixedRect.width; ++x)
+		{
+			ix = x + fixedRect.x;
+			i = iy * width_ * 3 + ix * 3;
+			r = int(image_[i]*255.0f);
+			if (r > 255) r = 255;
+			g = int(image_[i+1]*255.0f);
+			if (g > 255) g = 255;
+			b = int(image_[i+2]*255.0f);
+			if (b > 255) b = 255;
+			temp_pen.SetColour(wxColour(255,255,255));
+			temp_dc.SetPen(temp_pen);
+			temp_dc.DrawPoint(ix, iy);
+			
+			//assign rgb to bitmap
+		}
+	}
+
+	temp_dc.DrawCircle(10,10,10);
+
+	temp_dc.SelectObject(wxNullBitmap);
+}
+
+
 void wxAlpharayBitmap::RefreshArea(const wxRect& rect) {
 	if (!IsOk()) return;
+	
+	wxRect bitmapRect(0, 0, width(), height());
+	wxRect fixedRect = bitmapRect.Intersect(rect);
 
 	wxNativePixelData data(*this);
 	
-	if (!data) return; 
-
-	wxRect bitmapRect(0, 0, width(), height());
-	wxRect fixedRect = bitmapRect.Intersect(rect);
+	if (!data) {
+		std::cout << "wxAlpharayBitmap: Native Pixel Data access unavilable" << std::endl;
+		fallbackRefreshArea_(fixedRect);
+		return;
+	}
 
 	wxNativePixelData::Iterator p(data);
 	
 	p.Offset(data, fixedRect.x, fixedRect.y);
-	
+
 	unsigned int ix, iy, i;
 	int r, g, b;
 	for (unsigned int y = 0; y < fixedRect.height; ++y )

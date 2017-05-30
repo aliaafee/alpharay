@@ -10,6 +10,7 @@
 #include <functional>
 #include <vector>
 #include <algorithm>
+#include <unistd.h>
 
 #include "xmlobject.h"
 #include "scene.h"

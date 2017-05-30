@@ -1,6 +1,7 @@
-bin_PROGRAMS = alpharay
-
 if WXWIDGETS
+
+bin_PROGRAMS = alpharay alpharaycli
+
 alpharay_SOURCES = guimain.cc \
                    mainframe.cc \
                    projectloadingdialog.cc \
@@ -9,10 +10,18 @@ alpharay_SOURCES = guimain.cc \
                    wxalpharaycanvas.cc \
 				   previewpanel.cc \
 				   propertyeditor.cc
-else
-alpharay_SOURCES = climain.cc
-endif
-
 alpharay_LDADD = libalpharay/libalpharay.la
+
+alpharaycli_SOURCES = climain.cc
+alpharaycli_LDADD = libalpharay/libalpharay.la
+
+else
+
+bin_PROGRAMS = alpharay
+
+alpharay_SOURCES = climain.cc
+alpharay_LDADD = libalpharay/libalpharay.la
+
+endif
 
 SUBDIRS = libalpharay
