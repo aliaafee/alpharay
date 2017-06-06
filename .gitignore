@@ -26,3 +26,6 @@
 
 # /src/libalpharay/
 /src/libalpharay/Makefile.in
+
+# /examples/
+/examples/tests

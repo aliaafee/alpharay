@@ -55,7 +55,7 @@ void wxAlpharayBitmap::refresh() {
 
 
 void wxAlpharayBitmap::fallbackRefreshArea_(const wxRect& fixedRect) {
-	std::cout << "wxAlpharayBitmap: Fallback Bitmap Draw" << std::endl;
+	std::cout << "wxAlpharayBitmap: Fallback Bitmap Draw, this is slow." << std::endl;
 
 	wxMemoryDC temp_dc;
 	temp_dc.SelectObject(*this);
@@ -79,16 +79,13 @@ void wxAlpharayBitmap::fallbackRefreshArea_(const wxRect& fixedRect) {
 			if (g > 255) g = 255;
 			b = int(image_[i+2]*255.0f);
 			if (b > 255) b = 255;
-			temp_pen.SetColour(wxColour(255,255,255));
+			temp_pen.SetColour(wxColour(r,g,b));
 			temp_dc.SetPen(temp_pen);
 			temp_dc.DrawPoint(ix, iy);
 			
 			//assign rgb to bitmap
 		}
 	}
-
-	temp_dc.DrawCircle(10,10,10);
-
 	temp_dc.SelectObject(wxNullBitmap);
 }
 

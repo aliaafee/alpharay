@@ -94,7 +94,6 @@ void PreviewPanel::OnPaint(wxPaintEvent& event)
 	PrepareDC(dc);
 	
 	dc.DrawBitmap(bitmap_, 0, 0, false );
-	dc.DrawCircle(5,5,19);
 }
 
 
