@@ -35,6 +35,5 @@ libalpharay_la_SOURCES = vector.cc \
                          bbox.cc \
                          octree.cc
 
-libalpharay_la_CXXFLAGS = -std=c++11 -Wc++11-extensions 
 libalpharay_la_LIBDADD = -ltinyxml 
 libalpharay_la_LIBDADD += -lboost_thread-mt -lboost_system-mt

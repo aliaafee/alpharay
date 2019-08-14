@@ -7,6 +7,7 @@
 #include <boost/thread.hpp>
 #endif
 
+#include <unistd.h>
 #include <functional>
 #include <vector>
 #include <algorithm>

@@ -12,6 +12,7 @@
 /build
 /res
 /.swp
+/ltmain.sh
 
 # /examples/
 /examples/obj
