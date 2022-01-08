@@ -17,7 +17,7 @@ autoconf and automake.
 
 ## Required Dependencies
 
-tinyxml is the only required dependencies.
+tinyxml is the only required dependency.
 
 Install it in the standard manner for your system or get it from:
 	
